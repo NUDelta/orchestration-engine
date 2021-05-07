@@ -4,7 +4,7 @@ A system for authoring and executing Orchestration Scripts that support member o
 ## Setup
 1. Create a `.env` file as follows:
     ```
-    NODE_ENV=development
+   NODE_ENV=development
    PORT=3000
    DEBUG=true
    API_URL=http://localhost:3000
