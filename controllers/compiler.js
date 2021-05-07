@@ -187,9 +187,9 @@ export const compileScriptFromJson = async (scriptAsJson) => {
   }
 
   // create parsed condition by checking if the correct weekday and the time is greater than
-  parsedCondition = `(DateTime.now().weekday === DateTime.fromISO("${ manipulableDate.toString() }").weekday) &&
-    (DateTime.now().hour >= DateTime.fromISO("${ manipulableDate.toString() }").hour) && 
-    (DateTime.now().minute >= DateTime.fromISO("${ manipulableDate.toString() }").minute)`;
+  parsedCondition = `(currDate.weekday === DateTime.fromISO("${ manipulableDate.toString() }").weekday) &&
+    (currDate.hour >= DateTime.fromISO("${ manipulableDate.toString() }").hour) && 
+    (currDate.minute >= DateTime.fromISO("${ manipulableDate.toString() }").minute)`;
 
   // TODO: parse feedback
 
