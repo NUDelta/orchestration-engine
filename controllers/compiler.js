@@ -9,7 +9,7 @@ const getStudentsInSig = async (sigName) => {
   // get all data about SIGs
   let allSIGData;
   try {
-    allSIGData = await got.get(`${ studioAPIUrl }/venues/sig`, {responseType: 'json'});
+    allSIGData = await got.get(`${ studioAPIUrl }/venues/sig`, { responseType: 'json' });
     allSIGData = allSIGData.body;
 
     // get students relevant to that SIG only
@@ -32,7 +32,7 @@ const getStudentsOnProject = async (projectName) => {
   // get all data about projects
   let allProjectData;
   try {
-    allProjectData = await got.get(`${ studioAPIUrl }/projects`, {responseType: 'json'});
+    allProjectData = await got.get(`${ studioAPIUrl }/projects`, { responseType: 'json' });
     allProjectData = allProjectData.body;
 
     // get students relevant to that SIG only
@@ -118,10 +118,15 @@ export const compileScriptFromJson = async (scriptAsJson) => {
   parsedTarget = await parseTarget(scriptAsJson.script_target);
 
   // parse conditions
-  parsedDetectionCondition = await parseCondition(scriptAsJson.detection_condition);
+  parsedDetectionCondition = await parseCondition(scriptAsJson.detection_condition, scriptAsJson.script_target);
 
   // parse feedback
-  parsedActionableFeedback.parsed_feedback_trigger = scriptAsJson.actionable_feedback.feedback_trigger;
+  if (scriptAsJson.actionable_feedback.feedback_trigger !== "immediate") {
+    parsedActionableFeedback.parsed_feedback_trigger = await parseCondition(scriptAsJson.actionable_feedback.feedback_trigger, parsedTarget);
+  } else {
+    parsedActionableFeedback.parsed_feedback_trigger = "immediate";
+  }
+
   parsedActionableFeedback.parsed_feedback_message = await parseFeedbackMessage(
     scriptAsJson.actionable_feedback.feedback_message);
 
@@ -155,7 +160,7 @@ const parseTarget = async (currTarget) => {
   return parsedTarget;
 };
 
-const parseCondition = async (currCondition) => {
+const parseCondition = async (currCondition, target) => {
   // placeholder for parsed condition
   let parsedCondition;
 
@@ -168,8 +173,7 @@ const parseCondition = async (currCondition) => {
     parsedCondition = parseTimeBasedCondition(currCondition);
   } else if (toolConditions.some(el => currCondition.includes(el))) {
     // parsing a tool-based condition
-    // TODO: needs implementation
-    parsedCondition = "";
+    parsedCondition = parseToolBasedCondition(currCondition, target);
   }
 
   return parsedCondition;
@@ -235,9 +239,37 @@ const parseTimeBasedCondition = async (currCondition) => {
     (currDate.minute >= DateTime.fromISO("${ manipulableDate.toString() }").minute)`;
 };
 
-const parseToolBasedCondition = async (currCondition) => {
-  // TODO: implement
-  return "";
+const parseToolBasedCondition = async (currCondition, target) => {
+  // parse target
+  // TODO: handle list of students
+  let splitTarget = target.split(": ");
+  let parsedTarget;
+
+  if (splitTarget[0] === "project") {
+    parsedTarget = splitTarget[1];
+  } else if (splitTarget[0] === "sig") {
+    // TODO: implement
+  }
+
+  // hold parsed condition
+  let parsedCondition = "";
+
+  // separate out condition into chunks
+  let splitCondition = currCondition.split(".");
+
+  // handle sprintlog
+  if (splitCondition[0] === "sprintlog") {
+    if (splitCondition[1] === "tasks" && splitCondition[2] === "hasRoadblocks()") {
+      // parsedCondition = `(function() { let tasks = getTasksForSprint("${ parsedTarget }", currDate); `;
+      //
+      // if (splitCondition[2] === "hasRoadblocks()") {
+      //   parsedCondition += `return tasks.some(el => { el.expectedRoadblocks !== "" }); })`;
+      // }
+
+      parsedCondition = `currTasks.some(el => el.expectedRoadblocks !== "")`;
+    }
+  }
+  return parsedCondition;
 };
 
 const parseFeedbackMessage = async (currFeedbackMessage) => {

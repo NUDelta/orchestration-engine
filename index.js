@@ -73,91 +73,153 @@ app.listen(PORT, () => {
 // TODO: FOR TESTING ONLY
 // these are fancy slack reminders (the sprint log ones will have more of a condition)
 // hmm, so right now, these dont really need the targets since the conditions are really just triggers on the venue
-console.log("Ping students to send a revised sprint log the day after SIG\n",
-  await compileScriptFromJson({
-    script_target: "sig: Agile Research Studios SIG",
-    detection_condition: "after(Agile Research Studios SIG, 1 days)", // this is really more a trigger for when to deliver the actionable feedback (not the detection)
-    actionable_feedback: {
-      feedback_trigger: "immediate",
-      feedback_message: "Send your revised sprint log to your mentor to get feedback." // feedback should also tie into what slack channel it is being sent.
-    }
-  }),
-  "\n--------------------------\n\n"
-);
+// console.log("Ping students to send a revised sprint log the day after SIG\n",
+//   await compileScriptFromJson({
+//     script_target: "sig: Agile Research Studios SIG",
+//     detection_condition: "after(Agile Research Studios SIG, 1 days)", // this is really more a trigger for when to deliver the actionable feedback (not the detection)
+//     actionable_feedback: {
+//       feedback_trigger: "immediate",
+//       feedback_message: "Send your revised sprint log to your mentor to get feedback." // feedback should also tie into what slack channel it is being sent.
+//     }
+//   }),
+//   "\n--------------------------\n\n"
+// );
+//
+// console.log("Ping students to check in on what LIP they will do during Studio\n",
+//   await compileScriptFromJson({
+//     script_target: "project: Orchestration Scripting Environments",
+//     detection_condition: "before(Studio meeting, 3 hours)",
+//     actionable_feedback: {
+//       feedback_trigger: "immediate",
+//       feedback_message: "Do you know what LIP you're working on during Studio? Reply with: (1) what risk you plan to work on during Mysore; (2) what part of the canvas that related to; and (3) what learning module or template you’ll use during the Mysore session."
+//     }
+//   }),
+//   "\n--------------------------\n\n"
+// );
+//
+// console.log("Make sure we talk about deliverables for next week during SIG\n",
+//   await compileScriptFromJson({
+//     script_target: "sig: Networked Orchestration Technologies SIG",
+//     detection_condition: "during(Networked Orchestration Technologies SIG)",
+//     actionable_feedback: {
+//       feedback_trigger: "immediate",
+//       feedback_message: "Make sure to talk about deliverables for next week."
+//     }
+//   }),
+//   "\n--------------------------\n\n"
+// );
+//
+// console.log("Check in on how students' deliverables are going a couple days before SIG\n",
+//   await compileScriptFromJson({
+//     script_target: "sig: Agile Research Studios SIG",
+//     detection_condition: "before(Agile Research Studios SIG, 2 days)",
+//     actionable_feedback: {
+//       feedback_trigger: "immediate",
+//       feedback_message: "How are your deliverables going? Do you need any feedback or help?"
+//     }
+//   }),
+//   "\n--------------------------\n\n"
+// );
 
-console.log("Ping students to check in on what LIP they will do during Studio\n",
+// console.log("Check in on how students' deliverables are going a couple days before SIG\n",
+//   await compileScriptFromJson({
+//     script_target: "sig: Agile Research Studios SIG",
+//     detection_condition: "before(Agile Research Studios SIG, 2 days)",
+//     actionable_feedback: {
+//       feedback_trigger: "immediate",
+//       feedback_message: "How are your deliverables going? Do you need any feedback or help?"
+//     }
+//   }),
+//   "\n--------------------------\n\n"
+// );
+
+console.log("Make sure students are able to work through blockers on their sprints\n",
   await compileScriptFromJson({
     script_target: "project: Orchestration Scripting Environments",
-    detection_condition: "before(Studio meeting, 3 hours)",
+    detection_condition: "sprintlog.tasks.hasRoadblocks()",
     actionable_feedback: {
       feedback_trigger: "immediate",
-      feedback_message: "Do you know what LIP you're working on during Studio? Reply with: (1) what risk you plan to work on during Mysore; (2) what part of the canvas that related to; and (3) what learning module or template you’ll use during the Mysore session."
+      feedback_message: "Looks like you have roadblocks on your sprint. Do you need help with anything?"
     }
   }),
   "\n--------------------------\n\n"
 );
 
-console.log("Make sure we talk about deliverables for next week during SIG\n",
+console.log("Make sure students are able to work through blockers on their sprints\n",
   await compileScriptFromJson({
-    script_target: "sig: Networked Orchestration Technologies SIG",
-    detection_condition: "during(Networked Orchestration Technologies SIG)",
+    script_target: "project: Orchestration Scripting Environments",
+    detection_condition: "sprintlog.tasks.hasRoadblocks()",
     actionable_feedback: {
-      feedback_trigger: "immediate",
-      feedback_message: "Make sure to talk about deliverables for next week."
-    }
-  }),
-  "\n--------------------------\n\n"
-);
-
-console.log("Check in on how students' deliverables are going a couple days before SIG\n",
-  await compileScriptFromJson({
-    script_target: "sig: Agile Research Studios SIG",
-    detection_condition: "before(Agile Research Studios SIG, 2 days)",
-    actionable_feedback: {
-      feedback_trigger: "immediate",
-      feedback_message: "How are your deliverables going? Do you need any feedback or help?"
+      feedback_trigger: "during(Networked Orchestration Technologies SIG)",
+      feedback_message: "Looks like you have roadblocks on your sprint. Let's make sure we discuss these during SIG today."
     }
   }),
   "\n--------------------------\n\n"
 );
 
 
+
+// // simulate from start to end of Spring Quarter 2021
+// let startTime = DateTime.fromISO("2021-03-29T00:00:00", { zone: "America/Chicago" });
+// let endTime = DateTime.fromISO("2021-06-06T00:00:00", { zone: "America/Chicago" });
+//
+// await simulateScripts([
+//     {
+//       script_target: "sig: Agile Research Studios SIG",
+//       detection_condition: "after(Agile Research Studios SIG, 1 days)",
+//       actionable_feedback: {
+//         feedback_trigger: "immediate",
+//         feedback_message: "Send your revised sprint log to your mentor to get feedback."
+//       }
+//     },
+//     {
+//       script_target: "project: Orchestration Scripting Environments",
+//       detection_condition: "before(Studio meeting, 3 hours)",
+//       actionable_feedback: {
+//         feedback_trigger: "immediate",
+//         feedback_message: "Do you know what LIP you're working on during Studio? Reply with: (1) what risk you plan to work on during Mysore; (2) what part of the canvas that related to; and (3) what learning module or template you’ll use during the Mysore session."
+//       }
+//     },
+//     {
+//       script_target: "sig: Networked Orchestration Technologies SIG",
+//       detection_condition: "during(Networked Orchestration Technologies SIG)",
+//       actionable_feedback: {
+//         feedback_trigger: "immediate",
+//         feedback_message: "Make sure to talk about deliverables for next week."
+//       }
+//     },
+//     {
+//       script_target: "sig: Agile Research Studios SIG",
+//       detection_condition: "before(Agile Research Studios SIG, 2 days)",
+//       actionable_feedback: {
+//         feedback_trigger: "before(Agile Research Studios SIG, 2 days)",
+//         feedback_message: "How are your deliverables going? Do you need any feedback or help?"
+//       }
+//     }
+//   ],
+//   startTime,
+//   endTime
+// );
 
 // simulate from start to end of Spring Quarter 2021
-let startTime = DateTime.fromISO("2021-03-29T00:00:00", { zone: "America/Chicago" });
+let startTime = DateTime.fromISO("2021-03-31T11:00:00", { zone: "America/Chicago" });
 let endTime = DateTime.fromISO("2021-06-06T00:00:00", { zone: "America/Chicago" });
 
 await simulateScripts([
     {
-      script_target: "sig: Agile Research Studios SIG",
-      detection_condition: "after(Agile Research Studios SIG, 1 days)",
+      script_target: "project: Orchestration Scripting Environments",
+      detection_condition: "sprintlog.tasks.hasRoadblocks()",
       actionable_feedback: {
         feedback_trigger: "immediate",
-        feedback_message: "Send your revised sprint log to your mentor to get feedback."
+        feedback_message: "Looks like you have roadblocks on your sprint. Do you need help with anything?"
       }
     },
     {
       script_target: "project: Orchestration Scripting Environments",
-      detection_condition: "before(Studio meeting, 3 hours)",
+      detection_condition: "sprintlog.tasks.hasRoadblocks()",
       actionable_feedback: {
-        feedback_trigger: "immediate",
-        feedback_message: "Do you know what LIP you're working on during Studio? Reply with: (1) what risk you plan to work on during Mysore; (2) what part of the canvas that related to; and (3) what learning module or template you’ll use during the Mysore session."
-      }
-    },
-    {
-      script_target: "sig: Networked Orchestration Technologies SIG",
-      detection_condition: "during(Networked Orchestration Technologies SIG)",
-      actionable_feedback: {
-        feedback_trigger: "immediate",
-        feedback_message: "Make sure to talk about deliverables for next week."
-      }
-    },
-    {
-      script_target: "sig: Agile Research Studios SIG",
-      detection_condition: "before(Agile Research Studios SIG, 2 days)",
-      actionable_feedback: {
-        feedback_trigger: "immediate",
-        feedback_message: "How are your deliverables going? Do you need any feedback or help?"
+        feedback_trigger: "during(Networked Orchestration Technologies SIG)",
+        feedback_message: "Looks like you have roadblocks on your sprint. Let's make sure we discuss these during SIG today."
       }
     }
   ],
