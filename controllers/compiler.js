@@ -97,20 +97,47 @@ const message = async(content, target) => {
 /*
  json format:
  {
-  target: [String of students] or String with sig: <sig name> or project: <project name>
-  condition: String
-  actionable_feedback: String
+  script_target: [String of students] or String with sig: <sig name> or project: <project name>
+  detection_condition: "String"
+  actionable_feedback: {
+    feedback_trigger: "String",
+    feedback_message: "String"
+  }
  }
  */
 export const compileScriptFromJson = async (scriptAsJson) => {
   // placeholder variables for parsed code
   let parsedTarget = "";
-  let parsedCondition = "";
-  let parsedFeedback = scriptAsJson.actionable_feedback;
+  let parsedDetectionCondition = "";
+  let parsedActionableFeedback = {
+    parsed_feedback_trigger: "",
+    parsed_feedback_message: ""
+  };
 
   // parse target
-  let currTarget = scriptAsJson.target;
+  parsedTarget = await parseTarget(scriptAsJson.script_target);
 
+  // parse conditions
+  parsedDetectionCondition = await parseCondition(scriptAsJson.detection_condition);
+
+  // parse feedback
+  parsedActionableFeedback.parsed_feedback_trigger = scriptAsJson.actionable_feedback.feedback_trigger;
+  parsedActionableFeedback.parsed_feedback_message = await parseFeedbackMessage(
+    scriptAsJson.actionable_feedback.feedback_message);
+
+  // return parsed components
+  return {
+    parsed_target: parsedTarget,
+    parsed_detection_condition: parsedDetectionCondition,
+    parsed_actionable_feedback: parsedActionableFeedback
+  };
+};
+
+const parseTarget = async (currTarget) => {
+  // placeholder for parsed target
+  let parsedTarget;
+
+  // parse out target
   if (typeof(currTarget) === "string") {
     let splitStringTarget = currTarget.split(": ");
 
@@ -121,19 +148,35 @@ export const compileScriptFromJson = async (scriptAsJson) => {
       parsedTarget = await getStudentsOnProject(splitStringTarget[1]);
     }
   } else {
-   // handle string of student names
+    // TODO: handle string of student names
   }
 
-  // parse condition
-  let currCondition = scriptAsJson.condition;
-  // let functionRegex = new RegExp('(before)|(after)|(during)', 'g');
-  // let parametersRegex = new RegExp('\((.*?)\)', 'g');
-  //
-  // let matchedFunction = functionRegex.exec(currCondition);
-  // let matchedParams = functionRegex.exec(parametersRegex);
-  // console.log(matchedFunction);
-  // console.log(matchedParams);
+  // return parsed target
+  return parsedTarget;
+};
 
+const parseCondition = async (currCondition) => {
+  // placeholder for parsed condition
+  let parsedCondition;
+
+  // check if we have a time or tool-based condition
+  let timeConditions = ["before", "during", "after"];
+  let toolConditions = ["sprintlog"];
+
+  if (timeConditions.some(el => currCondition.includes(el))) {
+    // parsing a time-based condition
+    parsedCondition = parseTimeBasedCondition(currCondition);
+  } else if (toolConditions.some(el => currCondition.includes(el))) {
+    // parsing a tool-based condition
+    // TODO: needs implementation
+    parsedCondition = "";
+  }
+
+  return parsedCondition;
+};
+
+const parseTimeBasedCondition = async (currCondition) => {
+  // separate condition into chunks
   let firstBracket = currCondition.indexOf("(");
   let secondBracket = currCondition.indexOf(")");
   let functionMatch = currCondition.substring(0, firstBracket);
@@ -169,7 +212,7 @@ export const compileScriptFromJson = async (scriptAsJson) => {
       dayOfMarch = 7;
       break;
   }
-  let manipulableDate = venueTime.set({ year: 2021, month: 3, day: dayOfMarch });
+  let manipulableDate = venueTime.set({ year: 2021, month: 3, day: dayOfMarch }); // this is for during
 
   // parse into condition based on function
   if (functionMatch === "before" || functionMatch === "after") {
@@ -187,16 +230,17 @@ export const compileScriptFromJson = async (scriptAsJson) => {
   }
 
   // create parsed condition by checking if the correct weekday and the time is greater than
-  parsedCondition = `(currDate.weekday === DateTime.fromISO("${ manipulableDate.toString() }").weekday) &&
+  return `(currDate.weekday === DateTime.fromISO("${ manipulableDate.toString() }").weekday) &&
     (currDate.hour >= DateTime.fromISO("${ manipulableDate.toString() }").hour) && 
     (currDate.minute >= DateTime.fromISO("${ manipulableDate.toString() }").minute)`;
-
-  // TODO: parse feedback
-
-  // return parsed components
-  return {
-    parsed_target: parsedTarget,
-    parsed_condition: parsedCondition,
-    parsed_actionable_feedback: parsedFeedback
-  };
 };
+
+const parseToolBasedCondition = async (currCondition) => {
+  // TODO: implement
+  return "";
+};
+
+const parseFeedbackMessage = async (currFeedbackMessage) => {
+  // TODO: enable more complex messaging here when needed
+  return currFeedbackMessage;
+}

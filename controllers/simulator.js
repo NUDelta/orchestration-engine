@@ -7,7 +7,6 @@ export const simulateScripts = async (scriptList, startTime, endTime) => {
   for (let i = 0; i < scriptList.length; i++) {
     compiledScripts.push(await compileScriptFromJson(scriptList[i]));
   }
-  console.log(compiledScripts);
 
   // track which scripts have been triggered
   let triggeredScriptIndexSet = new Set();
@@ -61,12 +60,16 @@ export const simulateScripts = async (scriptList, startTime, endTime) => {
       if (!triggeredScriptIndexSet.has(index)) {
         // eval condition
         let currDate = startTime;
-        let is_condition_met = eval(compiledScripts[index].parsed_condition);
+        let is_condition_met = eval(compiledScripts[index].parsed_detection_condition);
 
-        // check if script condition is met and present feedback
+        // check if script condition is met
         if (is_condition_met) {
           triggeredScriptIndexSet.add(index);
-          console.log(`${ startTime.hour.toString().padStart(2, "0") }:${ startTime.minute.toString().padStart(2, "0") } -- ${ compiledScripts[index].parsed_target.join(", ") }: ${ compiledScripts[index].parsed_actionable_feedback }`);
+
+          // check if actionable feedback should be presented
+          if (compiledScripts[index].parsed_actionable_feedback.parsed_feedback_trigger === "immediate") {
+            console.log(`${ startTime.hour.toString().padStart(2, "0") }:${ startTime.minute.toString().padStart(2, "0") } -- ${ compiledScripts[index].parsed_target.join(", ") }: ${ compiledScripts[index].parsed_actionable_feedback.parsed_feedback_message }`);
+          }
         }
       }
     }
