@@ -1,149 +1,56 @@
-import { DateTime } from "luxon";
-import got from 'got';
-import { compileScriptFromJson } from "./compiler.js";
+import sinon from "sinon";
+// TODO: there is a separate package for fake timers that should be used here instead of sinon
+// https://sinonjs.org/releases/latest/fake-timers/
 
-// get url for Studio API
-const studioAPIUrl = process.env.API_URL;
+/**
+ * Simulates time changing over a specified time frame.
+ *
+ * @param startDate
+ * @param endDate
+ * @param simulateInfinitely
+ * @return {Promise<void>}
+ */
+export const simulateTimeFrame = async (startDate, endDate, simulateInfinitely) => {
+  // setup clock
+  let clock;
+  clock = sinon.useFakeTimers({ now: startDate });
 
-export const simulateScripts = async (scriptList, startTime, endTime) => {
-  // compile each script
-  let compiledScripts = [];
-  for (let i = 0; i < scriptList.length; i++) {
-    compiledScripts.push(await compileScriptFromJson(scriptList[i]));
-  }
+  // set tick amount for simulation
+  // 6 hours * 60 minutes * 60 seconds * 1000 ms
+  let tickAmount = 6 * 60 * 60 * 1000;
 
-  // track which scripts have been triggered
-  let triggeredScriptIndexSet = new Set();
+  // iterate over days
+  let currDate = new Date();
+  while (currDate < endDate) {
+    // pull out date components
+    let currHours = currDate.getHours();
+    let currMins = currDate.getMinutes();
+    let currSecs = currDate.getSeconds();
 
-  // simulate
-  console.log(`------------- Starting Simulation for S2021 -------------`);
-
-  let currDay = 0;
-  let weekCounter = 0;
-  while (startTime <= endTime) {
-    if (currDay !== startTime.weekday) {
-      console.log("\n");
-      currDay = startTime.weekday;
-      let currDayString = "";
-      switch (currDay) {
-        case 1:
-          currDayString = "Sunday";
-          break;
-        case 2:
-          currDayString = "Monday";
-          break;
-        case 3:
-          currDayString = "Tuesday";
-          break;
-        case 4:
-          currDayString = "Wednesday";
-          break;
-        case 5:
-          currDayString = "Thursday";
-          break;
-        case 6:
-          currDayString = "Friday";
-          break;
-        case 7:
-          currDayString = "Saturday";
-          break;
-      }
-
-      // clear the trigger set every sunday
-      if (currDay === 1) {
-        triggeredScriptIndexSet.clear();
-        weekCounter++;
-        console.log(`------------- Week ${ weekCounter } -------------`);
-      }
-
-      console.log(`${ currDayString } | ${ startTime.month }-${ startTime.day }-${ startTime.year }`);
+    // print day/date only if time is 00:00
+    if (currHours=== 0 && currMins === 0 && currSecs === 0) {
+      console.log(`\n${ currDate.toDateString() }`);
     }
 
-    // check if any scripts meet the conditions
-    for (let index = 0; index < compiledScripts.length; index++) {
-      if (!triggeredScriptIndexSet.has(index)) {
-        // eval condition
-        let currDate = startTime;
-        let currSprintLog = await getSprintLogForPerson(compiledScripts[index].parsed_target[0]);
-        let currTasks = await getTasksForSprint(currSprintLog, currDate.toString());
-        let is_condition_met = eval(compiledScripts[index].parsed_detection_condition);
+    // current time
+    console.log(`${ padDate(currHours, 2, "0") }:${ padDate(currMins, 2, "0") }`);
 
-        // check if script condition is met
-        if (is_condition_met) {
-          let feedbackTarget = compiledScripts[index].parsed_target;
-          let feedbackTrigger = compiledScripts[index].parsed_actionable_feedback.parsed_feedback_trigger;
-          let feedbackMessage = compiledScripts[index].parsed_actionable_feedback.parsed_feedback_message;
+    // tick clock by 1 hour
+    clock.tick(tickAmount);
+    currDate = new Date();
 
-          // check if actionable feedback should be presented immediately, or when compiled trigger is ready
-          if (feedbackTrigger === "immediate") {
-            triggeredScriptIndexSet.add(index);
-            console.log(sendFeedback(startTime, feedbackTarget, feedbackMessage));
-          } else {
-            let is_feedback_trigger_condition_met = eval(feedbackTrigger);
-            if (is_feedback_trigger_condition_met) {
-              triggeredScriptIndexSet.add(index);
-              console.log(sendFeedback(startTime, feedbackTarget, feedbackMessage));
-            }
-          }
-        }
-      }
-    }
-
-    // progress hours
-    startTime = startTime.plus({ hours: 1 });
-  }
-  console.log(`------------- Simulation for S2021 Complete -------------`);
-}
-
-const sendFeedback = (startTime, targets, feedback) => {
-  // parse out each component
-  let timestamp = `${ startTime.hour.toString().padStart(2, "0") }:${ startTime.minute.toString().padStart(2, "0") }`;
-  let targetString = targets.join(", ")
-  let messageString = feedback;
-
-  // compose and return message
-  return `${ timestamp } -- ${ targetString }: ${ messageString }`;
-};
-
-
-
-const getTasksForSprint = async (sprintLog, date) => {
-  // get current sprint
-  let query = await got.get(`${ studioAPIUrl }/sprints/currentSprint`, {
-    searchParams: { timestamp: date },
-    responseType: 'json'}
-  );
-  let currSprintInfo = query.body;
-
-  // get current sprint plan
-  let currSprint;
-  for (let i = 0; i < sprintLog.sprints.length; i++) {
-    if (sprintLog.sprints[i].name === currSprintInfo.name) {
-      currSprint = sprintLog.sprints[i];
-      break;
+    // continue infinitely, if desired
+    if (simulateInfinitely && (currDate >= endDate)) {
+      console.log(`---- simulation complete. repeating again from ${ startDate.toDateString() } ---- `);
+      currDate = startDate;
+      clock = sinon.useFakeTimers({ now: startDate });
     }
   }
 
-  // get all tasks for the sprint plan
-  let currTasks = [];
-  for (let i = 0; i < currSprint.stories.length; i++) {
-    currTasks = currTasks.concat(currSprint.stories[i].tasks);
-  }
-
-  return currTasks;
+  // restore clock to original
+  clock.restore();
 };
 
-
-const getSprintLogForPerson = async (person) => {
-  let query = await got.get(`${ studioAPIUrl }/users/fetchSprintLogForPerson`, {
-    searchParams: { personName: person },
-    responseType: 'json'}
-  );
-  let sprintLog = query.body;
-
-  return sprintLog;
-};
-
-const getSprintForDate = async (date) => {
-
+const padDate = (date, length, text) => {
+  return date.toString().padStart(length, text);
 };
