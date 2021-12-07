@@ -72,3 +72,5 @@ export const venue = async function (venueName) {
     end_time: filteredVenue.end_time
   };
 };
+
+// TODO: have a venue trigger for immediate that just returns true so that the script runs immediately

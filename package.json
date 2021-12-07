@@ -33,6 +33,7 @@
     "lodash": "^4.17.21",
     "luxon": "^2.1.1",
     "mongoose": "^6.0.12",
+    "mongoose-function": "^0.1.0",
     "node-schedule": "^2.0.0",
     "sinon": "^12.0.1"
   },

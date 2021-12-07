@@ -10,6 +10,8 @@ import { runTests } from "./imports/tester.js";
 // routes
 
 // fixtures for development
+import { createScriptLibraryFixtures } from "./models/fixtures/scriptLibraryFixtures.js";
+import { createActiveScriptFixtures } from "./models/fixtures/activeScriptFixtures.js";
 
 // setup application
 const app = express();
@@ -34,6 +36,8 @@ try {
 } finally {
   if (NODE_ENV === "development") {
     // TODO: populate DB with fixtures here
+    await createScriptLibraryFixtures();
+    await createActiveScriptFixtures();
   }
 }
 
@@ -69,4 +73,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${ PORT }`)
 });
 
-await runTests();
+await runTests("61af17954cfa9c626adcb2aa", new Date(2021, 4, 31), new Date(2021, 5, 7));

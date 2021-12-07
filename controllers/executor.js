@@ -42,8 +42,8 @@ export async function runDetector(orchScript) {
   // separate out components
   const scriptFn = orchScript.detector;
   const targets = {
-    students: orchScript.script_target.students,
-    projects: orchScript.script_target.projects,
+    students: orchScript.target.students,
+    projects: orchScript.target.projects,
   };
 
   return await executionEnv(scriptFn, targets, scriptingLanguageFns);
@@ -57,8 +57,8 @@ export async function runDetector(orchScript) {
 export async function getFeedbackOpportunity(orchScript) {
   // separate out components
   const targets = {
-    students: orchScript.script_target.students,
-    projects: orchScript.script_target.projects,
+    students: orchScript.target.students,
+    projects: orchScript.target.projects,
   };
 
   // compute when each feedback opportunity should be executed

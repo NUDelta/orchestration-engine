@@ -1,32 +1,52 @@
 import sinon from "sinon";
 
 import { runDetector, getFeedbackOpportunity } from "../controllers/executor.js";
+import { ActiveScripts } from "../models/activeScripts.js";
+import { simulateScriptOverTimeFrame } from "../controllers/simulator.js";
+import { OrchestrationScript } from "../models/scriptLibrary.js";
 
+
+// TODO: create a route that runs tests for a script
+// TODO: break this function up into parts that are each called as they will be by the engine in normal operations
 /**
  * Simulates the running of orchestration scripts over 1 week.
  * @return {Promise<void>}
  */
-export const runTests = async () => {
+export const runTests = async (scriptId, simStartDate, simEndDate) => {
+  // fetch target script from database
+  let activeScripts = await ActiveScripts.find({orchestration_script: scriptId}).populate("orchestration_script");
+  let currScript = activeScripts[0]["orchestration_script"].toObject();
+
+  // parse string functions into executable ones
+  currScript["detector"] = new Function(`return ${ currScript["detector"] }`)();
+  currScript["actionable_feedback"].forEach((currActionableFeedback, index, arr) => {
+    arr[index] = {
+      feedback_message: currActionableFeedback["feedback_message"],
+      feedback_opportunity: new Function(`return ${ currActionableFeedback["feedback_opportunity"] }`)()
+    }
+  });
+
   // setup clock
   let clock;
-  clock = sinon.useFakeTimers({ now: new Date(2021, 4, 31) });
+  clock = sinon.useFakeTimers({ now: simStartDate });
   let tickAmount = 1 * 60 * 60 * 1000; // 1 hour * 60 minutes * 60 seconds * 1000 ms;
 
 
-  console.log(`Running script: ${ prototypingScript.script_name }.\
-  \nScript object: ${ JSON.stringify(prototypingScript,null,2) }`);
+  console.log(`Running script: ${ currScript.name }.\
+  \nScript object: ${ JSON.stringify(currScript,null,2) }`);
 
   // run script detector
-  let scriptDidTrigger = await runDetector(prototypingScript);
+  let scriptDidTrigger = await runDetector(currScript);
   console.log(`Did Prototype Script Trigger? ${ scriptDidTrigger }`);
 
   if (scriptDidTrigger) {
     // simulate
     let currDate = new Date();
-    let endDate = new Date(2021, 5, 7);
+    let endDate = simEndDate;
 
+    // TODO: fetch scripts from database
     // get run time for actionable feedback
-    let feedbackOpportunities = await getFeedbackOpportunity(prototypingScript);
+    let feedbackOpportunities = await getFeedbackOpportunity(currScript);
     console.log(`Computed feedback opportunities: ${ JSON.stringify(feedbackOpportunities,null,2) }`);
 
     // simulate and check the trigger
@@ -49,7 +69,7 @@ export const runTests = async () => {
       feedbackOpportunities.forEach(currOpportunity => {
         // check if it's time to send the actionable feedback
         if (currDate.getTime() === currOpportunity.trigger_date.getTime()) {
-          console.log(`Feedback for ${ prototypingScript.script_name }: \n${ currOpportunity.feedback_message } \n`);
+          console.log(`Feedback for ${ currScript.name }: \n${ currOpportunity.feedback_message } \n`);
         }
       });
 
@@ -73,30 +93,4 @@ export const runTests = async () => {
  */
 const padDate = (date, length, text) => {
   return date.toString().padStart(length, text);
-};
-
-// TODO: two functions to try
-// (1) prototyping process (with multiple triggers that go off)
-// (2) remind me to check on my student's meta-blockers at the end of each sprint
-const prototypingScript = {
-  script_name: "Prototyping slices w/testing each week",
-  script_description: "When students plan to do prototyping, they should aim to do a slice where they (1) draft arguments; (2) make the prototype; (3) conduct a user test; and (4) do takeaways from user testing to update their arguments.",
-  // TODO: this could also be in a declarative, where you can get things like new students at runtime
-  script_target: {
-    students: ["Jason Friedman", "Hang Yin"], // getStudentsForSIG("SIG NAME"); alt: function () { return ["jason", "hang"] }
-    projects: ["Orchestration Scripting Environments"]
-  },
-  detector: async function () {
-    return await hasPrototypeTask(await getTasksForSprint());
-  },
-  actionable_feedback: [
-    {
-      feedback_message: "Looks like you have prototyping planned for this sprint. During SIG, let's talk about your plan for the week and make sure you'll get testing in before next SIG.",
-      feedback_opportunity: async function () { return await during(await venue("SIG")); }
-    },
-    {
-      feedback_message: "How is your prototyping sprint going? Are you on track to have testing done and takeaways before SIG? What can you do during Pair Research and Mysore in Studio to help move you in the right direction?",
-      feedback_opportunity: async function () { return await during(await venue("Studio")); }
-    }
-  ]
 };
