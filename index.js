@@ -1,13 +1,12 @@
 // application imports
-import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
-import bodyParser from "body-parser";
 
 // controllers
 import { runTests } from "./imports/tester.js";
 
 // routes
+import { scriptRouter } from "./routes/script.routes.js";
 
 // fixtures for development
 import { createScriptLibraryFixtures } from "./models/fixtures/scriptLibraryFixtures.js";
@@ -50,7 +49,9 @@ mongoose.connection.on('error', err => {
 });
 
 // setup routes
-app.use(bodyParser.json(), cors());
+app.use(express.urlencoded({extended: true}));
+app.use(express.json()) // To parse the incoming requests with JSON payloads
+app.use("/scripts", scriptRouter);
 
 // catch any undefined routes
 app.all('*', (request, response) => {
@@ -73,4 +74,4 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${ PORT }`)
 });
 
-await runTests("61af17954cfa9c626adcb2aa", new Date(2021, 4, 31), new Date(2021, 5, 7));
+// await runTests("61af17954cfa9c626adcb2aa", new Date(2021, 4, 31), new Date(2021, 5, 7));

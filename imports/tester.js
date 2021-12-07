@@ -14,8 +14,8 @@ import { OrchestrationScript } from "../models/scriptLibrary.js";
  */
 export const runTests = async (scriptId, simStartDate, simEndDate) => {
   // fetch target script from database
-  let activeScripts = await ActiveScripts.find({orchestration_script: scriptId}).populate("orchestration_script");
-  let currScript = activeScripts[0]["orchestration_script"].toObject();
+  let activeScript = await ActiveScripts.findOne({ script_id: scriptId });
+  let currScript = activeScript.toObject();
 
   // parse string functions into executable ones
   currScript["detector"] = new Function(`return ${ currScript["detector"] }`)();
@@ -32,8 +32,11 @@ export const runTests = async (scriptId, simStartDate, simEndDate) => {
   let tickAmount = 1 * 60 * 60 * 1000; // 1 hour * 60 minutes * 60 seconds * 1000 ms;
 
 
+  // console.log(`Running script: ${ currScript.name }.\
+  // \nScript object: ${ JSON.stringify(currScript,null,2) }`);
+
   console.log(`Running script: ${ currScript.name }.\
-  \nScript object: ${ JSON.stringify(currScript,null,2) }`);
+  \nScript object: ${ currScript }`);
 
   // run script detector
   let scriptDidTrigger = await runDetector(currScript);

@@ -31,6 +31,16 @@ const createScripts = async () => {
     ]
   });
   await prototypingScript.save();
+
+  const workingRepresentationsTemplateScript = new OrchestrationScript({
+    _id: mongoose.Types.ObjectId("61af2faea7f373281094b277"),
+    name: "Using appropriate representations when working on deliverables",
+    description: "When students are working on tasks that we have good representations for (e.g., design arguments), have them use the representation as part of their working process when doing their deliverables.",
+    target: {},
+    detector: (async function () { return true; }).toString(), // trigger script immediately in engine
+    actionable_feedback: []
+  });
+  await workingRepresentationsTemplateScript.save();
 };
 
 export const createScriptLibraryFixtures = async () => {

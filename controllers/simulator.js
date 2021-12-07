@@ -44,6 +44,7 @@ export const simulateScriptOverTimeFrame = async (startDate, endDate, simulateIn
     feedbackOpportunities.forEach(currOpportunity => {
       // check if it's time to send the actionable feedback
       if (currDate.getTime() === currOpportunity.trigger_date.getTime()) {
+        // TODO: add person or project channel to send feedback to (encode that in the Studio API)
         console.log(`Feedback for ${ script.name }: \n${ currOpportunity.feedback_message } \n`);
       }
     });

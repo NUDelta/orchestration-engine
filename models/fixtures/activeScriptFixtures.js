@@ -7,10 +7,15 @@ const populateActiveScripts = async () => {
   ];
 
   for (let currScriptId of scriptsToActiveIds) {
-    let currActiveScript = new ActiveScripts({
-      orchestration_script: currScriptId
-    });
-    await currActiveScript.save();
+    // get the template script from the script library
+    let templateScript = await OrchestrationScript.findOne({ _id: currScriptId });
+    templateScript = templateScript.toObject();
+    templateScript["script_id"] = templateScript._id;
+    delete templateScript._id
+    delete templateScript.__v
+
+    let newActiveScript = new ActiveScripts(templateScript);
+    await newActiveScript.save();
   }
 };
 
