@@ -18,19 +18,36 @@ import got from "got";
  * @return {string}
  */
 export const venue = async function (venueName) {
+  // parse venue name
+  let parsedVenueName;
+  switch (venueName) {
+    case "SIG":
+      parsedVenueName = "sig";
+      break;
+    case "Studio":
+      parsedVenueName = "studio";
+      break;
+    case "Office Hours":
+      parsedVenueName = "officehours";
+      break;
+    default:
+      parsedVenueName = ""
+      break;
+  }
+
   // select which venue to query for
   let venueInfo;
   try {
-     let response = await got.get(`${ studioAPIUrl }/venues/${ venueName.toLowerCase() }`,
+     let response = await got.get(`${ studioAPIUrl }/venues/${ parsedVenueName }`,
        { responseType: 'json' });
      venueInfo = response.body;
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
   }
 
-  // if SIG, get the SIG the students are in and return that; else return the venue
+  // if SIG or office hours, get the SIG of the students and then return just the venue for them
   let filteredVenue;
-  if (venueName.toLowerCase() === "sig") {
+  if ((parsedVenueName === "sig") || parsedVenueName === "officehours") {
     // get all projects
     let projectInfo;
     try {

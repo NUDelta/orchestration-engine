@@ -51,16 +51,20 @@ scriptRouter.post("/triggerScript", async (req, res) => {
 scriptRouter.post("/runTestForScript", async (req, res) => {
   let scriptId;
   let tickAmount
+  let startDate;
+  let endDate;
 
   try {
     // get parameters from request
     scriptId = req.body.scriptId;
     tickAmount = parseInt(req.body.tickAmount);
+    startDate = req.body.startDate;
+    endDate = req.body.endDate;
 
     // run tester with the new script
     await runSimulationOfScript(scriptId,
-      new Date(2021, 4, 31),
-      new Date(2021, 5, 7),
+      new Date(startDate),
+      new Date(endDate),
       tickAmount);
   } catch (error) {
     console.error(`Error in /runTestForScript route: ${ error }`);

@@ -120,7 +120,7 @@ const computeNextVenue = function (currDate, targetDayOfWeek, venueStartTime, ve
   if (nextVenueDayShift < 0) {
     nextVenueDayShift += 7;
   }
-  nextVenueDayShift += currDayOfWeekIndex - 1;
+
 
   // shift current date
   let nextVenueDate = new Date(currDate);
