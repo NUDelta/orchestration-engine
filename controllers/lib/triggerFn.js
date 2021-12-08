@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 // TODO: this might be messing up due to daylight savings time from using the default date in the studio api
 /**
- * Returns a timestamp for when the next instance of a venue will be available.
+ * Returns a timestamp for when to execute a script during the next instance of a venue.
  * @param venue object with information about the venue. Contains the following:
  * {
  *  name: string name of venue
@@ -12,7 +12,7 @@ import { DateTime } from "luxon";
  *  start_time: Date start time of venue (only encoded time)
  *  end_time: Date end time of venue
  * }
- * @return {Promise<*>}
+ * @return {Promise<Date>}
  */
 export const during = async function(venue) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
@@ -26,14 +26,74 @@ export const during = async function(venue) {
   return nextVenue.start_time;
 };
 
-// TODO
-export const before = async function(venueName, timeBefore) {
+/**
+ * Returns a timestamp for when to execute a script before the next instance of a venue.
+ * @param venue object with information about the venue. Contains the following:
+ * {
+ *  name: string name of venue
+ *  description: string description of venue
+ *  day_of_week: string day of week venue occurs
+ *  start_time: Date start time of venue (only encoded time)
+ *  end_time: Date end time of venue
+ * }
+ * @param timeBefore object used to compute number of milliseconds before venue:
+ * {
+ *   hours: number of hours
+ *   minutes: number of minutes
+ *   seconds: number of seconds
+ * }
+ * @return {Promise<Date>}
+ */
+export const before = async function(venue, timeBefore) {
+  // logic: check to see if the venue is still coming this week (if not send to next week)
+  let nextVenue = computeNextVenue(new Date(),
+    venue.day_of_week,
+    new Date(venue.start_time),
+    new Date(venue.end_time));
 
+  // compute time to subtract in milliseconds
+  let timeToSubtract = timeBefore.hours * 3600000 +
+    timeBefore.minutes * 60000 +
+    timeBefore.seconds * 1000;
+
+  // return the time that script should trigger
+  // for before, take the start_time and subtract timeBefore from it
+  return new Date(nextVenue.start_time.getTime() - timeToSubtract);
 };
 
-// TODO
-export const after = async function(venueName, timeAfter) {
+/**
+ * Returns a timestamp for when to execute a script after the next instance of a venue.
+ * @param venue object with information about the venue. Contains the following:
+ * {
+ *  name: string name of venue
+ *  description: string description of venue
+ *  day_of_week: string day of week venue occurs
+ *  start_time: Date start time of venue (only encoded time)
+ *  end_time: Date end time of venue
+ * }
+ * @param timeAfter object used to compute number of milliseconds before venue:
+ * {
+ *   hours: number of hours
+ *   minutes: number of minutes
+ *   seconds: number of seconds
+ * }
+ * @return {Promise<Date>}
+ */
+export const after = async function(venue, timeAfter) {
+  // logic: check to see if the venue is still coming this week (if not send to next week)
+  let nextVenue = computeNextVenue(new Date(),
+    venue.day_of_week,
+    new Date(venue.start_time),
+    new Date(venue.end_time));
 
+  // compute time to subtract in milliseconds
+  let timeToAdd = timeAfter.hours * 3600000 +
+    timeAfter.minutes * 60000 +
+    timeAfter.seconds * 1000;
+
+  // return the time that script should trigger
+  // for before, take the start_time and subtract timeBefore from it
+  return new Date(nextVenue.start_time.getTime() + timeToAdd);
 };
 
 // TODO: write test cases to check this more rigorously.
