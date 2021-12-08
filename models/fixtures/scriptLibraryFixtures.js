@@ -1,12 +1,19 @@
 import { OrchestrationScript } from "../scriptLibrary.js";
 import mongoose from "mongoose";
 
-// TODO:  functions to try
-// (1) KG: prototyping process (with multiple triggers that go off) [implemented]
-// (2) KG: remind me to check on my student's meta-blockers at the end of each sprint (recurring check-ins throughout the quarter)
-// (3) HQ: discuss effective working structures with students (manual triggering, but allow the trigger to inject what templates should be sent for each student [e.g., for a student working on a prospectus, the design argument])
-// (4) HK: student behind on their sprint AND close to office hours (more specificity on when the situation should trigger -- currently only if some data condition is met)
-// (5) RL: not bringing in-progress work to venues where it can be worked on or discussed further (check-in between venues -- requires being able to trigger scripts a certain time before venues happen)
+/*
+ Scripts to implement.
+  (1) KG: prototyping process (with multiple triggers that go off) [implemented]
+  (2) KG: remind me to check on my student's meta-blockers at the end of each sprint (recurring check-ins throughout the quarter)
+  (3) HQ: discuss effective working structures with students (manual triggering, but allow the trigger to inject what templates should be sent for each student [e.g., for a student working on a prospectus, the design argument])
+  (4) HK: student behind on their sprint AND close to office hours (more specificity on when the situation should trigger -- currently only if some data condition is met)
+  (5) RL: not bringing in-progress work to venues where it can be worked on or discussed further (check-in between venues -- requires being able to trigger scripts a certain time before venues happen)
+ */
+
+/**
+ * Creates orchestration scripts documents and saves them to the script_library collection.
+ * @return {Promise<void>}
+ */
 const createScripts = async () => {
   // (1) KG: prototyping process (with multiple triggers that go off) [implemented]
   const prototypingScript = new OrchestrationScript({
@@ -23,22 +30,28 @@ const createScripts = async () => {
       {
         feedback_message: "Looks like you have prototyping planned for this sprint. During SIG, let's talk about your plan for the week and make sure you'll get testing in before next SIG.",
         feedback_opportunity: (async function () { return await during(await venue("SIG")); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG") }).toString()
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
       },
       {
-        feedback_message: "How is your prototyping sprint going? Are you on track to have testing done and takeaways before SIG? What can you do during Pair Research and Mysore in Studio to help move you in the right direction?",
-        feedback_opportunity: (async function () { return await during(await venue("Studio")); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG") }).toString()
+        feedback_message: "How is your prototyping sprint going? Are you on track to have testing done and takeaways before SIG? What can you do during Pair Research and Mysore in Studio later today to help move you in the right direction?",
+        feedback_opportunity: (async function () { return await before(await venue("Studio"), { hours: 3, minutes: 0, seconds: 0 }); }).toString(),
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
       },
       {
-        feedback_message: "During Studio, it might be a good time to check in with your students on how their prototyping sprint is goindg, what they plan to use Mysore and Pair Research for, and if they need any help.",
+        feedback_message: "During Studio, it might be a good time to check in with your students on how their prototyping sprint is going, what they plan to use Mysore and Pair Research for, and if they need any help.",
         feedback_opportunity: (async function () { return await during(await venue("Studio")); }).toString(),
-        feedback_outlet: (async function () { return await getSlackIdForPerson(await getSigHeadForProject()) }).toString()
+        feedback_outlet: (async function () { return await getSlackIdForPerson(await getSigHeadForProject()); }).toString()
       },
+      {
+        feedback_message: "For office hours later today, what would helpful to discuss about your prototyping slice? Your testing plan? Some early findings from your tests? Planning until our SIG meeting?",
+        feedback_opportunity: (async function () { return await before(await venue("Office Hours"), { hours: 5, minutes: 0, seconds: 0 }); }).toString(),
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+      }
     ]
   });
   await prototypingScript.save();
 
+  // (3) HQ: discuss effective working structures with students (manual triggering, but allow the trigger to inject what templates should be sent for each student [e.g., for a student working on a prospectus, the design argument])
   const workingRepresentationsTemplateScript = new OrchestrationScript({
     _id: mongoose.Types.ObjectId("61af2faea7f373281094b277"),
     name: "Using appropriate representations when working on deliverables",
@@ -48,6 +61,45 @@ const createScripts = async () => {
     actionable_feedback: []
   });
   await workingRepresentationsTemplateScript.save();
+
+  // (5) RL: not bringing in-progress work to venues where it can be worked on or discussed further (check-in between venues -- requires being able to trigger scripts a certain time before venues happen)
+  const comingToOhScriptArs = new OrchestrationScript({
+    _id: mongoose.Types.ObjectId("61b01b296866d1560544b81b"),
+    name: "Using venues throughout the week",
+    description: "Use venues throughout the week to get feedback on in-progress work.",
+    target: {
+      students: ["Aimee van den Berg", "Ariella Silver", "Neha Sharma", "Molly Pribble"],
+      projects: ["Skill Tracking and Development", "Metacognitive Reflection"]
+    },
+    detector: (async function () { return true; }).toString(), // trigger script immediately in engine
+    actionable_feedback: [
+      {
+        feedback_message: "We have office hours mysore tomorrow! Have you thought about what you'd like to work on or get feedback on during the session?",
+        feedback_opportunity: (async function () { return await before(await venue("Office Hours"), { hours: 24, minutes: 0, seconds: 0 }); }).toString(),
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+      }
+    ]
+  });
+  await comingToOhScriptArs.save();
+
+  const comingToOhScriptNot = new OrchestrationScript({
+    _id: mongoose.Types.ObjectId("61b01c93abe4a4ea27794106"),
+    name: "Using venues throughout the week",
+    description: "Use venues throughout the week to get feedback on in-progress work.",
+    target: {
+      students: ["Jason Friedman", "Hang Yin"],
+      projects: ["Orchestration Scripting Environments"]
+    },
+    detector: (async function () { return true; }).toString(), // trigger script immediately in engine
+    actionable_feedback: [
+      {
+        feedback_message: "We have office hours tomorrow! Do you have some in-progress work that you can bring in for us to discuss?",
+        feedback_opportunity: (async function () { return await before(await venue("Office Hours"), { hours: 24, minutes: 0, seconds: 0 }); }).toString(),
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+      }
+    ]
+  });
+  await comingToOhScriptNot.save();
 };
 
 export const createScriptLibraryFixtures = async () => {

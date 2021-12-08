@@ -50,34 +50,43 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
     console.log(`Computed feedback opportunities: ${ JSON.stringify(feedbackOpportunities,null,2) }`);
 
     // simulate and check the trigger
-    console.log(`Simulating from ${ currDate } to ${ endDate }`);
+    console.log(`------ Simulating from ${ currDate } to ${ endDate } ------ `);
     while (currDate < endDate) {
       // pull out date components
       let currHours = currDate.getHours();
       let currMins = currDate.getMinutes();
       let currSecs = currDate.getSeconds();
 
+      // compute the current date string
+      let currTimeStr = `${ padDate(currHours, 2, "0") }:${ padDate(currMins, 2, "0") }`;
+
       // print day/date only if time is 00:00
       if (currHours=== 0 && currMins === 0 && currSecs === 0) {
         console.log(`\n${ currDate.toDateString() }`);
       }
 
-      // current time
-      console.log(`${ padDate(currHours, 2, "0") }:${ padDate(currMins, 2, "0") }`);
 
       // see if any of the triggers should execute
+      let feedbackWasPresented = false;
       feedbackOpportunities.forEach(currOpportunity => {
         // check if it's time to send the actionable feedback
         if (currDate.getTime() === currOpportunity.trigger_date.getTime()) {
-          console.log(`Feedback for -- ${ currScript.name }: \nSent to ${ currOpportunity.feedback_outlets.join("/") } -- ${ currOpportunity.feedback_message } \n`);
+          console.log(`${ currTimeStr }\nFeedback for: ${ currScript.name }: \nSent to ${ currOpportunity.feedback_outlets.join("/") } -- ${ currOpportunity.feedback_message } \n`);
+          feedbackWasPresented = true;
         }
       });
+
+      // print current time only if its a multiple of 6 and time was not included with feedback
+      if ((currHours % 6 === 0) && !feedbackWasPresented) {
+        console.log(currTimeStr);
+      }
 
       // tick clock by 1 hour
       clock.tick(tickAmount);
       currDate = new Date();
     }
   }
+  console.log(`------ Simulation Complete ------ \n`);
 
   // reset clock
   clock.restore();

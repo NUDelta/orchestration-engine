@@ -3,7 +3,9 @@ import { OrchestrationScript } from "../scriptLibrary.js";
 
 const populateActiveScripts = async () => {
   let scriptsToActiveIds = [
-    "61af17954cfa9c626adcb2aa"
+    "61af17954cfa9c626adcb2aa",
+    "61b01b296866d1560544b81b",
+    "61b01c93abe4a4ea27794106"
   ];
 
   for (let currScriptId of scriptsToActiveIds) {
