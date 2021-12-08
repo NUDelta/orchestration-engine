@@ -3,12 +3,13 @@ import { Router } from "express";
 import { OrchestrationScript } from "../models/scriptLibrary.js";
 import { ActiveScripts } from "../models/activeScripts.js";
 import mongoose from "mongoose";
-import { runTests } from "../imports/tester.js";
+import { runSimulationOfScript } from "../imports/tester.js";
 
 export const scriptRouter = new Router();
 
 // manually trigger an existing script
 scriptRouter.post("/triggerScript", async (req, res) => {
+  let activatedScript;
   try {
     // get parameters from request
     let scriptId = req.body.scriptId;
@@ -29,16 +30,44 @@ scriptRouter.post("/triggerScript", async (req, res) => {
       detector: templateScript.detector,
       actionable_feedback: [{
         feedback_message: feedbackMessage,
-        feedback_opportunity: (async function () { return new Date(); }).toString()
+        feedback_opportunity: (async function () { return new Date(); }).toString(),
+        feedback_outlet: (async function () { return await getSlackIdForPerson(await getStudentsInScript()) }).toString()
       }]
     });
-    await newActiveScript.save();
+    activatedScript = await newActiveScript.save();
 
-    // run tester with the new script
-    await runTests(templateScript._id, new Date(2021, 4, 31), new Date(2021, 5, 7))
+    // // run tester with the new script
+    // await runSimulationOfScript(templateScript._id, new Date(2021, 4, 31), new Date(2021, 5, 7))
   } catch (error) {
     console.error(`Error in /triggerScript route: ${ error }`);
+    res.json(error);
+    return;
   }
 
-  res.json(req.query);
+  // return activated script if successful
+  res.json(activatedScript);
+});
+
+scriptRouter.post("/runTestForScript", async (req, res) => {
+  let scriptId;
+  let tickAmount
+
+  try {
+    // get parameters from request
+    scriptId = req.body.scriptId;
+    tickAmount = parseInt(req.body.tickAmount);
+
+    // run tester with the new script
+    await runSimulationOfScript(scriptId,
+      new Date(2021, 4, 31),
+      new Date(2021, 5, 7),
+      tickAmount);
+  } catch (error) {
+    console.error(`Error in /runTestForScript route: ${ error }`);
+    res.json(error);
+    return;
+  }
+
+  // return 200 status if successful
+  res.status(200).send(`Test successfully run for script: ${ scriptId }`);
 });

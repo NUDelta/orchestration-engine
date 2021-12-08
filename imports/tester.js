@@ -4,6 +4,7 @@ import { runDetector, getFeedbackOpportunity } from "../controllers/executor.js"
 import { ActiveScripts } from "../models/activeScripts.js";
 import { simulateScriptOverTimeFrame } from "../controllers/simulator.js";
 import { OrchestrationScript } from "../models/scriptLibrary.js";
+import * as util from "util";
 
 
 // TODO: create a route that runs tests for a script
@@ -12,7 +13,7 @@ import { OrchestrationScript } from "../models/scriptLibrary.js";
  * Simulates the running of orchestration scripts over 1 week.
  * @return {Promise<void>}
  */
-export const runTests = async (scriptId, simStartDate, simEndDate) => {
+export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, tickAmount) => {
   // fetch target script from database
   let activeScript = await ActiveScripts.findOne({ script_id: scriptId });
   let currScript = activeScript.toObject();
@@ -22,21 +23,18 @@ export const runTests = async (scriptId, simStartDate, simEndDate) => {
   currScript["actionable_feedback"].forEach((currActionableFeedback, index, arr) => {
     arr[index] = {
       feedback_message: currActionableFeedback["feedback_message"],
-      feedback_opportunity: new Function(`return ${ currActionableFeedback["feedback_opportunity"] }`)()
+      feedback_opportunity: new Function(`return ${ currActionableFeedback["feedback_opportunity"] }`)(),
+      feedback_outlet: new Function(`return ${ currActionableFeedback["feedback_outlet"] }`)()
     }
   });
 
   // setup clock
   let clock;
   clock = sinon.useFakeTimers({ now: simStartDate });
-  let tickAmount = 1 * 60 * 60 * 1000; // 1 hour * 60 minutes * 60 seconds * 1000 ms;
 
-
-  // console.log(`Running script: ${ currScript.name }.\
-  // \nScript object: ${ JSON.stringify(currScript,null,2) }`);
-
+  // print script that we're about to run
   console.log(`Running script: ${ currScript.name }.\
-  \nScript object: ${ currScript }`);
+  \nScript object: ${ util.inspect(currScript) }`);
 
   // run script detector
   let scriptDidTrigger = await runDetector(currScript);
@@ -47,7 +45,6 @@ export const runTests = async (scriptId, simStartDate, simEndDate) => {
     let currDate = new Date();
     let endDate = simEndDate;
 
-    // TODO: fetch scripts from database
     // get run time for actionable feedback
     let feedbackOpportunities = await getFeedbackOpportunity(currScript);
     console.log(`Computed feedback opportunities: ${ JSON.stringify(feedbackOpportunities,null,2) }`);
@@ -72,7 +69,7 @@ export const runTests = async (scriptId, simStartDate, simEndDate) => {
       feedbackOpportunities.forEach(currOpportunity => {
         // check if it's time to send the actionable feedback
         if (currDate.getTime() === currOpportunity.trigger_date.getTime()) {
-          console.log(`Feedback for ${ currScript.name }: \n${ currOpportunity.feedback_message } \n`);
+          console.log(`Feedback for -- ${ currScript.name }: \nSent to ${ currOpportunity.feedback_outlets.join("/") } -- ${ currOpportunity.feedback_message } \n`);
         }
       });
 

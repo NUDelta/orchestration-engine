@@ -1,8 +1,16 @@
 import * as sprintLogFn from './lib/sprintLogFn.js';
 import * as venueFn from './lib/venueFn.js';
 import * as triggerFn from './lib/triggerFn.js';
+import * as communicationFn from './lib/communicationFn.js';
+import * as peopleFn from './lib/peopleFn.js';
 
-const scriptingLanguageFns = { ...sprintLogFn, ...venueFn, ...triggerFn };
+const scriptingLanguageFns = {
+  ...sprintLogFn,
+  ...venueFn,
+  ...triggerFn,
+  ...communicationFn,
+  ...peopleFn
+};
 
 /**
  * Creates an execution namespace to run detectors/triggers from orchestration scripts.
@@ -71,7 +79,8 @@ export async function getFeedbackOpportunity(orchScript) {
     let computedFeedbackOpportunity = {
       trigger_date: await executionEnv(currActionableFeedback.feedback_opportunity,
         targets, scriptingLanguageFns),
-      feedback_message: currActionableFeedback.feedback_message
+      feedback_message: currActionableFeedback.feedback_message,
+      feedback_outlets: await executionEnv(currActionableFeedback.feedback_outlet, targets, scriptingLanguageFns)
     };
 
     // store trigger date

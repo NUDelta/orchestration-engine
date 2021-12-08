@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 // (4) HK: student behind on their sprint AND close to office hours (more specificity on when the situation should trigger -- currently only if some data condition is met)
 // (5) RL: not bringing in-progress work to venues where it can be worked on or discussed further (check-in between venues -- requires being able to trigger scripts a certain time before venues happen)
 const createScripts = async () => {
-  // TODO: add a static object id that I can reference in testing
+  // (1) KG: prototyping process (with multiple triggers that go off) [implemented]
   const prototypingScript = new OrchestrationScript({
     _id: mongoose.Types.ObjectId("61af17954cfa9c626adcb2aa"),
     name: "Prototyping slices w/testing each week",
@@ -22,12 +22,19 @@ const createScripts = async () => {
     actionable_feedback: [
       {
         feedback_message: "Looks like you have prototyping planned for this sprint. During SIG, let's talk about your plan for the week and make sure you'll get testing in before next SIG.",
-        feedback_opportunity: (async function () { return await during(await venue("SIG")); }).toString()
+        feedback_opportunity: (async function () { return await during(await venue("SIG")); }).toString(),
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG") }).toString()
       },
       {
         feedback_message: "How is your prototyping sprint going? Are you on track to have testing done and takeaways before SIG? What can you do during Pair Research and Mysore in Studio to help move you in the right direction?",
-        feedback_opportunity: (async function () { return await during(await venue("Studio")); }).toString()
-      }
+        feedback_opportunity: (async function () { return await during(await venue("Studio")); }).toString(),
+        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG") }).toString()
+      },
+      {
+        feedback_message: "During Studio, it might be a good time to check in with your students on how their prototyping sprint is goindg, what they plan to use Mysore and Pair Research for, and if they need any help.",
+        feedback_opportunity: (async function () { return await during(await venue("Studio")); }).toString(),
+        feedback_outlet: (async function () { return await getSlackIdForPerson(await getSigHeadForProject()) }).toString()
+      },
     ]
   });
   await prototypingScript.save();

@@ -3,7 +3,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 
 // controllers
-import { runTests } from "./imports/tester.js";
 
 // routes
 import { scriptRouter } from "./routes/script.routes.js";
@@ -73,5 +72,3 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${ PORT }`)
 });
-
-// await runTests("61af17954cfa9c626adcb2aa", new Date(2021, 4, 31), new Date(2021, 5, 7));
