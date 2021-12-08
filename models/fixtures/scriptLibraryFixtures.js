@@ -30,12 +30,12 @@ const createScripts = async () => {
       {
         feedback_message: "Looks like you have prototyping planned for this sprint. During SIG, let's talk about your plan for the week and make sure you'll get testing in before next SIG.",
         feedback_opportunity: (async function () { return await during(await venue("SIG")); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+        feedback_outlet: (async function () { return await getSlackChannelForProject(); }).toString()
       },
       {
         feedback_message: "How is your prototyping sprint going? Are you on track to have testing done and takeaways before SIG? What can you do during Pair Research and Mysore in Studio later today to help move you in the right direction?",
         feedback_opportunity: (async function () { return await before(await venue("Studio"), { hours: 3, minutes: 0, seconds: 0 }); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+        feedback_outlet: (async function () { return await getSlackChannelForProject(); }).toString()
       },
       {
         feedback_message: "During Studio, it might be a good time to check in with your students on how their prototyping sprint is going, what they plan to use Mysore and Pair Research for, and if they need any help.",
@@ -45,7 +45,7 @@ const createScripts = async () => {
       {
         feedback_message: "For office hours later today, what would helpful to discuss about your prototyping slice? Your testing plan? Some early findings from your tests? Planning until our SIG meeting?",
         feedback_opportunity: (async function () { return await before(await venue("Office Hours"), { hours: 5, minutes: 0, seconds: 0 }); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+        feedback_outlet: (async function () { return await getSlackChannelForProject(); }).toString()
       }
     ]
   });
@@ -76,7 +76,7 @@ const createScripts = async () => {
       {
         feedback_message: "We have office hours mysore tomorrow! Have you thought about what you'd like to work on or get feedback on during the session?",
         feedback_opportunity: (async function () { return await before(await venue("Office Hours"), { hours: 24, minutes: 0, seconds: 0 }); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+        feedback_outlet: (async function () { return await getSlackChannelForProject(); }).toString()
       }
     ]
   });
@@ -95,7 +95,7 @@ const createScripts = async () => {
       {
         feedback_message: "We have office hours tomorrow! Do you have some in-progress work that you can bring in for us to discuss?",
         feedback_opportunity: (async function () { return await before(await venue("Office Hours"), { hours: 24, minutes: 0, seconds: 0 }); }).toString(),
-        feedback_outlet: (async function () { return await getSlackChannelForProject("SIG"); }).toString()
+        feedback_outlet: (async function () { return await getSlackChannelForProject(); }).toString()
       }
     ]
   });
