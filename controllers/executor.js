@@ -42,6 +42,7 @@ export async function executionEnv(scriptFn, targets, languageFns) {
   return await scriptFn();
 }
 
+// TODO: there needs to be one layer of abstraction higher where you iterate over all targets and check the script for each one
 /**
  * Used to run detector condition for an orchestration script.
  * @param orchScript

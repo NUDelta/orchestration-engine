@@ -35,6 +35,7 @@ export const getSlackChannelForProject = async function() {
   return slackChannels;
 };
 
+// TODO: why does this take an input instead of using the info from globalThis?
 export const getSlackIdForPerson = async function(people) {
   // get people
   let slackIds = [];
