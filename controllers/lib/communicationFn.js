@@ -1,7 +1,7 @@
 /**
  * This file has functions for determining who and how to communicate with people.
  *
- * Each function has access to globalThis which will include:
+ * Each function has access to this which will include:
  * {
  *  students: [list of student names],
  *  projects: [list of project names]
@@ -13,7 +13,7 @@ import got from "got";
 
 export const getSlackChannelForProject = async function() {
   // get projects
-  let projects = globalThis.projects;
+  let projects = this.projects;
   let slackChannels = [];
 
   for (let currProj of projects) {
@@ -35,7 +35,7 @@ export const getSlackChannelForProject = async function() {
   return slackChannels;
 };
 
-// TODO: why does this take an input instead of using the info from globalThis?
+// TODO: why does this take an input instead of using the info from this?
 export const getSlackIdForPerson = async function(people) {
   // get people
   let slackIds = [];

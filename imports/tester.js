@@ -2,8 +2,6 @@ import sinon from "sinon";
 
 import { runDetector, getFeedbackOpportunity } from "../controllers/executor.js";
 import { ActiveScripts } from "../models/activeScripts.js";
-import { simulateScriptOverTimeFrame } from "../controllers/simulator.js";
-import { OrchestrationScript } from "../models/scriptLibrary.js";
 import * as util from "util";
 
 
@@ -69,6 +67,7 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
       // see if any of the triggers should execute
       let feedbackWasPresented = false;
       feedbackOpportunities.forEach(currOpportunity => {
+        // TODO: this needs to be a fuzzy match since milliseconds are not guaranteed to match
         // check if it's time to send the actionable feedback
         if (currDate.getTime() === currOpportunity.trigger_date.getTime()) {
           console.log(`${ currTimeStr }\nFeedback for: ${ currScript.name }: \nSent to ${ currOpportunity.feedback_outlets.join("/") } -- ${ currOpportunity.feedback_message } \n`);

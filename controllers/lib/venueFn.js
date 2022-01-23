@@ -1,7 +1,7 @@
 /**
  * This file has functions for accessing information about venues.
  *
- * Each function has access to globalThis which will include:
+ * Each function has access to this which will include:
  * {
  *  students: [list of student names],
  *  projects: [list of project names]
@@ -62,7 +62,7 @@ export const venue = async function (venueName) {
     for (let projectIndex in projectInfo) {
       let currProject = projectInfo[projectIndex];
 
-      if (currProject.name === globalThis.projects[0]) {
+      if (currProject.name === this.projects[0]) {
         sigName = currProject.sig_name;
         break;
       }

@@ -1,6 +1,13 @@
 import { studioAPIUrl } from "../../index.js";
 import { DateTime } from "luxon";
 
+// TODO: consider returning a time-frame for each of these scripts
+// e.g., +- 10 mins from the trigger date (though, this should be dependent on the context)
+// during: up to 10 mins after the venue has started
+// before: up to 10 mins before the timestamp
+// after: up to 10 mins after the timestamp
+
+
 // TODO: this might be messing up due to daylight savings time from using the default date in the studio api
 /**
  * Returns a timestamp for when to execute a script during the next instance of a venue.

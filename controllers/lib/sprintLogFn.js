@@ -1,7 +1,7 @@
 /**
  * This file has API functions for accessing data from the Sprint Log.
  *
- * Each function has access to globalThis which will include:
+ * Each function has access to this which will include:
  * {
  *  students: [list of student names],
  *  projects: [list of project names]
@@ -42,7 +42,7 @@ export const hasPrototypeTask = async function (taskList) {
  */
 export const getTasksForSprint = async function () {
   // get the sprint log for the project and the current sprint
-  let relevantSprintLog = await getSprintLogForProject(globalThis.projects[0]);
+  let relevantSprintLog = await getSprintLogForProject(this.projects[0]);
   let sprintInfo = await getCurrentSprint();
   let sprint;
 
@@ -66,6 +66,7 @@ export const getTasksForSprint = async function () {
   return tasks;
 };
 
+// TODO: this should be in a separate controller
 /**
  *
  * @param projectName
