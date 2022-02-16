@@ -11,7 +11,7 @@
 import { studioAPIUrl } from "../../index.js";
 import got from "got";
 
-
+// TODO: support message (with text and/or resources) being inject this into the function
 export const sendSlackMessageForProject = async function(message) {
   // get project
   let projName = this.project;

@@ -16,7 +16,6 @@ const ObjectId = (m = Math, d = Date, h = 16, s = s => m.floor(s).toString(h)) =
 export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, tickAmount) => {
   // fetch target script from database
   let activeScript = await ActiveScripts.findOne({ script_id: scriptId });
-  console.log(activeScript)
   let currScript = activeScript.toObject();
 
 
@@ -41,7 +40,6 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
 
   // generate targets
   let computedTargets = await computeTargets(currScript.target);
-  // console.log(computedTargets);
 
   // run detector for each target, and track which issues were generated
   let generatedIssues = [];
@@ -132,8 +130,9 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
       clock.tick(tickAmount);
       currDate = new Date();
     }
+
+    console.log(`------ Simulation Complete ------ \n`);
   }
-  console.log(`------ Simulation Complete ------ \n`);
 
   // reset clock
   clock.restore();

@@ -4,6 +4,7 @@ import * as venueFn from './lib/venueFn.js';
 import * as triggerFn from './lib/triggerFn.js';
 import * as communicationFn from './lib/communicationFn.js';
 import * as peopleFn from './lib/peopleFn.js';
+import * as projectFn from "./lib/projectFn.js";
 
 // TODO: target should be a single object with student and project (see issue 1)
 /**
@@ -39,7 +40,8 @@ const scriptingLanguageFns = {
   ...venueFn,
   ...triggerFn,
   ...communicationFn,
-  ...peopleFn
+  ...peopleFn,
+  ...projectFn
 };
 
 for (const [key, value] of Object.entries(scriptingLanguageFns)) {
@@ -95,16 +97,8 @@ export async function getFeedbackOpportunity(target, actionableFeedback) {
     let triggerDateExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_opportunity);
 
-    console.log(triggerDateExecutionEnv);
-
     let feedbackOutletExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_outlet);
-
-    console.log(feedbackOutletExecutionEnv);
-
-    console.log(await triggerDateExecutionEnv.runScript())
-    console.log(currActionableFeedback.feedback_message)
-    console.log(feedbackOutletExecutionEnv)
 
     // create object to hold curr computed feedback opportunity
     let computedFeedbackOpportunity = {

@@ -124,7 +124,6 @@ const createScripts = async () => {
           return await this.during(await this.venue("SIG"));
         }).toString(),
         feedback_outlet: (async function () {
-          // TODO: inject this into the function
           return await this.sendSlackMessageForProject("Looks like you have planned way more than your available points. Let's talk about slicing strategies today during SIG.");
         }).toString()
       }
@@ -154,7 +153,6 @@ const createScripts = async () => {
           return await this.during(await this.venue("SIG"));
         }).toString(),
         feedback_outlet: (async function () {
-          // TODO: inject this into the function
           return await this.sendSlackMessageForProject("Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.");
         }).toString()
       }
@@ -187,7 +185,6 @@ const createScripts = async () => {
           });
         }).toString(),
         feedback_outlet: (async function () {
-          // TODO: inject this into the function
           return await this.sendSlackMessageForProject("Remember to send you revised sprint based on feedback from yesterday's SIG!");
         }).toString()
       }
@@ -198,6 +195,39 @@ const createScripts = async () => {
   // TODO: check if students oversprinted on the last sprint (or the first half of the current sprint)
 
   // TODO (stretch): remind students to discuss status update with their mentor 1 week before it, or at the next office hours
+
+  /**
+   * Remind students to discuss status update with their mentor 1 week before it.
+   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+   */
+  const remindStudentsAboutStatusUpdate = new OrchestrationScript({
+    _id: mongoose.Types.ObjectId("22af18194cfa9c738adcb2bb"),
+    name: "Reminder for Status Update",
+    description: "Students should plan to discuss their status update plan with mentors.",
+    target: (async function() {
+      return await this.getNonPhdProjects();
+    }).toString(),
+    detector: (async function() {
+      return true;
+    }).toString(),
+    actionable_feedback: [
+      // TODO: also support notification at next office hours
+      {
+        feedback_message: "You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.",
+        feedback_opportunity: (async function () {
+          // get date 1 week before status update date
+          let statusUpdateDate = await this.getStatusUpdateDate();
+          let notifDate = new Date(statusUpdateDate);
+          notifDate.setDate(statusUpdateDate.getDate() - 7);
+          return notifDate;
+        }).toString(),
+        feedback_outlet: (async function () {
+          return await this.sendSlackMessageForProject("You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.");
+        }).toString()
+      }
+    ]
+  });
+  await remindStudentsAboutStatusUpdate.save();
 };
 
 export const createScriptLibraryFixtures = async () => {
