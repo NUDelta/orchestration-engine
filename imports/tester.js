@@ -1,9 +1,11 @@
 import sinon from "sinon";
 
-import { runDetector, getFeedbackOpportunity } from "../controllers/executor.js";
+import { computeTargets, runDetector, getFeedbackOpportunity } from "../controllers/executor.js";
 import { ActiveScripts } from "../models/activeScripts.js";
 import * as util from "util";
 
+const ObjectId = (m = Math, d = Date, h = 16, s = s => m.floor(s).toString(h)) =>
+  s(d.now() / 1000) + ' '.repeat(h).replace(/./g, () => s(m.random() * h));
 
 // TODO: create a route that runs tests for a script
 // TODO: break this function up into parts that are each called as they will be by the engine in normal operations
@@ -14,9 +16,12 @@ import * as util from "util";
 export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, tickAmount) => {
   // fetch target script from database
   let activeScript = await ActiveScripts.findOne({ script_id: scriptId });
+  console.log(activeScript)
   let currScript = activeScript.toObject();
 
+
   // parse string functions into executable ones
+  currScript["target"] = new Function(`return ${ currScript["target"] }`)();
   currScript["detector"] = new Function(`return ${ currScript["detector"] }`)();
   currScript["actionable_feedback"].forEach((currActionableFeedback, index, arr) => {
     arr[index] = {
@@ -34,18 +39,44 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
   console.log(`Running script: ${ currScript.name }.\
   \nScript object: ${ util.inspect(currScript) }`);
 
-  // run script detector
-  let scriptDidTrigger = await runDetector(currScript);
-  console.log(`Did Prototype Script Trigger? ${ scriptDidTrigger }`);
+  // generate targets
+  let computedTargets = await computeTargets(currScript.target);
+  // console.log(computedTargets);
 
-  if (scriptDidTrigger) {
-    // simulate
+  // run detector for each target, and track which issues were generated
+  let generatedIssues = [];
+  for (const currTarget of computedTargets) {
+    let scriptDidTrigger = await runDetector(currTarget, currScript.detector);
+
+    // add targets for which script was triggered
+    if (scriptDidTrigger) {
+      generatedIssues.push({
+        issue_id: ObjectId(),
+        target: currTarget
+      });
+    }
+  }
+
+  // for triggered scripts, simulate feedback
+  if (generatedIssues.length > 0) {
+    // compute feedback opportunities for all issues
+    for (const issueIndex in generatedIssues) {
+      // get current target
+      let currTarget = generatedIssues[issueIndex].target;
+
+      // get run time for actionable feedback
+      let feedbackOppForIssue = await getFeedbackOpportunity(currTarget, currScript.actionable_feedback);
+      console.log(`Computed feedback opportunities: ${ JSON.stringify(feedbackOppForIssue,null,2) }`);
+
+      // add to list that will be used during simulation
+      generatedIssues[issueIndex].computedFeedbackOpps = feedbackOppForIssue;
+    }
+
+    console.log(generatedIssues);
+
+    // simulate delivery of feedback
     let currDate = new Date();
     let endDate = simEndDate;
-
-    // get run time for actionable feedback
-    let feedbackOpportunities = await getFeedbackOpportunity(currScript);
-    console.log(`Computed feedback opportunities: ${ JSON.stringify(feedbackOpportunities,null,2) }`);
 
     // simulate and check the trigger
     console.log(`------ Simulating from ${ currDate } to ${ endDate } ------ `);
@@ -63,21 +94,35 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
         console.log(`\n${ currDate.toDateString() }`);
       }
 
+      // for any issue, see if any of the triggers should execute
+      for (const issueIndex in generatedIssues) {
+        // get feedback opportunities for current issue
+        const feedbackOpportunities = generatedIssues[issueIndex].computedFeedbackOpps;
+        const currTarget = generatedIssues[issueIndex].target;
 
-      // see if any of the triggers should execute
-      let feedbackWasPresented = false;
-      feedbackOpportunities.forEach(currOpportunity => {
-        // TODO: this needs to be a fuzzy match since milliseconds are not guaranteed to match
-        // check if it's time to send the actionable feedback
-        if (currDate.getTime() === currOpportunity.trigger_date.getTime()) {
-          console.log(`${ currTimeStr }\nFeedback for: ${ currScript.name }: \nSent to ${ currOpportunity.feedback_outlets.join("/") } -- ${ currOpportunity.feedback_message } \n`);
-          feedbackWasPresented = true;
+        // see if any of the triggers should execute
+        let feedbackWasPresented = false;
+        for (const currOpportunity of feedbackOpportunities) {
+          // separate out components of feedback opp
+          let currFeedbackDate = currOpportunity.trigger_date.getTime();
+          let currFeedbackMessage = currOpportunity.feedback_message;
+          let currFeedbackOutletFn = currOpportunity.feedback_outlets;
+
+          // TODO: this needs to be a fuzzy match since milliseconds are not guaranteed to match
+          // check if it's time to send the actionable feedback
+          if (currDate.getTime() === currFeedbackDate) {
+            // execute feedback function
+            await currFeedbackOutletFn.runScript();
+
+            console.log(`${ currTimeStr }\nFeedback for: ${ currScript.name }: \nSent to ${ currTarget.project }'s Slack Channel  -- ${ currOpportunity.feedback_message } \n`);
+            feedbackWasPresented = true;
+          }
         }
-      });
 
-      // print current time only if its a multiple of 6 and time was not included with feedback
-      if ((currHours % 6 === 0) && !feedbackWasPresented) {
-        console.log(currTimeStr);
+        // print current time only if its a multiple of 6 and time was not included with feedback
+        if ((currHours % 6 === 0) && !feedbackWasPresented) {
+          console.log(currTimeStr);
+        }
       }
 
       // tick clock by 1 hour

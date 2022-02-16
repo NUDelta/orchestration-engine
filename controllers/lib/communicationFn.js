@@ -11,6 +11,25 @@
 import { studioAPIUrl } from "../../index.js";
 import got from "got";
 
+
+export const sendSlackMessageForProject = async function(message) {
+  // get project
+  let projName = this.project;
+
+  // send messagae to project
+  try {
+    let response = await got.post(
+      `${ studioAPIUrl }/slack/sendMessageToProjChannel`,
+      {
+        json: { projName, message },
+        responseType: "json"
+      }
+    );
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+  }
+}
+
 export const getSlackChannelForProject = async function() {
   // get projects
   let projects = this.projects;
@@ -19,7 +38,7 @@ export const getSlackChannelForProject = async function() {
   for (let currProj of projects) {
     try {
       let response = await got.get(
-        `${ studioAPIUrl }/projects/slackChannelForProject`,
+        `${ studioAPIUrl }/slack/slackChannelForProject`,
         {
           searchParams: {
             projectName: currProj

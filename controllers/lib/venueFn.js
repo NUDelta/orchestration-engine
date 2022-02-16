@@ -62,7 +62,7 @@ export const venue = async function (venueName) {
     for (let projectIndex in projectInfo) {
       let currProject = projectInfo[projectIndex];
 
-      if (currProject.name === this.projects[0]) {
+      if (currProject.name === this.project) {
         sigName = currProject.sig_name;
         break;
       }

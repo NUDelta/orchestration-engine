@@ -8,10 +8,7 @@ export const OrchestrationScript = mongoose.model("ScriptLibrary",
   new mongoose.Schema({
     name: { type: String, required: true },
     description: { type: String, required: true },
-    target: {
-        students: [{ type: String, required: true, default: "" }],
-        projects: [{ type: String, required: true, default: "" }],
-    },
+    target: { type: String, required: true },
     detector: { type: String, required: true },
     actionable_feedback: [
       {

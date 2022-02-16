@@ -12,58 +12,34 @@ import { studioAPIUrl } from "../../index.js";
 import got from "got";
 
 /**
- * Returns all students in a sig, and their projects.
+ * Returns all projects in the studio, and the students on them.
  * @return {Promise<{projects: *[], students}>}
  */
-export const getStudentsInSig = async function(sigName) {
-  let projectObjs;
-  let filteredProjs;
-
-  let students;
-  let projects
+export const getAllProjects = async function() {
+  let projResponse;
 
   try {
-    // get all projects
     let response = await got.get(
       `${ studioAPIUrl }/projects/`,
       {
         responseType: 'json'
       });
-    projectObjs = response.body;
 
-    // filter projects based on sig
-    filteredProjs = projectObjs.filter((projectObj) => {
-      return projectObj.sig_name === sigName;
-    });
-
-    // TODO: need to check if the SIG name is valid first. This will error if reduce is given an empty list
-    // create lists for students and projects
-    students = filteredProjs.map(
-      (currProj) => {
-        return currProj.students.map(
-          (currStudent) => {
-            return currStudent.name
-          });
-      })
-      .reduce(
-        (x, y) => {
-          return [...x, ...y]
-        });
-
-    projects = filteredProjs.map(
-      (currProj) => {
-        return currProj.name
-      });
+    projResponse = response.body;
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
   }
 
-  return {
-    students: students ?? [],
-    projects: projects ?? []
-  };
+  // return an object with { students: [student1Name, student2Name...], project: projName }
+  return projResponse.map((proj) => {
+    return {
+      students: proj.students.map((currStudent) => {
+        return currStudent.name
+      }),
+      project: proj.name
+    }
+  });
 };
-
 
 /**
  * Returns all projects in a sig, and the students on those projects.
@@ -73,7 +49,6 @@ export const getProjectsInSig = async function(sigName) {
   // TODO: all the logic in this function needs to be a controller
   return await getStudentsInSig(sigName);
 };
-
 
 /**
  * Returns all students in the studio, and their projects.
@@ -108,50 +83,50 @@ export const getAllStudents = async function() {
   };
 };
 
-
 /**
- * Returns all projects in the studio, and the students on them.
- * @return {Promise<{projects: *[], students}>}
+ * Returns all students in a sig, and their projects.
+ * @param sigName string SIG to get students and projects in.
+ * @return {Promise<*[]>}
  */
-export const getAllProjects = async function() {
-  let projResponse;
+export const getStudentsInSig = async function(sigName) {
+  let projectObjs;
+  let filteredProjs;
 
+  let output = [];
+
+  // TODO: need to check if the SIG name is valid first
   try {
+    // TODO: this should really be a route in the Studio API
+    // get all projects
     let response = await got.get(
       `${ studioAPIUrl }/projects/`,
       {
         responseType: 'json'
       });
+    projectObjs = response.body;
 
-    projResponse = response.body;
+    // filter projects based on sig
+    filteredProjs = projectObjs.filter((projectObj) => {
+      return projectObj.sig_name === sigName;
+    });
+
+
+    output = filteredProjs.map((currProj) => {
+      return {
+        students: currProj.students.map(
+          (currStudent) => {
+            return currStudent.name
+          }),
+        project: currProj.name
+      }
+    });
+
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
   }
 
-  // create lists for students and projects
-  let students = projResponse.map(
-    (currProj) => {
-      return currProj.students.map(
-        (currStudent) => {
-          return currStudent.name
-        });
-    })
-    .reduce(
-      (x, y) => {
-        return [...x, ...y]
-    });
-
-  let projects = projResponse.map(
-    (currProj) => {
-      return currProj.name
-    });
-
-  return {
-    students: students,
-    projects: projects
-  };
+  return output;
 };
-
 
 /**
  * Returns all non-Ph.D. students (i.e., masters and undergrads) in the studio, and their projects.

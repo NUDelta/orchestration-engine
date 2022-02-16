@@ -66,6 +66,23 @@ export const getTasksForSprint = async function () {
   return tasks;
 };
 
+export const getCurrentSprintLog = async function () {
+  // get the sprint log for the project and the current sprint
+  let relevantSprintLog = await getSprintLogForProject(this.project);
+  let sprintInfo = await getCurrentSprint();
+  let sprint;
+
+  for (let sprintIndex in relevantSprintLog["sprints"]) {
+    let currentSprint = relevantSprintLog["sprints"][sprintIndex];
+    if (currentSprint.name === sprintInfo.name) {
+      sprint = currentSprint;
+      break;
+    }
+  }
+
+  return sprint;
+};
+
 // TODO: this should be in a separate controller
 /**
  *

@@ -6,10 +6,7 @@ export const ActiveScripts = mongoose.model("ActiveScripts",
       script_id: { type: mongoose.Schema.Types.ObjectId },
       name: { type: String, required: true },
       description: { type: String, required: true },
-      target: {
-          students: [{ type: String, required: true, default: "" }],
-          projects: [{ type: String, required: true, default: "" }],
-      }, // TODO: change to a function after targets are functional
+      target: { type: String, required: true },
       detector: { type: String, required: true },
       actionable_feedback: [
           {

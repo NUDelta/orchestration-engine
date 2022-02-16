@@ -1,3 +1,4 @@
+import * as scriptTargetFn from "./lib/scriptTargetFn.js";
 import * as sprintLogFn from './lib/sprintLogFn.js';
 import * as venueFn from './lib/venueFn.js';
 import * as triggerFn from './lib/triggerFn.js';
@@ -33,6 +34,7 @@ export class ExecutionEnv {
 
 // add programming language functions to the execution env's prototype
 const scriptingLanguageFns = {
+  ...scriptTargetFn,
   ...sprintLogFn,
   ...venueFn,
   ...triggerFn,
@@ -44,56 +46,71 @@ for (const [key, value] of Object.entries(scriptingLanguageFns)) {
   ExecutionEnv.prototype[key] = value;
 }
 
+// TODO: need to catch errors if things fail
+/**
+ * Computes the targets specified by the target function in the orchestration script.
+ * @param targetFn function that specifies targets.
+ * @return {Promise<*>}
+ */
+export async function computeTargets(targetFn) {
+  // generate targets
+  let targetExecEnv = new ExecutionEnv({}, targetFn);
+  return await targetExecEnv.runScript();
+}
+
 // TODO: there needs to be one layer of abstraction higher where you iterate over all
 // all the targets once the functions are being used to compute them.
 // Then for each target that the script triggers for, save it out as an issue that later parts of
 // the code will use.
+
+// TODO: need to catch errors if things fail
 /**
  * Used to run detector condition for an orchestration script.
- * @param orchScript
+ * @param target { students: [string], target: "string" }
+ * @param detector function
+ * @return {Promise<*>}
  */
-export async function runDetector(orchScript) {
-  // separate out components
-  const scriptFn = orchScript.detector;
-  const targets = {
-    students: orchScript.target.students,
-    projects: orchScript.target.projects,
-  };
-
+export async function runDetector(target, detector) {
   // create script execution environment and run script
-  let scriptExecutionEnv = new ExecutionEnv(targets, scriptFn);
+  let scriptExecutionEnv = new ExecutionEnv(target, detector);
   return await scriptExecutionEnv.runScript();
 }
 
 // TODO: this will only trigger once since it returns (should pass in only 1 actionable feedback)
+// ^ is that actually true? seems to compute all the opportunities.
 /**
  * Used to run trigger function for actionable feedback in orchestration scripts.
- * @param orchScript
+ * @param target { students: [string], target: "string" }
+ * @param actionableFeedback list of feedback opportunities.
+ * @return {Promise<*[]>}
  */
-export async function getFeedbackOpportunity(orchScript) {
-  // separate out components
-  const targets = {
-    students: orchScript.target.students,
-    projects: orchScript.target.projects,
-  };
-
+export async function getFeedbackOpportunity(target, actionableFeedback) {
   // compute when each feedback opportunity should be executed
   let computedFeedbackOpportunities = [];
-  for (let feedbackItemIndex in orchScript.actionable_feedback) {
+  for (let feedbackItemIndex in actionableFeedback) {
     // get current feedback opportunity
-    let currActionableFeedback = orchScript.actionable_feedback[feedbackItemIndex];
+    let currActionableFeedback = actionableFeedback[feedbackItemIndex];
 
     // create execution envs for computing trigger date and feedback outlets
-    let triggerDateExecutionEnv = new ExecutionEnv(targets,
+    let triggerDateExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_opportunity);
-    let feedbackOutletExecutionEnv = new ExecutionEnv(targets,
+
+    console.log(triggerDateExecutionEnv);
+
+    let feedbackOutletExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_outlet);
+
+    console.log(feedbackOutletExecutionEnv);
+
+    console.log(await triggerDateExecutionEnv.runScript())
+    console.log(currActionableFeedback.feedback_message)
+    console.log(feedbackOutletExecutionEnv)
 
     // create object to hold curr computed feedback opportunity
     let computedFeedbackOpportunity = {
       trigger_date: await triggerDateExecutionEnv.runScript(),
       feedback_message: currActionableFeedback.feedback_message,
-      feedback_outlets: await feedbackOutletExecutionEnv.runScript()
+      feedback_outlets: feedbackOutletExecutionEnv
     };
 
     // store trigger date
