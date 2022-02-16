@@ -102,6 +102,10 @@ const createScripts = async () => {
   // });
   // await comingToOhScriptNot.save();
 
+  /**
+   * Students over-committing to a sprint.
+   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+   */
   const scopingResearchScript = new OrchestrationScript({
     _id: mongoose.Types.ObjectId("72af28054cfa9c626adcb2aa"),
     name: "Scoping Research Sprints",
@@ -128,9 +132,39 @@ const createScripts = async () => {
   });
   await scopingResearchScript.save();
 
-  // TODO: add script for if students haven't committed most of their points (like less than 75% of them)
+  /**
+   * Students not planning all of their points.
+   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+   */
+  const undercommittedOnSprint = new OrchestrationScript({
+    _id: mongoose.Types.ObjectId("61af17044cfa9c626adcb2aa"),
+    name: "Fully planning sprints",
+    description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings.",
+    target: (async function() {
+      return await this.getProjectsInSig("Collective Experiences");
+    }).toString(),
+    detector: (async function() {
+      let currentSprint = await this.getCurrentSprintLog();
+      return currentSprint.totalPoints.points_committed.total < 0.75 * currentSprint.totalPoints.point_available;
+    }).toString(),
+    actionable_feedback: [
+      {
+        feedback_message: "Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.",
+        feedback_opportunity: (async function () {
+          return await this.during(await this.venue("SIG"));
+        }).toString(),
+        feedback_outlet: (async function () {
+          // TODO: inject this into the function
+          return await this.sendSlackMessageForProject("Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.");
+        }).toString()
+      }
+    ]
+  });
+  await undercommittedOnSprint.save();
 
   // TODO: have students send updated sprint logs the day after SIG
+
+  // TODO: check if students oversprinted on the last sprint (or the first half of the current sprint)
 
   // TODO (stretch): remind students to discuss status update with their mentor 1 week before it, or at the next office hours
 };

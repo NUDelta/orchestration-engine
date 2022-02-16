@@ -114,7 +114,10 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
             // execute feedback function
             await currFeedbackOutletFn.runScript();
 
-            console.log(`${ currTimeStr }\nFeedback for: ${ currScript.name }: \nSent to ${ currTarget.project }'s Slack Channel  -- ${ currOpportunity.feedback_message } \n`);
+            console.log("--------------------------------------------------------------");
+            console.log(`Feedback for ${ currScript.name } sent at ${ currTimeStr } to ${ currTarget.project }'s Slack Channel:\n${ currOpportunity.feedback_message }`);
+            console.log("--------------------------------------------------------------");
+
             feedbackWasPresented = true;
           }
         }
