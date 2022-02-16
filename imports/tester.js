@@ -95,13 +95,13 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
       }
 
       // for any issue, see if any of the triggers should execute
+      let feedbackWasPresented = false;
       for (const issueIndex in generatedIssues) {
         // get feedback opportunities for current issue
         const feedbackOpportunities = generatedIssues[issueIndex].computedFeedbackOpps;
         const currTarget = generatedIssues[issueIndex].target;
 
         // see if any of the triggers should execute
-        let feedbackWasPresented = false;
         for (const currOpportunity of feedbackOpportunities) {
           // separate out components of feedback opp
           let currFeedbackDate = currOpportunity.trigger_date.getTime();
@@ -121,11 +121,11 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
             feedbackWasPresented = true;
           }
         }
+      }
 
-        // print current time only if its a multiple of 6 and time was not included with feedback
-        if ((currHours % 6 === 0) && !feedbackWasPresented) {
-          console.log(currTimeStr);
-        }
+      // print current time only if its a multiple of 6 and time was not included with feedback
+      if ((currHours % 6 === 0) && !feedbackWasPresented) {
+        console.log(currTimeStr);
       }
 
       // tick clock by 1 hour

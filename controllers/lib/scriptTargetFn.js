@@ -43,11 +43,50 @@ export const getAllProjects = async function() {
 
 /**
  * Returns all projects in a sig, and the students on those projects.
- * @return {Promise<{projects: *[], students}>}
+ * @param sigName
+ * @return {Promise<*[]>}
  */
 export const getProjectsInSig = async function(sigName) {
   // TODO: all the logic in this function needs to be a controller
   return await getStudentsInSig(sigName);
+};
+
+export const getNonPhdProjects = async function () {
+  let projectObjs;
+  let filteredProjs;
+
+  let output = [];
+
+  try {
+    // get all projects
+    let response = await got.get(
+      `${ studioAPIUrl }/projects/`,
+      {
+        responseType: 'json'
+      });
+    projectObjs = response.body;
+
+    // filter projects based on sig
+    filteredProjs = projectObjs.filter((projectObj) => {
+      return projectObj.sig_name !== "Summer BBQ";
+    });
+
+
+    output = filteredProjs.map((currProj) => {
+      return {
+        students: currProj.students.map(
+          (currStudent) => {
+            return currStudent.name
+          }),
+        project: currProj.name
+      }
+    });
+
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+  }
+
+  return output;
 };
 
 /**
