@@ -115,7 +115,10 @@ const createScripts = async () => {
     }).toString(),
     detector: (async function() {
       let currentSprint = await this.getCurrentSprintLog();
-      return currentSprint.totalPoints.points_committed.total >= 1.25 * currentSprint.totalPoints.point_available;
+      let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
+      let currPointsAvailable = currentSprint.totalPoints.point_available;
+
+      return currPointsCommitted >= 1.25 * currPointsAvailable;
     }).toString(),
     actionable_feedback: [
       {
@@ -144,7 +147,9 @@ const createScripts = async () => {
     }).toString(),
     detector: (async function() {
       let currentSprint = await this.getCurrentSprintLog();
-      return currentSprint.totalPoints.points_committed.total < 0.75 * currentSprint.totalPoints.point_available;
+      let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
+      let currPointsAvailable = currentSprint.totalPoints.point_available;
+      return currPointsCommitted < 0.75 * currPointsAvailable;
     }).toString(),
     actionable_feedback: [
       {
