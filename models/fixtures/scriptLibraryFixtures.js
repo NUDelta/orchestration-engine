@@ -1,5 +1,11 @@
 import { OrchestrationScript } from "../scriptLibrary.js";
-import mongoose from "mongoose";
+
+// import example script fixtures to save to DB
+import overcommittedOnSprint from "./exampleScriptFixtures/overcommittedOnSprint.js";
+import undercommittedOnSprint from "./exampleScriptFixtures/undercommittedOnSprint.js";
+import updateSprintAfterSig from "./exampleScriptFixtures/updateSprintAfterSig.js";
+import remindStudentAboutStatusUpdate
+  from "./exampleScriptFixtures/remindStudentAboutStatusUpdate.js";
 
 /*
  Scripts to implement.
@@ -102,137 +108,10 @@ const createScripts = async () => {
   // });
   // await comingToOhScriptNot.save();
 
-  /**
-   * Students over-committing to a sprint.
-   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
-   */
-  const scopingResearchScript = new OrchestrationScript({
-    _id: mongoose.Types.ObjectId("72af28054cfa9c626adcb2aa"),
-    name: "Scoping Research Sprints",
-    description: "Students should scope their research to the available points, and not be way over-committed.",
-    target: (async function() {
-      return await this.getAllProjects();
-    }).toString(),
-    detector: (async function() {
-      let currentSprint = await this.getCurrentSprintLog();
-      let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
-      let currPointsAvailable = currentSprint.totalPoints.point_available;
-
-      return currPointsCommitted >= 1.25 * currPointsAvailable;
-    }).toString(),
-    actionable_feedback: [
-      {
-        feedback_message: "Looks like you have planned way more than your available points. Let's talk about slicing strategies today during SIG.",
-        feedback_opportunity: (async function () {
-          return await this.during(await this.venue("SIG"));
-        }).toString(),
-        feedback_outlet: (async function () {
-          return await this.sendSlackMessageForProject("Looks like you have planned way more than your available points. Let's talk about slicing strategies today during SIG.");
-        }).toString()
-      }
-    ]
-  });
-  await scopingResearchScript.save();
-
-  /**
-   * Students not planning all of their points.
-   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
-   */
-  const undercommittedOnSprint = new OrchestrationScript({
-    _id: mongoose.Types.ObjectId("61af17044cfa9c626adcb2aa"),
-    name: "Fully planning sprints",
-    description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings.",
-    target: (async function() {
-      return await this.getProjectsInSig("Collective Experiences");
-    }).toString(),
-    detector: (async function() {
-      let currentSprint = await this.getCurrentSprintLog();
-      let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
-      let currPointsAvailable = currentSprint.totalPoints.point_available;
-      return currPointsCommitted < 0.75 * currPointsAvailable;
-    }).toString(),
-    actionable_feedback: [
-      {
-        feedback_message: "Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.",
-        feedback_opportunity: (async function () {
-          return await this.during(await this.venue("SIG"));
-        }).toString(),
-        feedback_outlet: (async function () {
-          return await this.sendSlackMessageForProject("Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.");
-        }).toString()
-      }
-    ]
-  });
+  await overcommittedOnSprint.save();
   await undercommittedOnSprint.save();
-
-  /**
-   * Have students send updated sprint logs the day after SIG
-   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
-   */
-  const updateSprintAfterSig = new OrchestrationScript({
-    _id: mongoose.Types.ObjectId("01af17044cfa9c738adcb2bb"),
-    name: "Sending updated sprints after SIG",
-    description: "Students should send a revised SIG plan to their mentors after their SIG meetings.",
-    target: (async function() {
-      return await this.getNonPhdProjects();
-    }).toString(),
-    detector: (async function() {
-      return true; // trigger immediately
-    }).toString(),
-    actionable_feedback: [
-      {
-        feedback_message: "Remember to send you revised sprint based on feedback from yesterday's SIG!",
-        feedback_opportunity: (async function () {
-          return await this.after(await this.venue("SIG"), {
-            hours: 24,
-            minutes: 0,
-            seconds: 0
-          });
-        }).toString(),
-        feedback_outlet: (async function () {
-          return await this.sendSlackMessageForProject("Remember to send you revised sprint based on feedback from yesterday's SIG!");
-        }).toString()
-      }
-    ]
-  });
   await updateSprintAfterSig.save();
-
-  // TODO: check if students oversprinted on the last sprint (or the first half of the current sprint)
-
-  // TODO (stretch): remind students to discuss status update with their mentor 1 week before it, or at the next office hours
-
-  /**
-   * Remind students to discuss status update with their mentor 1 week before it.
-   * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
-   */
-  const remindStudentsAboutStatusUpdate = new OrchestrationScript({
-    _id: mongoose.Types.ObjectId("22af18194cfa9c738adcb2bb"),
-    name: "Reminder for Status Update",
-    description: "Students should plan to discuss their status update plan with mentors.",
-    target: (async function() {
-      return await this.getNonPhdProjects();
-    }).toString(),
-    detector: (async function() {
-      return true;
-    }).toString(),
-    actionable_feedback: [
-      // TODO: also support notification at next office hours
-      {
-        feedback_message: "You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.",
-        feedback_opportunity: (async function () {
-          // get date 1 week before status update date
-          let statusUpdateDate = await this.getStatusUpdateDate();
-          let notifDate = new Date(statusUpdateDate);
-          notifDate.setDate(statusUpdateDate.getDate() - 7);
-          return notifDate;
-        }).toString(),
-        feedback_outlet: (async function () {
-          return await this.sendSlackMessageForProject("You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.");
-        }).toString()
-      }
-    ]
-  });
-  await remindStudentsAboutStatusUpdate.save();
+  await remindStudentAboutStatusUpdate.save();
 };
 
 export const createScriptLibraryFixtures = async () => {
