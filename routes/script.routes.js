@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { OrchestrationScript } from "../models/scriptLibrary.js";
-import { ActiveScripts } from "../models/activeScripts.js";
+import { MonitoredScripts } from "../models/monitoredScripts.js";
 import mongoose from "mongoose";
 import { runSimulationOfScript } from "../imports/tester.js";
 
@@ -19,7 +19,7 @@ scriptRouter.post("/triggerScript", async (req, res) => {
 
     // get the template script for the passed in script ID
     let templateScript = await OrchestrationScript.findOne({ _id: scriptId });
-    let newActiveScript = new ActiveScripts({
+    let newActiveScript = new MonitoredScripts({
       script_id: templateScript._id,
       name: templateScript.name,
       description: templateScript.description,

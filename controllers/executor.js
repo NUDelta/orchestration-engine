@@ -1,86 +1,108 @@
+import * as scriptTargetFn from "./lib/scriptTargetFn.js";
 import * as sprintLogFn from './lib/sprintLogFn.js';
 import * as venueFn from './lib/venueFn.js';
 import * as triggerFn from './lib/triggerFn.js';
 import * as communicationFn from './lib/communicationFn.js';
 import * as peopleFn from './lib/peopleFn.js';
+import * as projectFn from "./lib/projectFn.js";
 
+// TODO: target should be a single object with student and project (see issue 1)
+/**
+ * Class that provides an execution environment where detectors and feedback functions in scripts
+ * can run.
+ *
+ * The environment provides targets on the this context, and programming language functions on the
+ * object's prototype. As a caveat, all programming languages functions used in an orchestration
+ * script must be pre-pended with "this." so that they refer to the functions in the environment's
+ * prototype.
+ */
+export class ExecutionEnv {
+  constructor(targets, scriptFn) {
+    function addToContext(obj, dest) {
+      for (const key in obj) {
+        dest[key] = obj[key];
+      }
+    }
+    this.scriptFn = scriptFn;
+    addToContext(targets, this);
+  }
+
+  async runScript() {
+    let boundScriptToExecute = this.scriptFn.bind(this);
+    return await boundScriptToExecute();
+  }
+}
+
+// add programming language functions to the execution env's prototype
 const scriptingLanguageFns = {
+  ...scriptTargetFn,
   ...sprintLogFn,
   ...venueFn,
   ...triggerFn,
   ...communicationFn,
-  ...peopleFn
+  ...peopleFn,
+  ...projectFn
 };
 
-/**
- * Creates an execution namespace to run detectors/triggers from orchestration scripts.
- *
- * Namespace imports in the script, targets on which to run the scripts, and script functions
- * from the
- * @param scriptFn
- * @param targets
- * @param languageFns
- * @return {*}
- */
-export async function executionEnv(scriptFn, targets, languageFns) {
-  /**
-   * Adds objects to an execution context.
-   * In this function, it is used to add the parameters to globalThis.
-   * @param obj
-   * @param dest
-   */
-  function addToContext(obj, dest) {
-    for (const key in obj) {
-      dest[key] = obj[key];
-    }
-  }
-
-  // add targets and language functions to this context
-  addToContext(targets, globalThis);
-  addToContext(languageFns, globalThis);
-
-  return await scriptFn();
+for (const [key, value] of Object.entries(scriptingLanguageFns)) {
+  ExecutionEnv.prototype[key] = value;
 }
 
+// TODO: need to catch errors if things fail
+/**
+ * Computes the targets specified by the target function in the orchestration script.
+ * @param targetFn function that specifies targets.
+ * @return {Promise<*>}
+ */
+export async function computeTargets(targetFn) {
+  // generate targets
+  let targetExecEnv = new ExecutionEnv({}, targetFn);
+  return await targetExecEnv.runScript();
+}
+
+// TODO: there needs to be one layer of abstraction higher where you iterate over all
+// all the targets once the functions are being used to compute them.
+// Then for each target that the script triggers for, save it out as an issue that later parts of
+// the code will use.
+
+// TODO: need to catch errors if things fail
 /**
  * Used to run detector condition for an orchestration script.
- * @param orchScript
+ * @param target { students: [string], target: "string" }
+ * @param detector function
+ * @return {Promise<*>}
  */
-export async function runDetector(orchScript) {
-  // separate out components
-  const scriptFn = orchScript.detector;
-  const targets = {
-    students: orchScript.target.students,
-    projects: orchScript.target.projects,
-  };
-
-  return await executionEnv(scriptFn, targets, scriptingLanguageFns);
+export async function runDetector(target, detector) {
+  // create script execution environment and run script
+  let scriptExecutionEnv = new ExecutionEnv(target, detector);
+  return await scriptExecutionEnv.runScript();
 }
 
-// TODO: this will only trigger once since it returns (should pass in only 1 actionable feedback)
 /**
  * Used to run trigger function for actionable feedback in orchestration scripts.
- * @param orchScript
+ * @param target { students: [string], target: "string" }
+ * @param actionableFeedback list of feedback opportunities.
+ * @return {Promise<*[]>}
  */
-export async function getFeedbackOpportunity(orchScript) {
-  // separate out components
-  const targets = {
-    students: orchScript.target.students,
-    projects: orchScript.target.projects,
-  };
-
+export async function getFeedbackOpportunity(target, actionableFeedback) {
   // compute when each feedback opportunity should be executed
   let computedFeedbackOpportunities = [];
-  for (let feedbackItemIndex in orchScript.actionable_feedback) {
+  for (let feedbackItemIndex in actionableFeedback) {
     // get current feedback opportunity
-    let currActionableFeedback = orchScript.actionable_feedback[feedbackItemIndex];
+    let currActionableFeedback = actionableFeedback[feedbackItemIndex];
+
+    // create execution envs for computing trigger date and feedback outlets
+    let triggerDateExecutionEnv = new ExecutionEnv(target,
+      currActionableFeedback.feedback_opportunity);
 
     // create object to hold curr computed feedback opportunity
     let computedFeedbackOpportunity = {
-      trigger_date: await executionEnv(currActionableFeedback.feedback_opportunity,
-        targets, scriptingLanguageFns),
-      feedback_message: currActionableFeedback.feedback_message,
-      feedback_outlets: await executionEnv(currActionableFeedback.feedback_outlet, targets, scriptingLanguageFns)
+      opportunity: await triggerDateExecutionEnv.runScript(),
+      target: {
+        message: currActionableFeedback.feedback_message,
+        ...target
+      },
+      outlet_fn: currActionableFeedback.feedback_outlet
     };
 
     // store trigger date

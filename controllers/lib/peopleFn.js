@@ -1,7 +1,7 @@
 /**
  * This file has functions for accessing information about people in the community.
  *
- * Each function has access to globalThis which will include:
+ * Each function has access to this which will include:
  * {
  *  students: [list of student names],
  *  projects: [list of project names]
@@ -17,7 +17,7 @@ import got from "got";
  */
 export const getSigHeadForProject = async function() {
   // get projects
-  let projects = globalThis.projects;
+  let projects = this.projects;
   let sigHeads = [];
 
   for (let currProj of projects) {
@@ -45,7 +45,7 @@ export const getSigHeadForProject = async function() {
  */
 export const getStudentsOnProject = async function() {
   // get projects
-  let projects = globalThis.projects;
+  let projects = this.projects;
   let studentsOnProj = [];
 
   for (let currProj of projects) {
@@ -72,5 +72,5 @@ export const getStudentsOnProject = async function() {
  * @return {Promise<[{default: string, type: String | StringConstructor, required: boolean}]|string[]|[{default: string, type: String | StringConstructor, required: boolean}]|*>}
  */
 export const getStudentsInScript = async function() {
-  return globalThis.students;
+  return thi.students;
 };
