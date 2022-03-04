@@ -1,6 +1,7 @@
 // application imports
 import express from 'express';
 import mongoose from 'mongoose';
+import schedule from "node-schedule";
 
 // controllers
 
@@ -16,6 +17,11 @@ import {
   createActiveScriptFixtures,
   isMonitoredScriptsEmpty
 } from "./models/fixtures/activeScriptFixtures.js";
+import {
+  checkActiveIssues,
+  checkMonitoredScripts,
+  cleanUpActiveIssues
+} from "./controllers/executionFlow.js";
 
 // setup application
 const app = express();
@@ -89,3 +95,26 @@ app.use((req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${ PORT }`)
 });
+
+
+// start cron job in production
+if (NODE_ENV === "production") {
+  let MINUTE = process.env.MINUTE || 30;
+  console.log(`Starting cron job to monitor for scripts every ${ MINUTE } minutes.`);
+  schedule.scheduleJob(`*/${ MINUTE } * * * *`, async () => {
+    console.log(`Beginning Monitoring Loop at ${ new Date() }`);
+
+    // step (1): check all monitored scripts, and create issues for triggered scripts
+    let createdIssues = await checkMonitoredScripts();
+    console.log("Created Issues: ", createdIssues);
+
+    // step (2): check active issues to see if any feedback was triggered
+    let triggeredFeedbackOpps = await checkActiveIssues();
+    console.log("Triggered Feedback Opportunities: ", triggeredFeedbackOpps);
+
+    // step (3): clean-up issues based on expiry time
+    let [archivedIssues, activeIssues] = await cleanUpActiveIssues();
+    console.log("Archived Issues: ", archivedIssues);
+    console.log("New Active Issues from Reset Issues: ", activeIssues);
+  });
+}
