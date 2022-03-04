@@ -1,0 +1,180 @@
+/**
+ * This file contains functions to execute the monitoring of scripts, creation of issues,
+ * and delivery of feedback.
+ */
+import { MonitoredScripts } from "../models/monitoredScripts.js";
+import util from "util";
+import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
+import { ActiveIssues } from "../models/activeIssues.js";
+
+/**
+ *
+ * @return {Promise<Array<EnforceDocument<T & Document<any, any, any>, {}, {}>>>}
+ */
+export const checkMonitoredScripts = async () => {
+  // store current date to use for created issues
+  let currDate = new Date();
+
+  // fetch all monitored scripts
+  let monitoredScripts = await MonitoredScripts.find({});
+
+  // for each script, check script condition and create an issue if triggered
+  let generatedIssues = [];
+  for (let currScript of monitoredScripts) {
+    // parse current script
+    currScript = currScript.toObject();
+
+    currScript["target"] = new Function(`return ${ currScript["target"] }`)();
+    currScript["detector"] = new Function(`return ${ currScript["detector"] }`)();
+    currScript["actionable_feedback"].forEach((currActionableFeedback, index, arr) => {
+      arr[index] = {
+        feedback_message: currActionableFeedback["feedback_message"],
+        feedback_opportunity: new Function(`return ${ currActionableFeedback["feedback_opportunity"] }`)(),
+        feedback_outlet: new Function(`return ${ currActionableFeedback["feedback_outlet"] }`)()
+      }
+    });
+
+    // generate targets for script
+    let computedTargets = await computeTargets(currScript.target);
+
+    // run detector for each target, and create issues for each target-detector pair that is true
+    for (const currTarget of computedTargets) {
+      let scriptDidTrigger = await runDetector(currTarget, currScript.detector);
+
+      // TODO: check if issue already exists in DB before adding (check script id + date_triggered + target)
+      // store triggered scripts as issues
+      if (scriptDidTrigger) {
+        // check if issue already exists in database
+        let foundIssue = await ActiveIssues.findOne({
+          script_id: currScript._id,
+          students: {
+            $in: currTarget.students
+          },
+          project: currTarget.project
+        }).exec();
+
+        if (foundIssue === null) {
+          // issue not in DB, add it
+          generatedIssues.push(new ActiveIssues({
+            script_id: currScript._id,
+            name: currScript.name,
+            date_triggered: currDate,
+            expiry_time: computeExpiryTimeForScript(currDate, currTarget.timeframe),
+            repeat: currScript.repeat,
+            students: currTarget.students,
+            project: currTarget.project,
+            detector: currScript.detector.toString(),
+            computed_actionable_feedback: await computeActionableFeedback(currTarget, currScript.actionable_feedback)
+          }));
+        }
+      }
+    }
+  }
+
+  return ActiveIssues.insertMany(generatedIssues);
+}
+
+
+/**
+ * Checks if any active issues should have their feedback triggered, and executes those feedback.
+ * @return {Promise<*[]>}
+ */
+export const checkActiveIssues = async () => {
+  // get all issues
+  let activeIssues = await ActiveIssues.find({});
+
+  // hold date for checking all of these issues
+  let currDate = new Date();
+
+  // for each issue, check if any of the feedback opportunities should trigger
+  let triggeredFeedbackOpps = [];
+  for (const issue of activeIssues) {
+    let issueObj = issue.toObject();
+
+    // check each feedback opportunity
+    for (const feedbackOpp of issueObj.computed_actionable_feedback) {
+      // convert outlet fn back to a function
+      feedbackOpp["outlet_fn"] = new Function(`return ${ feedbackOpp["outlet_fn"] }`)();
+
+      // check if it's time to send the actionable feedback
+      // TODO: this needs to be a fuzzy match since milliseconds are not guaranteed to match
+      if (currDate.getTime() === feedbackOpp.opportunity.getTime()) {
+        // TODO: this should inject feedback message
+        // execute feedback function by creating an execution env with targets and outlet_fn
+        let feedbackExecutionEnv = new ExecutionEnv(feedbackOpp.target, feedbackOpp.outlet_fn);
+        await feedbackExecutionEnv.runScript();
+
+        // add to triggered feedback list
+        triggeredFeedbackOpps.push({
+          name: issueObj.name,
+          target: {
+            students: issueObj.students,
+            project: issueObj.project
+          },
+          message: feedbackOpp.target.message
+        });
+      }
+    }
+  }
+
+  return triggeredFeedbackOpps;
+};
+
+/**
+ * Checks if any active issues should be archived or reset.
+ * @return {Promise<void>}
+ */
+export const cleanUpActiveIssues = async () => {
+  // TODO
+};
+
+/**
+ *
+ * @param triggerDate
+ * @param timeFrame
+ * @return {Date}
+ */
+const computeExpiryTimeForScript = (triggerDate, timeFrame) => {
+  let roundingCoeff = 1000 * 60 * 5;
+  let roundedDate = new Date(Math.round(triggerDate.getTime() / roundingCoeff) * roundingCoeff);
+  let expiryTime = new Date(roundedDate);
+
+  // add time to roundedDate based on timeframe from script
+  switch (timeFrame) {
+    case "day":
+      expiryTime.setDate(expiryTime.getDate() + 1);
+      break;
+    case "week":
+      expiryTime.setDate(expiryTime.getDate() + 7);
+      break;
+    case "month":
+      expiryTime.setMonth(expiryTime.getMonth() + 1);
+      break;
+    case "sprint":
+      // TODO: this is incorrect
+      expiryTime.setDate(expiryTime.getDate() + 14);
+      break;
+    case "quarter":
+      // TODO: this is incorrect
+      expiryTime.setMonth(expiryTime.getMonth() + 3);
+      break;
+    default:
+      break;
+  }
+
+  return expiryTime;
+};
+
+/**
+ *
+ * @param target
+ * @param actionableFeedbackList
+ * @return {Promise<{outlet_fn: *, opportunity: *, message: *}[]>}
+ */
+const computeActionableFeedback = async (target, actionableFeedbackList) => {
+  let computedFeedback = await getFeedbackOpportunity(target, actionableFeedbackList);
+  return computedFeedback.map((currFeedback) => {
+    currFeedback.outlet_fn = currFeedback.outlet_fn.toString()
+    return currFeedback;
+  });
+};

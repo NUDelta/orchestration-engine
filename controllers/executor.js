@@ -78,8 +78,6 @@ export async function runDetector(target, detector) {
   return await scriptExecutionEnv.runScript();
 }
 
-// TODO: this will only trigger once since it returns (should pass in only 1 actionable feedback)
-// ^ is that actually true? seems to compute all the opportunities.
 /**
  * Used to run trigger function for actionable feedback in orchestration scripts.
  * @param target { students: [string], target: "string" }
@@ -97,14 +95,14 @@ export async function getFeedbackOpportunity(target, actionableFeedback) {
     let triggerDateExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_opportunity);
 
-    let feedbackOutletExecutionEnv = new ExecutionEnv(target,
-      currActionableFeedback.feedback_outlet);
-
     // create object to hold curr computed feedback opportunity
     let computedFeedbackOpportunity = {
-      trigger_date: await triggerDateExecutionEnv.runScript(),
-      feedback_message: currActionableFeedback.feedback_message,
-      feedback_outlets: feedbackOutletExecutionEnv
+      opportunity: await triggerDateExecutionEnv.runScript(),
+      target: {
+        message: currActionableFeedback.feedback_message,
+        ...target
+      },
+      outlet_fn: currActionableFeedback.feedback_outlet
     };
 
     // store trigger date

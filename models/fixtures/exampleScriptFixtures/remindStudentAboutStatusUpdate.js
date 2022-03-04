@@ -1,12 +1,10 @@
 import { OrchestrationScript } from "../../scriptLibrary.js";
-import mongoose from "mongoose";
 
 /**
  * Remind students to discuss status update with their mentor 1 week before it.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
 export default new OrchestrationScript({
-  _id: mongoose.Types.ObjectId("22af18194cfa9c738adcb2bb"),
   name: "Reminder for Status Update",
   description: "Students should plan to discuss their status update plan with mentors.",
   timeframe: "day",

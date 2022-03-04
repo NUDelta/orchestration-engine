@@ -1,12 +1,10 @@
 import { OrchestrationScript } from "../../scriptLibrary.js";
-import mongoose from "mongoose";
 
 /**
  * Students not planning all of their points.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
 export default new OrchestrationScript({
-  _id: mongoose.Types.ObjectId("61af17044cfa9c626adcb2aa"),
   name: "Fully planning sprints",
   description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings.",
   timeframe: "sprint",

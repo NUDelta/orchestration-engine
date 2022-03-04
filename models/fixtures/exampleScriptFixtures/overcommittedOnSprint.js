@@ -1,12 +1,10 @@
 import { OrchestrationScript } from "../../scriptLibrary.js";
-import mongoose from "mongoose";
 
 /**
  * Students over-committing to a sprint.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
 export default new OrchestrationScript({
-  _id: mongoose.Types.ObjectId("72af28054cfa9c626adcb2aa"),
   name: "Scoping Research Sprints",
   description: "Students should scope their research to the available points, and not be way over-committed.",
   timeframe: "sprint",

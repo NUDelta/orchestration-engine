@@ -1,12 +1,10 @@
 import { OrchestrationScript } from "../../scriptLibrary.js";
-import mongoose from "mongoose";
 
 /**
  * Have students send updated sprint logs the day after SIG
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
 export default new OrchestrationScript({
-  _id: mongoose.Types.ObjectId("01af17044cfa9c738adcb2bb"),
   name: "Sending updated sprints after SIG",
   description: "Students should send a revised SIG plan to their mentors after their SIG meetings.",
   timeframe: "week",
