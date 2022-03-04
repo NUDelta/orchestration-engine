@@ -120,4 +120,9 @@ export const createScriptLibraryFixtures = async () => {
 
   // populate scripts
   await createScripts();
-}
+};
+
+export const isScriptLibraryEmpty = async () => {
+  let foundScripts = await OrchestrationScript.find({});
+  return foundScripts.length === 0;
+};

@@ -8,8 +8,14 @@ import mongoose from 'mongoose';
 import { scriptRouter } from "./routes/script.routes.js";
 
 // fixtures for development
-import { createScriptLibraryFixtures } from "./models/fixtures/scriptLibraryFixtures.js";
-import { createActiveScriptFixtures } from "./models/fixtures/activeScriptFixtures.js";
+import {
+  createScriptLibraryFixtures,
+  isScriptLibraryEmpty
+} from "./models/fixtures/scriptLibraryFixtures.js";
+import {
+  createActiveScriptFixtures,
+  isMonitoredScriptsEmpty
+} from "./models/fixtures/activeScriptFixtures.js";
 
 // setup application
 const app = express();
@@ -34,8 +40,19 @@ try {
 } finally {
   if (NODE_ENV === "development") {
     // TODO: populate DB with fixtures here
+    console.log("Development -- Populating databases for development.");
     await createScriptLibraryFixtures();
     await createActiveScriptFixtures();
+  }
+
+  if (NODE_ENV === "production") {
+    // check if collections are empty first so that data isn't overwritten
+    if (await isScriptLibraryEmpty() && await isMonitoredScriptsEmpty()) {
+      console.log("Production -- Databases are empty. Populating.");
+      // populate them if they are
+      await createScriptLibraryFixtures();
+      await createActiveScriptFixtures();
+    }
   }
 }
 

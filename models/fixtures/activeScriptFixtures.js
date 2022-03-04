@@ -37,3 +37,8 @@ export const createActiveScriptFixtures = async () => {
   // populate active scripts
   await populateActiveScripts();
 };
+
+export const isMonitoredScriptsEmpty = async () => {
+  let foundMonitoredScripts = await MonitoredScripts.find({});
+  return foundMonitoredScripts.length === 0;
+};
