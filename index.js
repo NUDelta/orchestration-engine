@@ -63,7 +63,7 @@ try {
 }
 
 // get studio api url
-export const studioAPIUrl = process.env.API_URL;
+export const studioAPIUrl = process.env.STUDIO_API_URL;
 
 // listen for any errors after initial connection
 mongoose.connection.on('error', err => {

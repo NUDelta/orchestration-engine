@@ -1,18 +1,26 @@
 # Orchestration Engine
 A system for authoring and executing Orchestration Scripts that support member of an [Agile Research Studios (ARS)](http://agileresearch.io/) community learn the skills to access a community of support for their research work.
 
-## Setup
+## Setup for local development
 1. Create a `.env` file as follows:
     ```
    NODE_ENV=development
-   PORT=3000
+   PORT=5001
    DEBUG=true
-   API_URL=http://localhost:3000
-   CORS_ORIGINS=http://localhost:8080
-   MONGODB_URI=mongodb://localhost/studio-api
-   POOL_SIZE=25
+   STUDIO_API_URL=http://localhost:3000
+   MONGODB_URI=mongodb://localhost/orchestration-engine
     ```
 
 ## Development
 1. Run `npm install` to download the necessary packages.
 2. Run `npm run dev` to start the local Node.js application.
+
+## Deployment
+For production, use the following environment variables:
+```
+NODE_ENV=production
+PORT=8080
+STUDIO_API_URL=<url of deployed studio api>
+MONGODB_URI=<url of mongodb>
+MINUTE=30
+```
