@@ -20,6 +20,9 @@
     "test": "mocha",
     "lines": "cloc --exclude-dir=node_modules,.idea --exclude-ext=json ."
   },
+  "engines" : {
+    "node" : "^16.x"
+  },
   "type": "module",
   "dependencies": {
     "body-parser": "^1.19.0",
