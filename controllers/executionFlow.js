@@ -14,7 +14,7 @@ import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } fro
  */
 export const checkMonitoredScripts = async () => {
   // store current date to use for created issues
-  let currDate = new Date();
+  let currDate = floorDateToNearestFiveMinutes(new Date());
 
   // fetch all monitored scripts
   let monitoredScripts = await MonitoredScripts.find({});
@@ -84,7 +84,7 @@ export const checkActiveIssues = async () => {
   let activeIssues = await ActiveIssues.find({});
 
   // hold date for checking all of these issues
-  let currDate = new Date();
+  let currDate = floorDateToNearestFiveMinutes(new Date());
 
   // for each issue, check if any of the feedback opportunities should trigger
   let triggeredFeedbackOpps = [];
@@ -97,7 +97,6 @@ export const checkActiveIssues = async () => {
       feedbackOpp["outlet_fn"] = new Function(`return ${ feedbackOpp["outlet_fn"] }`)();
 
       // check if it's time to send the actionable feedback
-      // TODO: this needs to be a fuzzy match since milliseconds are not guaranteed to match
       if (currDate.getTime() === feedbackOpp.opportunity.getTime()) {
         // TODO: this should inject feedback message
         // execute feedback function by creating an execution env with targets and outlet_fn
@@ -129,13 +128,14 @@ export const cleanUpActiveIssues = async () => {
   let activeIssues = await ActiveIssues.find({});
 
   // for each issue, check to see if we're past the expiry time
-  let currTime = new Date();
+  let currDate = floorDateToNearestFiveMinutes(new Date());
+
   let issuesToArchive = [];
   let issuesToReset = [];
 
   for (let issue of activeIssues) {
     issue = issue.toObject();
-    if (currTime.getTime() > issue.expiry_time.getTime()) {
+    if (currDate.getTime() > issue.expiry_time.getTime()) {
       // archive issue
       let currArchivedIssue = new ArchivedIssues({
         script_id: issue.script_id,
@@ -172,8 +172,8 @@ export const cleanUpActiveIssues = async () => {
           let repeatedActiveIssue = new ActiveIssues({
             script_id: issue.script_id,
             name: issue.name,
-            date_triggered: currTime,
-            expiry_time: computeExpiryTimeForScript(currTime, relevantScript.timeframe),
+            date_triggered: issue.expiry_time,
+            expiry_time: computeExpiryTimeForScript(issue.expiry_time, relevantScript.timeframe),
             repeat: issue.repeat,
             students: issue.students,
             project: issue.project,
@@ -249,3 +249,14 @@ const computeActionableFeedback = async (target, actionableFeedbackList) => {
     return currFeedback;
   });
 };
+
+/**
+ * Floors date down to nearest 5 minutes.
+ * From: https://stackoverflow.com/a/10789415
+ * @param currDate
+ * @return {Date}
+ */
+const floorDateToNearestFiveMinutes = (currDate) => {
+  let coeff = 1000 * 60 * 5;
+  return new Date(Math.floor(currDate.getTime() / coeff) * coeff);
+}
