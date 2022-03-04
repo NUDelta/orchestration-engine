@@ -71,7 +71,6 @@ export const venue = async function (venueName) {
     // filter venue
     for (let venueIndex in venueInfo) {
       let currVenue = venueInfo[venueIndex];
-
       if (currVenue.name.includes(sigName)) {
         filteredVenue = currVenue;
         break;

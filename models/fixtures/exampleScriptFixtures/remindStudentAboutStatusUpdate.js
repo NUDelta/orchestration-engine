@@ -7,24 +7,29 @@ import { OrchestrationScript } from "../../scriptLibrary.js";
 export default new OrchestrationScript({
   name: "Reminder for Status Update",
   description: "Students should plan to discuss their status update plan with mentors.",
-  timeframe: "day",
+  timeframe: "week",
   repeat: false,
   target: (async function() {
     return await this.getNonPhdProjects();
   }).toString(),
   detector: (async function() {
-    return true;
+    // get date 1 week before status update date
+    let statusUpdateDate = await this.getStatusUpdateDate();
+    let shiftedDate = new Date(statusUpdateDate);
+    shiftedDate.setDate(shiftedDate.getDate() - 7);
+
+    // check if current month and date equal shifted date
+    let currDate = new Date();
+    return (currDate.getDate() === shiftedDate.getDate()) &&
+      (currDate.getMonth() === shiftedDate.getMonth()) &&
+      (currDate.getFullYear() === shiftedDate.getFullYear());
   }).toString(),
   actionable_feedback: [
     // TODO: also support notification at next office hours
     {
       feedback_message: "You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.",
       feedback_opportunity: (async function () {
-        // get date 1 week before status update date
-        let statusUpdateDate = await this.getStatusUpdateDate();
-        let notifDate = new Date(statusUpdateDate);
-        notifDate.setDate(statusUpdateDate.getDate() - 7);
-        return notifDate;
+        return await this.during(await this.venue("Studio"));
       }).toString(),
       feedback_outlet: (async function () {
         return await this.sendSlackMessageForProject("You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.");

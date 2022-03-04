@@ -1,15 +1,13 @@
 import sinon from "sinon";
-
-import { computeTargets, runDetector, getFeedbackOpportunity } from "../controllers/executor.js";
-import { MonitoredScripts } from "../models/monitoredScripts.js";
-import * as util from "util";
-import { checkActiveIssues, checkMonitoredScripts } from "../controllers/executionFlow.js";
+import {
+  checkActiveIssues,
+  checkMonitoredScripts,
+  cleanUpActiveIssues
+} from "../controllers/executionFlow.js";
 
 const ObjectId = (m = Math, d = Date, h = 16, s = s => m.floor(s).toString(h)) =>
   s(d.now() / 1000) + ' '.repeat(h).replace(/./g, () => s(m.random() * h));
 
-// TODO: create a route that runs tests for a script
-// TODO: break this function up into parts that are each called as they will be by the engine in normal operations
 /**
  * Simulates the running of orchestration scripts over 1 week.
  * @return {Promise<void>}
@@ -39,11 +37,14 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
       console.log(`\n${ currDate.toDateString() }`);
     }
 
-    // check all monitored scripts, and trigger issues
+    // step (1): check all monitored scripts, and create issues for triggered scripts
     let createdIssues = await checkMonitoredScripts();
 
-    // check all issues
+    // step (2): check active issues to see if any feedback was triggered
     let triggeredFeedbackOpps = await checkActiveIssues();
+
+    // step (3): clean-up issues based on expiry time
+    let [archivedIssues, activeIssues] = await cleanUpActiveIssues();
 
     // print any feedback messages sent
     let feedbackWasPresented = false;

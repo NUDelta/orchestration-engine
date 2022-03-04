@@ -3,9 +3,10 @@
  * and delivery of feedback.
  */
 import { MonitoredScripts } from "../models/monitoredScripts.js";
-import util from "util";
-import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
 import { ActiveIssues } from "../models/activeIssues.js";
+import { ArchivedIssues } from "../models/archivedIssues.js";
+
+import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
 
 /**
  *
@@ -41,7 +42,6 @@ export const checkMonitoredScripts = async () => {
     for (const currTarget of computedTargets) {
       let scriptDidTrigger = await runDetector(currTarget, currScript.detector);
 
-      // TODO: check if issue already exists in DB before adding (check script id + date_triggered + target)
       // store triggered scripts as issues
       if (scriptDidTrigger) {
         // check if issue already exists in database
@@ -59,7 +59,7 @@ export const checkMonitoredScripts = async () => {
             script_id: currScript._id,
             name: currScript.name,
             date_triggered: currDate,
-            expiry_time: computeExpiryTimeForScript(currDate, currTarget.timeframe),
+            expiry_time: computeExpiryTimeForScript(currDate, currScript.timeframe),
             repeat: currScript.repeat,
             students: currTarget.students,
             project: currTarget.project,
@@ -122,10 +122,81 @@ export const checkActiveIssues = async () => {
 
 /**
  * Checks if any active issues should be archived or reset.
- * @return {Promise<void>}
+ * @return {Promise<unknown[]>}
  */
 export const cleanUpActiveIssues = async () => {
-  // TODO
+  // get all issues
+  let activeIssues = await ActiveIssues.find({});
+
+  // for each issue, check to see if we're past the expiry time
+  let currTime = new Date();
+  let issuesToArchive = [];
+  let issuesToReset = [];
+
+  for (let issue of activeIssues) {
+    issue = issue.toObject();
+    if (currTime.getTime() > issue.expiry_time.getTime()) {
+      // archive issue
+      let currArchivedIssue = new ArchivedIssues({
+        script_id: issue.script_id,
+        name: issue.name,
+        date_triggered: issue.date_triggered,
+        date_expired: issue.expiry_time,
+        repeat: issue.repeat,
+        target: {
+          students: issue.students,
+          project: issue.project
+        },
+        detector: issue.detector,
+        computed_actionable_feedback: issue.computed_actionable_feedback
+      });
+      issuesToArchive.push(currArchivedIssue);
+
+      // create new issue if repeat is specified
+      if (issue.repeat) {
+        // TODO: this is pretty repetitive of just creating a new active issue. try to pull out.
+        // get script to see timeframe
+        let relevantScript = await MonitoredScripts.findOne({ _id: issue.script_id });
+
+        if (relevantScript !== null) {
+          relevantScript = relevantScript.toObject();
+          relevantScript["actionable_feedback"].forEach((currActionableFeedback, index, arr) => {
+            arr[index] = {
+              feedback_message: currActionableFeedback["feedback_message"],
+              feedback_opportunity: new Function(`return ${ currActionableFeedback["feedback_opportunity"] }`)(),
+              feedback_outlet: new Function(`return ${ currActionableFeedback["feedback_outlet"] }`)()
+            }
+          });
+
+          // create new issue
+          let repeatedActiveIssue = new ActiveIssues({
+            script_id: issue.script_id,
+            name: issue.name,
+            date_triggered: currTime,
+            expiry_time: computeExpiryTimeForScript(currTime, relevantScript.timeframe),
+            repeat: issue.repeat,
+            students: issue.students,
+            project: issue.project,
+            detector: issue.detector.toString(),
+            computed_actionable_feedback: await computeActionableFeedback({
+              students: issue.students,
+              project: issue.project
+            }, relevantScript.actionable_feedback)
+          });
+          issuesToReset.push(repeatedActiveIssue);
+        }
+      }
+
+      // delete old issue
+      await ActiveIssues.deleteOne({ _id: issue._id });
+    }
+  }
+
+  // save all and return them
+  return [
+    await ArchivedIssues.insertMany(issuesToArchive),
+    await ActiveIssues.insertMany(issuesToReset)
+  ];
 };
 
 /**
