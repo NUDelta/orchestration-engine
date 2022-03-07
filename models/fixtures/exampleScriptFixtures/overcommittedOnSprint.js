@@ -1,10 +1,8 @@
-import { OrchestrationScript } from "../../scriptLibrary.js";
-
 /**
  * Students over-committing to a sprint.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
-export default new OrchestrationScript({
+export default {
   name: "Scoping Research Sprints",
   description: "Students should scope their research to the available points, and not be way over-committed.",
   timeframe: "sprint",
@@ -30,4 +28,4 @@ export default new OrchestrationScript({
       }).toString()
     }
   ]
-});
+};

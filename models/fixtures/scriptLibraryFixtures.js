@@ -108,14 +108,14 @@ const createScripts = async () => {
   //     }
   //   ]
   // });
-  // await comingToOhScriptNot.save();
+  // await comingToOhScriptNot.save();)
 
-  await overcommittedOnSprint.save();
-  await undercommittedOnSprint.save();
-  await updateSprintAfterSig.save();
-  await remindStudentAboutStatusUpdate.save();
-  await readThroughEOQChecklist.save();
-  await discussEOQDeliverablesAtSig.save();
+  await new OrchestrationScript(overcommittedOnSprint).save();
+  await new OrchestrationScript(undercommittedOnSprint).save();
+  await new OrchestrationScript(updateSprintAfterSig).save();
+  await new OrchestrationScript(remindStudentAboutStatusUpdate).save();
+  await new OrchestrationScript(readThroughEOQChecklist).save();
+  await new OrchestrationScript(discussEOQDeliverablesAtSig).save();
 };
 
 export const createScriptLibraryFixtures = async () => {

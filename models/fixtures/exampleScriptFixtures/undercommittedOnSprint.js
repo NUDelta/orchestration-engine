@@ -1,10 +1,8 @@
-import { OrchestrationScript } from "../../scriptLibrary.js";
-
 /**
  * Students not planning all of their points.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
-export default new OrchestrationScript({
+export default {
   name: "Fully planning sprints",
   description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings.",
   timeframe: "sprint",
@@ -29,4 +27,4 @@ export default new OrchestrationScript({
       }).toString()
     }
   ]
-});
+};

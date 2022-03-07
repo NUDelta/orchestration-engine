@@ -7,6 +7,7 @@ import schedule from "node-schedule";
 
 // routes
 import { scriptRouter } from "./routes/script.routes.js";
+import { dataRouter } from "./routes/data.routes.js";
 
 // fixtures for development
 import {
@@ -74,6 +75,7 @@ mongoose.connection.on('error', err => {
 app.use(express.urlencoded({extended: true}));
 app.use(express.json()) // To parse the incoming requests with JSON payloads
 app.use("/scripts", scriptRouter);
+app.use("/data", dataRouter);
 
 // catch any undefined routes
 app.all('*', (request, response) => {

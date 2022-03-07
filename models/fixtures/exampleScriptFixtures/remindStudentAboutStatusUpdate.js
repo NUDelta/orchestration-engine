@@ -1,10 +1,8 @@
-import { OrchestrationScript } from "../../scriptLibrary.js";
-
 /**
  * Remind students to discuss status update with their mentor 1 week before it.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
-export default new OrchestrationScript({
+export default {
   name: "Reminder for Status Update",
   description: "Students should plan to discuss their status update plan with mentors.",
   timeframe: "week",
@@ -36,4 +34,4 @@ export default new OrchestrationScript({
       }).toString()
     }
   ]
-});
+};

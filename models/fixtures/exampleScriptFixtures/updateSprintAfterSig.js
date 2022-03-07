@@ -1,10 +1,8 @@
-import { OrchestrationScript } from "../../scriptLibrary.js";
-
 /**
  * Have students send updated sprint logs the day after SIG
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
-export default new OrchestrationScript({
+export default {
   name: "Sending updated sprints after SIG",
   description: "Students should send a revised SIG plan to their mentors after their SIG meetings.",
   timeframe: "week",
@@ -30,4 +28,4 @@ export default new OrchestrationScript({
       }).toString()
     }
   ]
-});
+};
