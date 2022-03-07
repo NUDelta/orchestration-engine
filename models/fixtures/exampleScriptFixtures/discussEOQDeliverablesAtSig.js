@@ -21,7 +21,7 @@ export default {
         return new Date(lastSigMeetingTime.start_time);
       }).toString(),
       feedback_outlet: (async function () {
-        return await this.sendSlackMessageToSig("Let's make sure we discuss your plans for EOQ deliverables during SIG today.");
+        return await this.sendSlackMessageToSig();
       }).toString()
     }
   ]

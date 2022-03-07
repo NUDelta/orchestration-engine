@@ -64,7 +64,7 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
     }
 
     // print current time only if its a multiple of 6 and time was not included with feedback
-    if ((currHours % 6 === 0) && !feedbackWasPresented) {
+    if ((currHours % 6 === 0) && (currMins === 0) && !feedbackWasPresented) {
       console.log(currTimeStr);
     }
 

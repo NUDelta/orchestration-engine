@@ -4,7 +4,14 @@
  * Each function has access to this which will include:
  * {
  *  students: [list of student names],
- *  projects: [list of project names]
+ *  project: "project name",
+ *  message: "message to send",
+ *  resources: [
+ *    {
+ *      link: "link to resource",
+ *      description: "description text about resource to help someone use it"
+ *    }
+ *  ]
  * }
  **/
 
@@ -12,13 +19,18 @@ import { studioAPIUrl } from "../../index.js";
 import got from "got";
 
 // TODO: support message (with text and/or resources) being inject this into the function
-export const sendSlackMessageForProject = async function(message) {
-  // get project
+/**
+ * Sends a message to a Project Channel, given a project and message.
+ * @return {Promise<void>}
+ */
+export const sendSlackMessageForProject = async function() {
+  // get project and message
   let projName = this.project;
+  let message = this.message;
 
   // send message to project channel
   try {
-    let response = await got.post(
+    await got.post(
       `${ studioAPIUrl }/slack/sendMessageToProjChannel`,
       {
         json: { projName, message },
@@ -30,21 +42,27 @@ export const sendSlackMessageForProject = async function(message) {
   }
 };
 
-export const sendSlackMessageToSig = async function (message) {
+/**
+ * Sends a message to a SIG Channel, given a project and message.
+ * @return {Promise<void>}
+ */
+export const sendSlackMessageToSig = async function () {
+  // get project and message
+  let projName = this.project;
+  let message = this.message;
+
   try {
     // get sig name for project
     let sigNameResponse = await got.get(`${ studioAPIUrl }/projects/projectByName`,
       {
-        searchParams: {
-          projName: this.project
-        },
+        searchParams: { projName },
         responseType: 'json'
       });
 
     let sigName = sigNameResponse.body.sig_name;
     if (sigName !== undefined) {
       // send message to SIG channel
-      let response = await got.post(
+      await got.post(
         `${ studioAPIUrl }/slack/sendMessageToSigChannel`,
         {
           json: { sigName, message },
@@ -57,6 +75,7 @@ export const sendSlackMessageToSig = async function (message) {
   }
 };
 
+// TODO: fix to use single project (this is old code)
 export const getSlackChannelForProject = async function() {
   // get projects
   let projects = this.projects;

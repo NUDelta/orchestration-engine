@@ -24,7 +24,7 @@ export default {
         return outputTime;
       }).toString(),
       feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject("Today is our last SIG for the quarter! Try to read through the EOQ checklist (https://docs.google.com/document/d/1GXvf4m7M9D6b_j8hacTxN9JhsDvZgdqSQmgwLiLHlRY/edit?usp=sharing) before our SIG today, and plan what your EOQ deliverables will be.");
+        return await this.sendSlackMessageForProject();
       }).toString()
     }
   ]

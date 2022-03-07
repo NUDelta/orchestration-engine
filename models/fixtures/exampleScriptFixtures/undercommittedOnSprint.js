@@ -23,7 +23,7 @@ export default {
         return await this.during(await this.venue("SIG"));
       }).toString(),
       feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject("Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.");
+        return await this.sendSlackMessageForProject();
       }).toString()
     }
   ]

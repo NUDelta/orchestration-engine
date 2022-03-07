@@ -30,7 +30,7 @@ export default {
         return await this.during(await this.venue("Studio"));
       }).toString(),
       feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject("You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.");
+        return await this.sendSlackMessageForProject();
       }).toString()
     }
   ]

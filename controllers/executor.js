@@ -100,6 +100,7 @@ export async function getFeedbackOpportunity(target, actionableFeedback) {
       opportunity: await triggerDateExecutionEnv.runScript(),
       target: {
         message: currActionableFeedback.feedback_message,
+        resources: [], // TODO, implement
         ...target
       },
       outlet_fn: currActionableFeedback.feedback_outlet
