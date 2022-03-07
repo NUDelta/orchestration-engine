@@ -89,4 +89,50 @@ export const venue = async function (venueName) {
   };
 };
 
+/**
+ * Gets the start and end time of the first SIG meeting of the quarter.
+ * @return {Promise<*>}
+ */
+export const firstSigMeeting = async function () {
+  // get info about first SIG meeting based on the this.project
+  let venueInfo;
+  try {
+    let response = await got.get(`${ studioAPIUrl }/venues/sig/firstSig`,
+      {
+        searchParams: {
+          projName: this.project
+        },
+        responseType: 'json'
+      });
+    venueInfo = response.body;
+
+    return venueInfo;
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+  }
+};
+
+/**
+ * Gets the start and end time of the last SIG meeting of the quarter.
+ * @return {Promise<*>}
+ */
+export const lastSigMeeting = async function () {
+  // get info about first SIG meeting based on the this.project
+  let venueInfo;
+  try {
+    let response = await got.get(`${ studioAPIUrl }/venues/sig/lastSig`,
+      {
+        searchParams: {
+          projName: this.project
+        },
+        responseType: 'json'
+      });
+    venueInfo = response.body;
+
+    return venueInfo;
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+  }
+};
+
 // TODO: have a venue trigger for immediate that just returns true so that the script runs immediately

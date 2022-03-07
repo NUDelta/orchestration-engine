@@ -6,6 +6,7 @@ import undercommittedOnSprint from "./exampleScriptFixtures/undercommittedOnSpri
 import updateSprintAfterSig from "./exampleScriptFixtures/updateSprintAfterSig.js";
 import remindStudentAboutStatusUpdate
   from "./exampleScriptFixtures/remindStudentAboutStatusUpdate.js";
+import readThroughEOQChecklist from "./exampleScriptFixtures/readThroughEOQChecklist.js";
 
 /*
  Scripts to implement.
@@ -112,6 +113,7 @@ const createScripts = async () => {
   await undercommittedOnSprint.save();
   await updateSprintAfterSig.save();
   await remindStudentAboutStatusUpdate.save();
+  await readThroughEOQChecklist.save();
 };
 
 export const createScriptLibraryFixtures = async () => {
