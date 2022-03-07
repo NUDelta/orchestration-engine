@@ -9,7 +9,8 @@ const populateActiveScripts = async () => {
     "Fully planning sprints",
     "Sending updated sprints after SIG",
     "Reminder for Status Update",
-    "Have students read EOQ checklist before last SIG"
+    "Have students read EOQ checklist before last SIG",
+    "Discuss EOQ deliverables during SIG"
   ];
 
   for (let currScriptName of scriptsToActivateNames) {

@@ -16,7 +16,7 @@ export const sendSlackMessageForProject = async function(message) {
   // get project
   let projName = this.project;
 
-  // send messagae to project
+  // send message to project channel
   try {
     let response = await got.post(
       `${ studioAPIUrl }/slack/sendMessageToProjChannel`,
@@ -28,7 +28,34 @@ export const sendSlackMessageForProject = async function(message) {
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
   }
-}
+};
+
+export const sendSlackMessageToSig = async function (message) {
+  try {
+    // get sig name for project
+    let sigNameResponse = await got.get(`${ studioAPIUrl }/projects/projectByName`,
+      {
+        searchParams: {
+          projName: this.project
+        },
+        responseType: 'json'
+      });
+
+    let sigName = sigNameResponse.body.sig_name;
+    if (sigName !== undefined) {
+      // send message to SIG channel
+      let response = await got.post(
+        `${ studioAPIUrl }/slack/sendMessageToSigChannel`,
+        {
+          json: { sigName, message },
+          responseType: "json"
+        }
+      );
+    }
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+  }
+};
 
 export const getSlackChannelForProject = async function() {
   // get projects

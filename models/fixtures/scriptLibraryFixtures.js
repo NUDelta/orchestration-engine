@@ -7,6 +7,7 @@ import updateSprintAfterSig from "./exampleScriptFixtures/updateSprintAfterSig.j
 import remindStudentAboutStatusUpdate
   from "./exampleScriptFixtures/remindStudentAboutStatusUpdate.js";
 import readThroughEOQChecklist from "./exampleScriptFixtures/readThroughEOQChecklist.js";
+import discussEOQDeliverablesAtSig from "./exampleScriptFixtures/discussEOQDeliverablesAtSig.js";
 
 /*
  Scripts to implement.
@@ -114,6 +115,7 @@ const createScripts = async () => {
   await updateSprintAfterSig.save();
   await remindStudentAboutStatusUpdate.save();
   await readThroughEOQChecklist.save();
+  await discussEOQDeliverablesAtSig.save();
 };
 
 export const createScriptLibraryFixtures = async () => {
