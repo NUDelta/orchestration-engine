@@ -17,10 +17,12 @@ export default {
     {
       feedback_message: "Today is our last SIG for the quarter! Try to read through the EOQ checklist (https://docs.google.com/document/d/1GXvf4m7M9D6b_j8hacTxN9JhsDvZgdqSQmgwLiLHlRY/edit?usp=sharing) before our SIG today, and plan what your EOQ deliverables will be.",
       feedback_opportunity: (async function () {
+        // get time for last sig meeting
         let lastSigMeetingTime = await this.lastSigMeeting();
+
+        // sent notification 3 hours before last SIG starts
         let outputTime = new Date(lastSigMeetingTime.start_time);
         outputTime.setHours(outputTime.getHours() - 3);
-
         return outputTime;
       }).toString(),
       feedback_outlet: (async function () {

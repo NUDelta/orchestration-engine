@@ -17,7 +17,10 @@ export default {
     {
       feedback_message: "Let's make sure we discuss your plans for EOQ deliverables during SIG today.",
       feedback_opportunity: (async function () {
+        // get time for last sig meeting
         let lastSigMeetingTime = await this.lastSigMeeting();
+
+        // sent notification at the start of the last SIG meeting
         return new Date(lastSigMeetingTime.start_time);
       }).toString(),
       feedback_outlet: (async function () {
