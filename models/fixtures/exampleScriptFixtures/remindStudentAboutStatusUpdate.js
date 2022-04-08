@@ -25,7 +25,7 @@ export default {
   actionable_feedback: [
     // TODO: also support notification at next office hours
     {
-      feedback_message: "You have a status update in 1 week! Make sure to meeting with your mentor to discuss your plan.",
+      feedback_message: "You have a status update in 1 week! Make sure to meet with your mentor to discuss your plan.",
       feedback_opportunity: (async function () {
         return await this.during(await this.venue("Studio"));
       }).toString(),

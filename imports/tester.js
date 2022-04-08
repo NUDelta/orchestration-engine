@@ -77,6 +77,8 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
 
   // reset clock
   clock.restore();
+
+  // TODO: clean up models after simulation so it can be run again
 };
 
 /**
