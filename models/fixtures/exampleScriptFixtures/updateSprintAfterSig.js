@@ -24,7 +24,7 @@ export default {
         });
       }).toString(),
       feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject("Remember to send you revised sprint based on feedback from yesterday's SIG!");
+        return await this.sendSlackMessageForProject();
       }).toString()
     }
   ]
