@@ -9,7 +9,7 @@ import { ArchivedIssues } from "../models/archivedIssues.js";
 import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
 
 /**
- *
+ * TODO: comment
  * @return {Promise<Array<EnforceDocument<T & Document<any, any, any>, {}, {}>>>}
  */
 export const checkMonitoredScripts = async () => {
@@ -96,9 +96,10 @@ export const checkActiveIssues = async () => {
       // convert outlet fn back to a function
       feedbackOpp["outlet_fn"] = new Function(`return ${ feedbackOpp["outlet_fn"] }`)();
 
+      // TODO: this will fail since its looking for a direct match. Need to round this down.
+      // TODO: in the future, may want to change it to currTime >= oppTime (or on the same day, but >= time)
       // check if it's time to send the actionable feedback
       if (currDate.getTime() === feedbackOpp.opportunity.getTime()) {
-        // TODO: this should inject feedback message
         // execute feedback function by creating an execution env with targets and outlet_fn
         let feedbackExecutionEnv = new ExecutionEnv(feedbackOpp.target, feedbackOpp.outlet_fn);
         await feedbackExecutionEnv.runScript();
@@ -135,6 +136,7 @@ export const cleanUpActiveIssues = async () => {
 
   for (let issue of activeIssues) {
     issue = issue.toObject();
+    // TODO: greater or equal?
     if (currDate.getTime() > issue.expiry_time.getTime()) {
       // archive issue
       let currArchivedIssue = new ArchivedIssues({

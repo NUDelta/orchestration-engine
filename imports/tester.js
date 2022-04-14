@@ -24,6 +24,10 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
   // simulate and check the trigger
   console.log(`------ Simulating from ${ currDate } to ${ endDate } ------ `);
   while (currDate < endDate) {
+    // TODO: for more realistic testing, add a small amount of jitter (0-60 seconds)
+    // this will let us test if the code runs slow on the server
+
+
     // pull out date components
     let currHours = currDate.getHours();
     let currMins = currDate.getMinutes();
@@ -68,6 +72,7 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
       console.log(currTimeStr);
     }
 
+    // TODO: subtract jitter before ticking
     // tick clock by 1 hour
     clock.tick(tickAmount);
     currDate = new Date();

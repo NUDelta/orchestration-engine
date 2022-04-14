@@ -10,6 +10,7 @@ export default {
   target: (async function() {
     return await this.getNonPhdProjects();
   }).toString(),
+  // TODO: maybe have the feedback be immediate, and detector be what
   detector: (async function() {
     return true; // trigger immediately
   }).toString(),

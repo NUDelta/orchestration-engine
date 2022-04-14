@@ -10,6 +10,7 @@ export default {
   target: (async function() {
     return await this.getAllProjects();
   }).toString(),
+  // TODO: change this to run when it's the same week as the last SIG meeting (or have feedback opportunity run immediately)
   detector: (async function() {
     return true; // trigger immediately
   }).toString(),

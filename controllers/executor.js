@@ -95,6 +95,7 @@ export async function getFeedbackOpportunity(target, actionableFeedback) {
     let triggerDateExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_opportunity);
 
+    // TODO: opportunity timestamp should also be rounded to the nearest 5 mins
     // create object to hold curr computed feedback opportunity
     let computedFeedbackOpportunity = {
       opportunity: await triggerDateExecutionEnv.runScript(),
