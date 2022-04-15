@@ -24,10 +24,6 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
   // simulate and check the trigger
   console.log(`------ Simulating from ${ currDate } to ${ endDate } ------ `);
   while (currDate < endDate) {
-    // TODO: for more realistic testing, add a small amount of jitter (0-60 seconds)
-    // this will let us test if the code runs slow on the server
-
-
     // pull out date components
     let currHours = currDate.getHours();
     let currMins = currDate.getMinutes();
@@ -41,11 +37,26 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
       console.log(`\n${ currDate.toDateString() }`);
     }
 
+    // add some jitter to the timestamp (0 - 30 seconds) to simulate lag on server
+    let step1Jitter = Math.round(Math.random() * 30);
+    clock.tick(step1Jitter * 1000);
+    console.log(`Timestamp with Step 1 jitter (${ step1Jitter } seconds): ${ new Date() }`);
+
     // step (1): check all monitored scripts, and create issues for triggered scripts
     let createdIssues = await checkMonitoredScripts();
 
+    // add more jitter to the timestamp (60 - 120 seconds) to simulate completion time of step 1
+    let step2Jitter = Math.round(60 + (Math.random() * 60));
+    clock.tick(step2Jitter * 1000);
+    console.log(`Timestamp with Step 2 jitter (${ step2Jitter } seconds): ${ new Date() }`);
+
     // step (2): check active issues to see if any feedback was triggered
     let triggeredFeedbackOpps = await checkActiveIssues();
+
+    // add more jitter to the timestamp (60 - 120 seconds) to simulate completion time of step 2
+    let step3Jitter = Math.round(60 + (Math.random() * 120));
+    clock.tick(step3Jitter  * 1000);
+    console.log(`Timestamp with Step 3 jitter (${ step3Jitter } seconds): ${ new Date() }`);
 
     // step (3): clean-up issues based on expiry time
     let [archivedIssues, activeIssues] = await cleanUpActiveIssues();
@@ -73,9 +84,12 @@ export const runSimulationOfScript = async (scriptId, simStartDate, simEndDate, 
     }
 
     // TODO: subtract jitter before ticking
-    // tick clock by 1 hour
-    clock.tick(tickAmount);
+    // tick clock by 1 hour - jitter that was added above
+    let totalJitter = step1Jitter + step2Jitter + step3Jitter;
+    clock.tick(tickAmount - (totalJitter * 1000));
     currDate = new Date();
+    console.log(`Total jitter: ${ totalJitter } seconds | ${ totalJitter / 60 } mins.`);
+    console.log("Timestamp after ticking for simulation: ", new Date());
   }
 
   console.log(`------ Simulation Complete ------ \n`);
