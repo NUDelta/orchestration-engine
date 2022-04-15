@@ -1,4 +1,5 @@
 /**
+ * TODO: this really should have a check where if it's week 1 of a sprint, then its only half the available points.
  * Students over-committing to a sprint.
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */

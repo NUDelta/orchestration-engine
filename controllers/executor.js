@@ -5,6 +5,7 @@ import * as triggerFn from './lib/triggerFn.js';
 import * as communicationFn from './lib/communicationFn.js';
 import * as peopleFn from './lib/peopleFn.js';
 import * as projectFn from "./lib/projectFn.js";
+import { floorDateToNearestFiveMinutes } from "./utils.js";
 
 // TODO: target should be a single object with student and project (see issue 1)
 /**
@@ -95,9 +96,12 @@ export async function getFeedbackOpportunity(target, actionableFeedback) {
     let triggerDateExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_opportunity);
 
+    // get opportunity date, and floor
+    let opportunityDate = await triggerDateExecutionEnv.runScript();
+
     // create object to hold curr computed feedback opportunity
     let computedFeedbackOpportunity = {
-      opportunity: await triggerDateExecutionEnv.runScript(),
+      opportunity: floorDateToNearestFiveMinutes(opportunityDate),
       target: {
         message: currActionableFeedback.feedback_message,
         resources: [], // TODO, implement
