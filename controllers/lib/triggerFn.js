@@ -7,6 +7,7 @@ import { DateTime } from "luxon";
 // before: up to 10 mins before the timestamp
 // after: up to 10 mins after the timestamp
 
+// TODO: if using luxon, good to shift towards its monday-0-index instead of my sunday-0-index
 
 // TODO: this might be messing up due to daylight savings time from using the default date in the studio api
 /**
@@ -17,17 +18,20 @@ import { DateTime } from "luxon";
  *  name: string name of venue
  *  description: string description of venue
  *  day_of_week: string day of week venue occurs
- *  start_time: Date start time of venue (only encoded time)
- *  end_time: Date end time of venue
+ *  start_time: string start time of venue in format HH:MM:SS
+ *  end_time: string end time of venue in format HH:MM:SS
+ *  timezone: string timezone of start and end times for venue
  * }
  * @return {Promise<Date>}
  */
 export const during = async function(venue) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
-  let nextVenue = computeNextVenue(new Date(),
+  let nextVenue = computeNextVenue(
     venue.day_of_week,
-    new Date(venue.start_time),
-    new Date(venue.end_time));
+    venue.start_time,
+    venue.end_time,
+    venue.timezone
+  );
 
   // return the time that script should trigger
   // for during, script triggers at the beginning of the venue (so, the start time)
@@ -36,15 +40,17 @@ export const during = async function(venue) {
 
 /**
  * Returns a timestamp for when to execute a script before the next instance of a venue.
+ * TODO: support something like "noon the day before"
  * @param venue object with information about the venue. Contains the following:
  * {
  *  name: string name of venue
  *  description: string description of venue
  *  day_of_week: string day of week venue occurs
- *  start_time: Date start time of venue (only encoded time)
- *  end_time: Date end time of venue
+ *  start_time: string start time of venue in format HH:MM:SS
+ *  end_time: string end time of venue in format HH:MM:SS
+ *  timezone: string timezone of start and end times for venue
  * }
- * @param timeBefore object used to compute number of milliseconds before venue:
+ * @param timeBefore object used to compute the time before the venue's start_time:
  * {
  *   hours: number of hours
  *   minutes: number of minutes
@@ -54,33 +60,39 @@ export const during = async function(venue) {
  */
 export const before = async function(venue, timeBefore) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
-  let nextVenue = computeNextVenue(new Date(),
+  let nextVenue = computeNextVenue(
     venue.day_of_week,
-    new Date(venue.start_time),
-    new Date(venue.end_time));
+    venue.start_time,
+    venue.end_time,
+    venue.timezone
+  );
 
-  // compute time to subtract in milliseconds
-  let timeToSubtract = timeBefore.hours * 3600000 +
-    timeBefore.minutes * 60000 +
-    timeBefore.seconds * 1000;
+  // shift time based on timeBefore
+  // for before, take the start_time and subtract timeBefore from it
+  let shiftedTime = DateTime.fromJSDate(nextVenue.start_time).minus({
+    hours: timeBefore.hours,
+    minutes: timeBefore.minutes,
+    seconds: timeBefore.seconds
+  });
 
   // return the time that script should trigger
-  // for before, take the start_time and subtract timeBefore from it
-  return new Date(nextVenue.start_time.getTime() - timeToSubtract);
+  return shiftedTime.toJSDate();
 };
 
 /**
  * TODO: This will not work as expected if time needs to be rounded to be matched.
  * Returns a timestamp for when to execute a script after the next instance of a venue.
+ * TODO: support something like "noon the day after a venue"
  * @param venue object with information about the venue. Contains the following:
  * {
  *  name: string name of venue
  *  description: string description of venue
  *  day_of_week: string day of week venue occurs
- *  start_time: Date start time of venue (only encoded time)
- *  end_time: Date end time of venue
+ *  start_time: string start time of venue in format HH:MM:SS
+ *  end_time: string end time of venue in format HH:MM:SS
+ *  timezone: string timezone of start and end times for venue
  * }
- * @param timeAfter object used to compute number of milliseconds before venue:
+ * @param timeAfter object used to compute the time after the venue's end_time:
  * {
  *   hours: number of hours
  *   minutes: number of minutes
@@ -90,19 +102,23 @@ export const before = async function(venue, timeBefore) {
  */
 export const after = async function(venue, timeAfter) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
-  let nextVenue = computeNextVenue(new Date(),
+  let nextVenue = computeNextVenue(
     venue.day_of_week,
-    new Date(venue.start_time),
-    new Date(venue.end_time));
+    venue.start_time,
+    venue.end_time,
+    venue.timezone
+  );
 
-  // compute time to subtract in milliseconds
-  let timeToAdd = timeAfter.hours * 3600000 +
-    timeAfter.minutes * 60000 +
-    timeAfter.seconds * 1000;
+  // shift time based on timeBefore
+  // for after, take the end_time and add time to it
+  let shiftedTime = DateTime.fromJSDate(nextVenue.end_time).plus({
+    hours: timeAfter.hours,
+    minutes: timeAfter.minutes,
+    seconds: timeAfter.seconds
+  });
 
   // return the time that script should trigger
-  // for before, take the start_time and subtract timeBefore from it
-  return new Date(nextVenue.start_time.getTime() + timeToAdd);
+  return shiftedTime.toJSDate();
 };
 
 // TODO: write test cases to check this more rigorously.
@@ -114,15 +130,19 @@ export const after = async function(venue, timeAfter) {
  * (3) if the shift is < 1, add 7 to roll over to next week.
  * (4) add this shift to the current date to get the new date
  * (5) replace the timestamp with the start/end times of the venue.
- * @param currDate
  * @param targetDayOfWeek
  * @param venueStartTime
  * @param venueEndTime
+ * @param timezone
  */
-const computeNextVenue = function (currDate, targetDayOfWeek, venueStartTime, venueEndTime) {
+const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime, timezone) {
+  // create new DateTime object for the current week in the venue's timezone
+  let currentWeekDate = DateTime.now().setZone(timezone);
+
   // get the number of days to shift date based on when the next venue is
+  // note that this is sunday = 0 while luxon is monday = 0
   let targetDayOfWeekIndex = dayOfWeekToIndex(targetDayOfWeek);
-  let currDayOfWeekIndex = currDate.getDay();
+  let currDayOfWeekIndex = dayOfWeekToIndex(currentWeekDate.weekdayLong);
 
   // TODO: something about this incrementing thing is not adding properly
   let nextVenueDayShift = targetDayOfWeekIndex - currDayOfWeekIndex;
@@ -130,19 +150,23 @@ const computeNextVenue = function (currDate, targetDayOfWeek, venueStartTime, ve
     nextVenueDayShift += 7;
   }
 
-
   // shift current date
-  let nextVenueDate = new Date(currDate);
-  nextVenueDate.setDate(nextVenueDate.getDate() + nextVenueDayShift);
+  let nextVenueDate = currentWeekDate.plus({ days: nextVenueDayShift });
 
   // create new start and end times for the venue
-  let nextVenueStartTime = new Date(nextVenueDate);
-  nextVenueStartTime.setHours(venueStartTime.getHours(), venueStartTime.getMinutes());
+  let [startHours, startMinutes, startSeconds] = venueStartTime.split(":");
+  let nextVenueStartTime = nextVenueDate.set({
+    hour: startHours,
+    minute: startMinutes,
+    second: startSeconds
+  });
 
-  let nextVenueEndTime = new Date(nextVenueDate);
-  nextVenueEndTime.setHours(venueEndTime.getHours(), venueEndTime.getMinutes());
-
-  // TODO: need to zero ou the seconds otherwise exact match will not work (this could happen
+  let [endHours, endMinutes, endSeconds] = venueEndTime.split(":");
+  let nextVenueEndTime = nextVenueDate.set({
+    hour: endHours,
+    minute: endMinutes,
+    second: endSeconds
+  });
 
   // console.log('Current date', currDate)
   // console.log('Venue Start Time', venueStartTime)
@@ -156,8 +180,8 @@ const computeNextVenue = function (currDate, targetDayOfWeek, venueStartTime, ve
   // TODO edge case: check if the day is today, but the venue time has already passed. if so, add 1 week.
   // careful tho since the venue may still be applicable with the after function
   return {
-    start_time: nextVenueStartTime,
-    end_time: nextVenueEndTime
+    start_time: nextVenueStartTime.toUTC().toJSDate(),
+    end_time: nextVenueEndTime.toUTC().toJSDate()
   };
 };
 

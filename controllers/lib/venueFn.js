@@ -15,7 +15,15 @@ import got from "got";
 /**
  * Gets the start and end time that a venue with a given name is occurring.
  * @param venueName
- * @return {string}
+ * @return object with information about the venue. Contains the following:
+ * {
+ *  name: string name of venue
+ *  description: string description of venue
+ *  day_of_week: string day of week venue occurs
+ *  start_time: string start time of venue in format HH:MM:SS
+ *  end_time: string end time of venue in format HH:MM:SS
+ *  timezone: string timezone of start and end times for venue
+ * }
  */
 export const venue = async function (venueName) {
   // parse venue name
@@ -85,7 +93,8 @@ export const venue = async function (venueName) {
     description: filteredVenue.description,
     day_of_week: filteredVenue.day_of_week,
     start_time: filteredVenue.start_time,
-    end_time: filteredVenue.end_time
+    end_time: filteredVenue.end_time,
+    timezone: filteredVenue.timezone
   };
 };
 
