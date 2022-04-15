@@ -7,6 +7,7 @@ import { ActiveIssues } from "../models/activeIssues.js";
 import { ArchivedIssues } from "../models/archivedIssues.js";
 
 import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
+import { floorDateToNearestFiveMinutes } from "./utils.js";
 
 /**
  * TODO: comment
@@ -97,7 +98,7 @@ export const checkActiveIssues = async () => {
       feedbackOpp["outlet_fn"] = new Function(`return ${ feedbackOpp["outlet_fn"] }`)();
 
       // TODO: this will fail since its looking for a direct match. Need to round this down.
-      // TODO: in the future, may want to change it to currTime >= oppTime (or on the same day, but >= time)
+      // TODO: in the future, may want to change it to currTime >= oppTime (or on the same day, but >= time). This will need to check, though, if a ping has been sent for an active issue.
       // check if it's time to send the actionable feedback
       if (currDate.getTime() === feedbackOpp.opportunity.getTime()) {
         // execute feedback function by creating an execution env with targets and outlet_fn
@@ -251,14 +252,3 @@ const computeActionableFeedback = async (target, actionableFeedbackList) => {
     return currFeedback;
   });
 };
-
-/**
- * Floors date down to nearest 5 minutes.
- * From: https://stackoverflow.com/a/10789415
- * @param currDate
- * @return {Date}
- */
-const floorDateToNearestFiveMinutes = (currDate) => {
-  let coeff = 1000 * 60 * 5;
-  return new Date(Math.floor(currDate.getTime() / coeff) * coeff);
-}
