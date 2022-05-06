@@ -55,7 +55,10 @@ for (const [key, value] of Object.entries(scriptingLanguageFns)) {
  * @param targetFn function that specifies targets.
  * @return {Promise<*>}
  */
+
 export async function computeTargets(targetFn) {
+  // TODO: this should load in all the projects, students, sigs, etc. before createing the execution env
+
   // generate targets
   let targetExecEnv = new ExecutionEnv({}, targetFn);
   return await targetExecEnv.runScript();
@@ -92,6 +95,7 @@ export async function getFeedbackOpportunity(target, actionableFeedback) {
     // get current feedback opportunity
     let currActionableFeedback = actionableFeedback[feedbackItemIndex];
 
+    // TODO: make sure this is using all the target information from when(...)
     // create execution envs for computing trigger date and feedback outlets
     let triggerDateExecutionEnv = new ExecutionEnv(target,
       currActionableFeedback.feedback_opportunity);

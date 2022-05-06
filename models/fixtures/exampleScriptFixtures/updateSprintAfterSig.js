@@ -10,7 +10,7 @@ export default {
   target: (async function() {
     return await this.getNonPhdProjects();
   }).toString(),
-  // TODO: maybe have the feedback be immediate, and detector be what
+  // TODO: detector should be that it's now after a SIG meeting
   detector: (async function() {
     return true; // trigger immediately
   }).toString(),
