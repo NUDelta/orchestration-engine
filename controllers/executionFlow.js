@@ -36,6 +36,7 @@ export const checkMonitoredScripts = async () => {
       }
     });
 
+    // TODO: computeTargets(...) will need to have the projects, students, sigs, etc. objects accessible
     // generate targets for script
     let computedTargets = await computeTargets(currScript.target);
 

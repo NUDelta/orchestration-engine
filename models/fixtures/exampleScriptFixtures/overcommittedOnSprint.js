@@ -11,12 +11,13 @@ export default {
   target: (async function() {
     return await this.getAllProjects();
   }).toString(),
+  // TODO: check if it's the start of the SIG meeting before running this script
   detector: (async function() {
     let currentSprint = await this.getCurrentSprintLog();
     let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
     let currPointsAvailable = currentSprint.totalPoints.point_available;
 
-    return currPointsCommitted >= 1.25 * currPointsAvailable;
+    return currPointsCommitted >= (1.25 * currPointsAvailable);
   }).toString(),
   actionable_feedback: [
     {
