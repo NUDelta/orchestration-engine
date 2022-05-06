@@ -6,6 +6,7 @@ import undercommittedOnSprint from "./exampleScriptFixtures/undercommittedOnSpri
 import updateSprintAfterSig from "./exampleScriptFixtures/updateSprintAfterSig.js";
 import remindStudentAboutStatusUpdate
   from "./exampleScriptFixtures/remindStudentAboutStatusUpdate.js";
+import remindFacultyAboutStatusUpdate from "./exampleScriptFixtures/remindStudioHeadAboutTodaysStatusUpdate.js";
 import readThroughEOQChecklist from "./exampleScriptFixtures/readThroughEOQChecklist.js";
 import discussEOQDeliverablesAtSig from "./exampleScriptFixtures/discussEOQDeliverablesAtSig.js";
 
@@ -114,6 +115,7 @@ const createScripts = async () => {
   await new OrchestrationScript(undercommittedOnSprint).save();
   await new OrchestrationScript(updateSprintAfterSig).save();
   await new OrchestrationScript(remindStudentAboutStatusUpdate).save();
+  await new OrchestrationScript(remindFacultyAboutStatusUpdate).save();
   await new OrchestrationScript(readThroughEOQChecklist).save();
   await new OrchestrationScript(discussEOQDeliverablesAtSig).save();
 };

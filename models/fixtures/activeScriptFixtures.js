@@ -6,6 +6,7 @@ import { ArchivedIssues } from "../archivedIssues.js";
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
     "Reminder for Status Update",
+    "Today's Status Update",
     // "Scoping Research Sprints",
     // "Fully planning sprints",
     // "Sending updated sprints after SIG",

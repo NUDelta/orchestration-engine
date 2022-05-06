@@ -3,8 +3,8 @@
  * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
  */
 export default {
-  name: "Reminder for Status Update",
-  description: "Students should plan to discuss their status update plan with mentors.",
+  name: "Today's Status Update",
+  description: "Before the start of Studio, let the studio head know who has status update.",
   timeframe: "week",
   repeat: false,
   target: (async function() {
@@ -13,28 +13,17 @@ export default {
   detector: (async function() {
     // get date 1 week before status update date
     let statusUpdateDate = await this.getStatusUpdateDate();
-    let shiftedDate = new Date(statusUpdateDate);
-    shiftedDate.setDate(shiftedDate.getDate() - 7);
 
-    // check if current month and date equal shifted date
+    // check if current month and date equal the status update date of the project
     let currDate = new Date();
-    return (currDate.getDate() === shiftedDate.getDate()) &&
-      (currDate.getMonth() === shiftedDate.getMonth()) &&
-      (currDate.getFullYear() === shiftedDate.getFullYear());
+    return (currDate.getDate() === statusUpdateDate.getDate()) &&
+      (currDate.getMonth() === statusUpdateDate.getMonth()) &&
+      (currDate.getFullYear() === statusUpdateDate.getFullYear());
   }).toString(),
   actionable_feedback: [
     // TODO: also support notification at next office hours as an alternate strategy
     {
-      feedback_message: "You have a status update in 1 week! Make sure to meet with your mentor to discuss your plan.",
-      feedback_opportunity: (async function () {
-        return await this.during(await this.venue("Studio"));
-      }).toString(),
-      feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject();
-      }).toString()
-    },
-    {
-      feedback_message: "${ this.project } has their status update next week.",
+      feedback_message: "${ this.project } has their status update today.",
       feedback_opportunity: (async function () {
         return await this.before(await this.venue("Studio"), {
           hours: 0,

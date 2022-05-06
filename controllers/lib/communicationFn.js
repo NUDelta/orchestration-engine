@@ -75,6 +75,43 @@ export const sendSlackMessageToSig = async function () {
   }
 };
 
+/**
+ * Sends a message to the faculty mentor, given and project and message.
+ * @returns {Promise<void>}
+ */
+export const sendSlackMessageToFacultyMentor = async function () {
+  // get project and message
+  let projName = this.project;
+  let message = eval('`'+ this.message + '`');
+
+  try {
+    // get info for project
+    let projectInfoResponse = await got.get(`${ studioAPIUrl }/projects/projectByName`,
+      {
+        searchParams: { projName },
+        responseType: 'json'
+      });
+
+    // get the faculty mentor and send a message to them
+    let facultyMentorName = projectInfoResponse.body.faculty_mentor.name;
+    if (facultyMentorName !== undefined) {
+      // send message to SIG channel
+      await got.post(
+        `${ studioAPIUrl }/slack/sendMessageToPeople`,
+        {
+          json: {
+            people: JSON.stringify([facultyMentorName]),
+            message: message
+          },
+          responseType: "json"
+        }
+      );
+    }
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+  }
+}
+
 // TODO: fix to use single project (this is old code)
 export const getSlackChannelForProject = async function() {
   // get projects
