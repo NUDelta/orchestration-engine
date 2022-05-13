@@ -25,6 +25,8 @@ export default {
   actionable_feedback: [
     // TODO: also support notification at next office hours as an alternate strategy
     {
+      // TODO: add the ability to include SIG head in message
+      // "Make sure to discuss your plan with your mentor, ${ this.project.sigHead }, at SIG meeting and/or Office Hours."
       feedback_message: "You have a status update in 1 week! Make sure to meet with your mentor to discuss your plan.",
       feedback_opportunity: (async function () {
         return await this.during(await this.venue("Studio"));
