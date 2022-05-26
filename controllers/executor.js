@@ -5,7 +5,7 @@ import * as triggerFn from './lib/triggerFn.js';
 import * as communicationFn from './lib/communicationFn.js';
 import * as peopleFn from './lib/peopleFn.js';
 import * as projectFn from "./lib/projectFn.js";
-import { floorDateToNearestFiveMinutes } from "./utils.js";
+import { floorDateToNearestFiveMinutes } from "../imports/utils.js";
 
 // TODO: target should be a single object with student and project (see issue 1)
 /**

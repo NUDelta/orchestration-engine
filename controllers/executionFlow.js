@@ -7,7 +7,7 @@ import { ActiveIssues } from "../models/activeIssues.js";
 import { ArchivedIssues } from "../models/archivedIssues.js";
 
 import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
-import { floorDateToNearestFiveMinutes } from "./utils.js";
+import { floorDateToNearestFiveMinutes } from "../imports/utils.js";
 
 /**
  * TODO: comment

@@ -380,6 +380,7 @@ const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime
 };
 
 /**
+ * TODO: refactor the code that's using this to use luxon's indices instead (monday is 0 for luxon)
  * Converts a string day of the week to an integer index.
  * @param dayString
  * @return {number}
