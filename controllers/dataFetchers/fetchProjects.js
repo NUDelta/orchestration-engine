@@ -1,12 +1,6 @@
 import { DateTime } from "luxon";
-import { camelize } from "../utils.js";
-import {
-  generateEqualityPredicate
-} from "../../imports/programmingLanguage/predicateGenerators.js";
 import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
 
-
-// TODO: maybe store as projects.data (org object) and projects.helpers (predicates)
 /**
  * Returns all projects in the organization.
  * @return {Promise<{}>} list of all projects in organization.
@@ -18,10 +12,7 @@ export const getAllProjects = async () => {
     let projResponse = response.body;
 
     // setup each object and return
-    return {
-      data: projResponse.map(proj => { return formatProjectOrgObj(proj); }),
-      helpers: generateProjectPredicates()
-    };
+    return projResponse.map(proj => { return formatProjectOrgObj(proj); });
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
@@ -142,40 +133,4 @@ const formatProjectOrgObj = (projApiObj) => {
       sprintLog: projApiObj.sprint_log.current_sprint
     }
   };
-};
-
-const generateProjectPredicates = () => {
-  const predicateObjList = [
-    {
-      key: "name",
-      predicateType: "primitive-equality"
-    },
-    {
-      key: "sig",
-      predicateType: "primitive-equality"
-    },
-    {
-      key: "sigHead.name",
-      predicateType: "primitive-equality"
-    },
-    {
-      key: "facultyMentor.name",
-      predicateType: "primitive-equality"
-    },
-  ];
-
-
-  // TODO: maybe have this as a separete function
-  let generatedPredicates = {};
-  for (const predicateToAdd of predicateObjList) {
-    // create camelCase identifier for function
-    const camelCaseFnName = camelize([...predicateToAdd.key.split("."), "is"].join(" "))
-
-    switch(predicateToAdd.predicateType) {
-      case "primitive-equality":
-        generatedPredicates[camelCaseFnName] = generateEqualityPredicate(predicateToAdd.key);
-    }
-  }
-
-  return generatedPredicates;
 };
