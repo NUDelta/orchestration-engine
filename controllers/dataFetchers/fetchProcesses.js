@@ -50,7 +50,7 @@ export const getCurrentProcesses = async () => {
  * @param processApiObj process object from Studio API.
  * @returns {{kind: *, startDay: Date, endDay: Date, name, targetType: string}}
  */
-export const formatProcessOrgObject = (processApiObj) => {
+const formatProcessOrgObject = (processApiObj) => {
   // generate the organization data object
   return {
     targetType: "process",
