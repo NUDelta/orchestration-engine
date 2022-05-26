@@ -1,36 +1,27 @@
-import { studioAPIUrl } from "../../index.js";
-import got from "got";
 import { DateTime } from "luxon";
+import { camelize } from "../utils.js";
+import {
+  generateEqualityPredicate
+} from "../../imports/programmingLanguage/predicateGenerators.js";
+import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
 
+
+// TODO: maybe store as projects.data (org object) and projects.helpers (predicates)
 /**
  * Returns all projects in the organization.
- * @return {Promise<*[]>} list of all projects in organization.
+ * @return {Promise<{}>} list of all projects in organization.
  */
 export const getAllProjects = async () => {
   try {
     // get data from Studio API
-    let response = await got.get(
-      `${ studioAPIUrl }/projects`,
-      {
-        searchParams: {
-          populateTools: true
-        },
-        responseType: 'json',
-        retry: {
-          limit: 3,
-          methods: ["GET"]
-        }
-      });
-
+    let response = await getFromStudioAPI("projects", { populateTools: true });
     let projResponse = response.body;
 
     // setup each object and return
-    let outputProjects = [];
-    for (let proj of projResponse) {
-      outputProjects.push(projectParser(proj));
-    }
-
-    return outputProjects;
+    return {
+      data: projResponse.map(proj => { return formatProjectOrgObj(proj); }),
+      helpers: generateProjectPredicates()
+    };
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
@@ -45,23 +36,14 @@ export const getAllProjects = async () => {
 export const getProjectByName = async (projName) => {
   try {
     // get data from Studio API
-    let response = await got.get(
-      `${ studioAPIUrl }/projects/byName`,
-      {
-        searchParams: {
-          projectName: projName,
-          populateTools: true
-        },
-        responseType: 'json',
-        retry: {
-          limit: 3,
-          methods: ["GET"]
-        }
-      });
+    let response = await getFromStudioAPI("projects/byName", {
+      projectName: projName,
+      populateTools: true
+    });
+    let projResponse = response.body;
 
     // format project and return
-    let projResponse = response.body;
-    return projectParser(projResponse);
+    return formatProjectOrgObj(projResponse);
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
@@ -76,23 +58,14 @@ export const getProjectByName = async (projName) => {
 export const getProjectForPerson = async (personName) => {
   try {
     // get data from Studio API
-    let response = await got.get(
-      `${ studioAPIUrl }/projects/forPerson`,
-      {
-        searchParams: {
-          personName: personName,
-          populateTools: true
-        },
-        responseType: 'json',
-        retry: {
-          limit: 3,
-          methods: ["GET"]
-        }
-      });
+    let response = await getFromStudioAPI("projects/forPerson", {
+      personName: personName,
+      populateTools: true
+    });
+    let projResponse = response.body;
 
     // format project and return
-    let projResponse = response.body;
-    return projectParser(projResponse);
+    return formatProjectOrgObj(projResponse);
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
@@ -134,21 +107,22 @@ export const getProjectForPerson = async (personName) => {
  *   },
  *
  * }
- * @param projJsonObj project object from Studio API.
+ * @param projApiObj project object from Studio API.
  * @returns {{sig: *, facultyMentor: {role: *, slackId: *, name, email: *}, sigHead: {role: *, slackId: *, name, email: *}, slackChannel: *, statusUpdateDate: Date, name, students: {role: *, slackId: *, name: *, email: *}[], targetType: string}}
  */
-const projectParser = (projJsonObj) => {
+const formatProjectOrgObj = (projApiObj) => {
+  // generate the organization data object
   return {
     targetType: "project",
-    name: projJsonObj.name,
-    sig: projJsonObj.sig_name,
+    name: projApiObj.name,
+    sig: projApiObj.sig_name,
     sigHead: {
-      name: projJsonObj.sig_head.name,
-      role: projJsonObj.sig_head.role,
-      email: projJsonObj.sig_head.email,
-      slackId: projJsonObj.sig_head.slack_id
+      name: projApiObj.sig_head.name,
+      role: projApiObj.sig_head.role,
+      email: projApiObj.sig_head.email,
+      slackId: projApiObj.sig_head.slack_id
     },
-    students: projJsonObj.students.map(student => {
+    students: projApiObj.students.map(student => {
       return {
         name: student.name,
         role: student.role,
@@ -157,15 +131,51 @@ const projectParser = (projJsonObj) => {
       }
     }),
     facultyMentor: {
-      name: projJsonObj.faculty_mentor.name,
-      role: projJsonObj.faculty_mentor.role,
-      email: projJsonObj.faculty_mentor.email,
-      slackId: projJsonObj.faculty_mentor.slack_id
+      name: projApiObj.faculty_mentor.name,
+      role: projApiObj.faculty_mentor.role,
+      email: projApiObj.faculty_mentor.email,
+      slackId: projApiObj.faculty_mentor.slack_id
     },
-    slackChannel: projJsonObj.slack_channel,
-    statusUpdateDate: DateTime.fromISO(projJsonObj.status_update_date).toJSDate(),
+    slackChannel: projApiObj.slack_channel,
+    statusUpdateDate: DateTime.fromISO(projApiObj.status_update_date).toJSDate(),
     tools: {
-      sprintLog: projJsonObj.sprint_log.current_sprint
+      sprintLog: projApiObj.sprint_log.current_sprint
     }
   };
+};
+
+const generateProjectPredicates = () => {
+  const predicateObjList = [
+    {
+      key: "name",
+      predicateType: "primitive-equality"
+    },
+    {
+      key: "sig",
+      predicateType: "primitive-equality"
+    },
+    {
+      key: "sigHead.name",
+      predicateType: "primitive-equality"
+    },
+    {
+      key: "facultyMentor.name",
+      predicateType: "primitive-equality"
+    },
+  ];
+
+
+  // TODO: maybe have this as a separete function
+  let generatedPredicates = {};
+  for (const predicateToAdd of predicateObjList) {
+    // create camelCase identifier for function
+    const camelCaseFnName = camelize([...predicateToAdd.key.split("."), "is"].join(" "))
+
+    switch(predicateToAdd.predicateType) {
+      case "primitive-equality":
+        generatedPredicates[camelCaseFnName] = generateEqualityPredicate(predicateToAdd.key);
+    }
+  }
+
+  return generatedPredicates;
 };
