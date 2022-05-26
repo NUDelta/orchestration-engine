@@ -11,7 +11,7 @@ import { DateTime } from "luxon";
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<boolean>} boolean whether today is the day of the venue.
  */
-export const isDayOfVenue = async (venue) => {
+export const isDayOfVenue = async function (venue) {
   let todayWeekday = DateTime.now().weekdayLong;
   return venue.day_of_week.trim().toLowerCase() === todayWeekday.trim().toLowerCase();
 };
@@ -21,7 +21,7 @@ export const isDayOfVenue = async (venue) => {
  * @param date date to check if today is the same day of.
  * @returns {Promise<boolean>} true if today is the day of date.
  */
-export const isDayOf = async (date) => {
+export const isDayOf = async function (date) {
   let todayWeekday = DateTime.now().weekdayLong;
   let dateWeekday = DateTime.fromJSDate(date).weekdayLong;
   return todayWeekday.trim().toLowerCase() === dateWeekday.trim().toLowerCase();
@@ -32,7 +32,7 @@ export const isDayOf = async (date) => {
  * @param date date to check if today is the same week of.
  * @returns {Promise<boolean>} true if today is the week of date.
  */
-export const isWeekOf = async (date) => {
+export const isWeekOf = async function (date) {
   let todayWeek = DateTime.now().weekNumber;
   let dateWeek = DateTime.fromJSDate(date).weekNumber;
   return todayWeek === dateWeek;
@@ -49,7 +49,7 @@ export const isWeekOf = async (date) => {
  * @param value object value to check for. currently supports string, boolean, number, and array.
  * @returns {Function} predicate that will check if target.objPropertySpecifier equals value.
  */
-export const where = (objPropertySpecifier, value) => {
+export const where = function (objPropertySpecifier, value) {
   // check if the input value is an array
   if (Array.isArray(value)) {
     return new Function(
@@ -80,7 +80,7 @@ export const where = (objPropertySpecifier, value) => {
  * @param value object value to check for.
  * @returns {Function} predicate that will check if all objPropertySpecifier of target.listKey equals value.
  */
-export const whereAll = (listKey, objPropertySpecifier, value) => {
+export const whereAll = function (listKey, objPropertySpecifier, value) {
   // generate inner predicate
   let innerPredicate = where(objPropertySpecifier, value);
 
@@ -98,7 +98,7 @@ export const whereAll = (listKey, objPropertySpecifier, value) => {
  * @param value object value to check for.
  * @returns {Function} predicate that will check if any of objPropertySpecifier of target.listKey equals value.
  */
-export const whereSome = (listKey, objPropertySpecifier, value) => {
+export const whereSome = function (listKey, objPropertySpecifier, value) {
   // generate inner predicate
   let innerPredicate = where(objPropertySpecifier, value);
 
@@ -108,3 +108,5 @@ export const whereSome = (listKey, objPropertySpecifier, value) => {
     `return target.${ listKey }.some(${ innerPredicate })`
   );
 };
+
+// TODO: (maybe) predicates for searching sprint log? would the above not be enough?

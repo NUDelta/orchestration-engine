@@ -18,7 +18,7 @@ import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
  * @param numWeeks number of weeks to get time before the event.
  * @returns {Promise<Date>} date numWeeks before eventDate.
  */
-export const weeksBefore = async (eventDate, numWeeks) => {
+export const weeksBefore = async function (eventDate, numWeeks) {
   // shift time from eventDate
   let shiftedTime = DateTime.fromJSDate(eventDate).minus({
     hours: numWeeks * 7 * 24, // numWeeks * 7 days/week * 24 hours/day
@@ -36,7 +36,7 @@ export const weeksBefore = async (eventDate, numWeeks) => {
  * @param numDays number of days to get time before venue.
  * @returns {Promise<Date>} date numDays before venue's start time.
  */
-export const daysBefore = async (venue, numDays) => {
+export const daysBefore = async function (venue, numDays) {
   return before(
     venue,
     {
@@ -53,7 +53,7 @@ export const daysBefore = async (venue, numDays) => {
  * @param numHours number of hours to get time before venue.
  * @returns {Promise<Date>} date numHours before venue's start time.
  */
-export const hoursBefore = async (venue, numHours) => {
+export const hoursBefore = async function (venue, numHours) {
   return before(
     venue,
     {
@@ -70,7 +70,7 @@ export const hoursBefore = async (venue, numHours) => {
  * @param numMinutes number of minutes to get time before venue.
  * @returns {Promise<Date>} date numMinutes before venue's start time.
  */
-export const minutesBefore = async (venue, numMinutes) => {
+export const minutesBefore = async function (venue, numMinutes) {
   return before(
     venue,
     {
@@ -87,7 +87,7 @@ export const minutesBefore = async (venue, numMinutes) => {
  * @param numWeeks number of weeks to get time after the event.
  * @returns {Promise<Date>} date numWeeks after eventDate.
  */
-export const weeksAfter = async (eventDate, numWeeks) => {
+export const weeksAfter = async function (eventDate, numWeeks) {
   // shift time from eventDate
   let shiftedTime = DateTime.fromJSDate(eventDate).plus({
     hours: numWeeks * 7 * 24, // numWeeks * 7 days/week * 24 hours/day
@@ -105,7 +105,7 @@ export const weeksAfter = async (eventDate, numWeeks) => {
  * @param numDays number of days to get time after venue.
  * @returns {Promise<Date>} date numDays after venue's start time.
  */
-export const daysAfter = async (venue, numDays) => {
+export const daysAfter = async function (venue, numDays) {
   return after(
     venue,
     {
@@ -122,7 +122,7 @@ export const daysAfter = async (venue, numDays) => {
  * @param numHours number of hours to get time after venue.
  * @returns {Promise<Date>} date numHours after venue's end time.
  */
-export const hoursAfter = async (venue, numHours) => {
+export const hoursAfter = async function (venue, numHours) {
   return after(
     venue,
     {
@@ -139,7 +139,7 @@ export const hoursAfter = async (venue, numHours) => {
  * @param numMinutes number of minutes to get time after venue.
  * @returns {Promise<Date>} date numMinutes after venue's start time.
  */
-export const minutesAfter = async (venue, numMinutes) => {
+export const minutesAfter = async function (venue, numMinutes) {
   return after(
     venue,
     {
@@ -155,7 +155,7 @@ export const minutesAfter = async (venue, numMinutes) => {
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<Date>} date start time of a venue.
  */
-export const startOf = async (venue) => {
+export const startOf = async function (venue) {
   return computeNextVenue(
     venue.day_of_week,
     venue.start_time,
@@ -169,7 +169,7 @@ export const startOf = async (venue) => {
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<Date>} date end time of a venue.
  */
-export const endOf = async (venue) => {
+export const endOf = async function (venue) {
   return computeNextVenue(
     venue.day_of_week,
     venue.start_time,
@@ -183,7 +183,7 @@ export const endOf = async (venue) => {
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<{}|CancelableRequest<Response<*>>>} promise that contains the venue name, start time, end time, and timezone of the first instance of venue.
  */
-export const getFirst = async (venue) => {
+export const getFirst = async function (venue) {
   try {
     // query studio api for first instance of venue
     let response = await getFromStudioAPI(
@@ -211,7 +211,7 @@ export const getFirst = async (venue) => {
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<{}|CancelableRequest<Response<*>>>} promise that contains the venue name, start time, end time, and timezone of the last instance of venue.
  */
-export const getLast = async (venue) => {
+export const getLast = async function (venue) {
   try {
     // query studio api for first instance of venue
     let response = await getFromStudioAPI(
@@ -253,7 +253,7 @@ export const getLast = async (venue) => {
  * }
  * @return {Date}
  */
-const before = function(venue, timeBefore) {
+const before = function (venue, timeBefore) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
   let nextVenue = computeNextVenue(
     venue.day_of_week,
@@ -294,7 +294,7 @@ const before = function(venue, timeBefore) {
  * }
  * @return {Date}
  */
-const after = function(venue, timeAfter) {
+const after = function (venue, timeAfter) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
   let nextVenue = computeNextVenue(
     venue.day_of_week,
