@@ -4,11 +4,11 @@ import { studioAPIUrl } from "../../index.js";
 /**
  * GET request wrapper for the Studio API.
  * @param subdomain string specific route to run GET request on.
- * @param searchParams object search parameters to pass in URL to GET request.
+ * @param searchParams optional object search parameters to pass in URL to GET request. Default is empty.
  * @param retryLimit optional amount of times to retry request if it fails.
  * @returns {CancelableRequest<Response<unknown>>} promise with request.
  */
-export const getFromStudioAPI = async (subdomain, searchParams, retryLimit=3) => {
+export const getFromStudioAPI = async (subdomain, searchParams={}, retryLimit=3) => {
   return got.get(
     `${ studioAPIUrl }/${ subdomain }`,
     {
@@ -24,11 +24,11 @@ export const getFromStudioAPI = async (subdomain, searchParams, retryLimit=3) =>
 /**
  * POST request wrapper for the Studio API.
  * @param subdomain string specific route to run GET request on.
- * @param jsonBody object data to send to route.
+ * @param jsonBody optional object data to send to route. Default is empty.
  * @param retryLimit optional amount of times to retry request if it fails.
  * @returns {CancelableRequest<Response<unknown>>} promise with request.
  */
-export const postToStudioApi = async (subdomain, jsonBody, retryLimit=3) => {
+export const postToStudioApi = async (subdomain, jsonBody={}, retryLimit=3) => {
   return got.post(
     `${ studioAPIUrl }/${ subdomain }`,
     {
