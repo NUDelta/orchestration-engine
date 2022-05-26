@@ -3,16 +3,15 @@ import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
 
 /**
  * Returns all projects in the organization.
- * @return {Promise<{}>} list of all projects in organization.
+ * @return {Promise<[]>} list of all projects in organization.
  */
 export const getAllProjects = async () => {
   try {
     // get data from Studio API
     let response = await getFromStudioAPI("projects", { populateTools: true });
-    let projResponse = response.body;
 
     // setup each object and return
-    return projResponse.map(proj => { return formatProjectOrgObj(proj); });
+    return response.body.map(proj => { return formatProjectOrgObj(proj); });
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
@@ -31,10 +30,9 @@ export const getProjectByName = async (projName) => {
       projectName: projName,
       populateTools: true
     });
-    let projResponse = response.body;
 
     // format project and return
-    return formatProjectOrgObj(projResponse);
+    return formatProjectOrgObj(response.body);
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
@@ -53,10 +51,9 @@ export const getProjectForPerson = async (personName) => {
       personName: personName,
       populateTools: true
     });
-    let projResponse = response.body;
 
     // format project and return
-    return formatProjectOrgObj(projResponse);
+    return formatProjectOrgObj(response.body);
   } catch (error) {
     console.error(`Error in fetching data from Studio API: ${ error }`);
     return error;
