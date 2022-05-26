@@ -2,12 +2,14 @@
  * This module contains helper functions for manipulating dates.
  */
 import { DateTime } from "luxon";
+import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
 
 /*
   TODO:
   - Support something like "noon the day before" or "noon the day after a venue"
   - ^ in general for this: morning, noon, afternoon
   - Having things like "beginning/middle/end of week"
+  - May need separate before(...) and after(...) functions that work for getFirst() and getLast() since those return dates and not venue objects.
  */
 
 /**
@@ -176,14 +178,60 @@ export const endOf = async (venue) => {
   ).end_time;
 };
 
-// TODO: have this call the studio API and compute the first one
+/**
+ * Returns the start and end time corresponding to the first instance of a venue.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @returns {Promise<{}|CancelableRequest<Response<*>>>} promise that contains the venue name, start time, end time, and timezone of the first instance of venue.
+ */
 export const getFirst = async (venue) => {
-  return {};
+  try {
+    // query studio api for first instance of venue
+    let response = await getFromStudioAPI(
+      "venues/firstInstance",
+      {
+        venueName: venue.name
+      });
+
+    // parse info and return
+    let responseBody = response.body;
+    return {
+      name: responseBody.name,
+      start_time: DateTime.fromISO(responseBody.start_time).toJSDate(),
+      end_time: DateTime.fromISO(responseBody.end_time).toJSDate(),
+      timezone: responseBody.timezone
+    };
+  } catch (error) {
+    console.error(`Error in getFirst PL function: ${ error }`);
+    return {};
+  }
 };
 
-// TODO: have this call the studio API and compute the first one
+/**
+ * Returns the start and end time corresponding to the last instance of a venue.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @returns {Promise<{}|CancelableRequest<Response<*>>>} promise that contains the venue name, start time, end time, and timezone of the last instance of venue.
+ */
 export const getLast = async (venue) => {
-  return {};
+  try {
+    // query studio api for first instance of venue
+    let response = await getFromStudioAPI(
+      "venues/lastInstance",
+      {
+        venueName: venue.name
+      });
+
+    // parse info and return
+    let responseBody = response.body;
+    return {
+      name: responseBody.name,
+      start_time: DateTime.fromISO(responseBody.start_time).toJSDate(),
+      end_time: DateTime.fromISO(responseBody.end_time).toJSDate(),
+      timezone: responseBody.timezone
+    };
+  } catch (error) {
+    console.error(`Error in getFirst PL function: ${ error }`);
+    return {};
+  }
 };
 
 /**
