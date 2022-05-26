@@ -93,7 +93,6 @@ export const getProjectForPerson = async (personName) => {
  *     // current sprint log
  *     sprintLog: sprintLogObject from Studio API
  *   },
- *
  * }
  * @param projApiObj project object from Studio API.
  * @returns {{sig: *, facultyMentor: {role: *, slackId: *, name, email: *}, sigHead: {role: *, slackId: *, name, email: *}, slackChannel: *, statusUpdateDate: Date, name, students: {role: *, slackId: *, name: *, email: *}[], targetType: string}}
