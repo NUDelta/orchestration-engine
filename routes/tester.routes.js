@@ -25,6 +25,7 @@ import {
   getAllSocialStructures,
   getSocialStructuresForPerson, getSocialStructuresForProject
 } from "../controllers/dataFetchers/fetchSocialStructures.js";
+import { computeApplicableSet } from "../controllers/execution/executionFns.js";
 
 export const testerRouter = new Router();
 
@@ -154,4 +155,11 @@ testerRouter.get("/socialStructures", async (req, res) => {
 
   // get social structures for a project
   res.json(await getSocialStructuresForProject("CE for Relationship Development"));
+});
+
+testerRouter.get("/execution", async (req, res) => {
+  // console.log(await computeApplicableSet(async function() {
+  //   return this.projects.filter(this.whereAll("students", "role", "NonPhdStudent"));
+  // }))
+  res.json({})
 });
