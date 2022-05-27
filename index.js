@@ -22,7 +22,7 @@ import {
 import {
   checkActiveIssues,
   checkMonitoredScripts,
-  cleanUpActiveIssues
+  archiveStaleIssues
 } from "./controllers/execution/executionFlow.js";
 
 // setup application
@@ -109,16 +109,28 @@ if (NODE_ENV === "production") {
     console.log(`Beginning Monitoring Loop at ${ new Date() }`);
 
     // step (1): check all monitored scripts, and create issues for triggered scripts
-    let createdIssues = await checkMonitoredScripts();
-    console.log("Created Issues: ", createdIssues);
+    try {
+      let createdIssues = await checkMonitoredScripts();
+      console.log("Created Issues: ", createdIssues);
+    } catch (error) {
+      console.error(`Error in cron job loop for checkMonitoredScripts: ${ error.stack }`);
+    }
 
     // step (2): check active issues to see if any feedback was triggered
-    let triggeredFeedbackOpps = await checkActiveIssues();
-    console.log("Triggered Feedback Opportunities: ", triggeredFeedbackOpps);
+    try {
+      let triggeredFeedbackOpps = await checkActiveIssues();
+      console.log("Triggered Feedback Opportunities: ", triggeredFeedbackOpps);
+    } catch (error) {
+      console.error(`Error in cron job loop for checkActiveIssues: ${ error.stack }`);
+    }
 
     // step (3): clean-up issues based on expiry time
-    let [archivedIssues, activeIssues] = await cleanUpActiveIssues();
-    console.log("Archived Issues: ", archivedIssues);
-    console.log("New Active Issues from Reset Issues: ", activeIssues);
+    try {
+      let [archivedIssues, activeIssues] = await archiveStaleIssues();
+      console.log("Archived Issues: ", archivedIssues);
+      console.log("New Active Issues from Reset Issues: ", activeIssues);
+    } catch (error) {
+      console.error(`Error in cron job loop for cleanUpActiveIssues: ${ error.stack }`);
+    }
   });
 }
