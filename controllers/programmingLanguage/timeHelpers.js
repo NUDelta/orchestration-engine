@@ -31,6 +31,24 @@ export const weeksBefore = async function (eventDate, numWeeks) {
 };
 
 /**
+ * Returns the Date numDays before an event.
+ * @param eventDate date for an event to get number of days before.
+ * @param numDays number of days to get time before the event.
+ * @returns {Promise<Date>} date numDays before eventDate.
+ */
+export const daysBefore = async function (eventDate, numDays) {
+  // shift time from eventDate
+  let shiftedTime = DateTime.fromJSDate(eventDate).minus({
+    hours: numDays * 24, // numDays * 24 hours/day
+    minutes: 0,
+    seconds: 0
+  });
+
+  // return the shifted time
+  return shiftedTime.toJSDate();
+};
+
+/**
  * Returns the Date numDays before the start of a venue.
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @param numDays number of days to get time before venue.
@@ -229,7 +247,7 @@ export const getLast = async function (venue) {
       timezone: responseBody.timezone
     };
   } catch (error) {
-    console.error(`Error in getFirst PL function: ${ error }`);
+    console.error(`Error in getLast PL function: ${ error }`);
     return {};
   }
 };

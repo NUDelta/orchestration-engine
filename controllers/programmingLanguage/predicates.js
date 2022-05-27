@@ -4,6 +4,11 @@
 import { DateTime } from "luxon";
 
 /*
+ TODO:
+ - add a isDaysBefore (and similar for other quantities) predicate
+ */
+
+/*
  Datetime predicates.
  */
 /**

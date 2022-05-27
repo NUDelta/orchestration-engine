@@ -119,7 +119,7 @@ const createScripts = async () => {
   // await new OrchestrationScript(readThroughEOQChecklist).save();
 
   await new OrchestrationScript(remindStudentAboutStatusUpdate).save();
-  // await new OrchestrationScript(discussEOQDeliverablesAtSig).save();
+  await new OrchestrationScript(discussEOQDeliverablesAtSig).save();
 };
 
 /**

@@ -66,7 +66,6 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
       let feedbackWasPresented = false;
       if (deliveredStrategies.length > 0) {
         for (const deliveredStrategy of deliveredStrategies) {
-          console.log(deliveredStrategy)
           let currOppScriptName = deliveredStrategy.name;
           let currOppTargetProj = deliveredStrategy.issue_target.name;
           let currOppTargetSts = deliveredStrategy.issue_target.students;
