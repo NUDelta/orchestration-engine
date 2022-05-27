@@ -9,20 +9,29 @@ mongooseFunction(mongoose)
 
 // TODO: add resources to actionable feedback
 // TODO: figure out how to actually store functions without needing the parse a string
-export const OrchestrationScript = mongoose.model("ScriptLibrary",
-  new mongoose.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    timeframe: { type: String, enum: ["day", "week", "sprint", "month", "term"] },
-    repeat: { type: Boolean },
-    target: { type: String, required: true },                        // actually a function
-    detector: { type: String, required: true },                      // actually a function
-    actionable_feedback: [
-      {
-          feedback_message: { type: String, required: true },
-          feedback_opportunity: { type: String, required: true },   // actually a function
-          feedback_outlet: { type: String, required: true }         // actually a function
-      }
-    ]
-  })
-);
+
+/**
+ * Declare a script schema that's used by other mongoose models
+ * @type {module:mongoose.Schema<any, Model<any, any, any, any>, any, any>}
+ */
+export const scriptSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  timeframe: { type: String, enum: ["day", "week", "month", "sprint", "quarter"] },
+  repeat: { type: Boolean },
+  applicable_set: { type: String, required: true },                     // actually a function
+  situation_detector: { type: String, required: true },                   // actually a function
+  strategies: [
+    {
+      name: { type: String, required: true },
+      description: { type: String, required: true },
+      strategy_function: { type: String, required: true }, // actually a function
+    }
+  ]
+});
+
+/**
+ * Model for Orchestration Scripts stored in a library.
+ * @type {Model<any>}
+ */
+export const OrchestrationScript = mongoose.model("ScriptLibrary", scriptSchema);

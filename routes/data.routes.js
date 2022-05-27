@@ -4,6 +4,8 @@ import { createActiveScriptFixtures } from "../models/fixtures/activeScriptFixtu
 
 export const dataRouter = new Router();
 
+// TODO: have routes to refresh data for each controller separately
+
 /**
  * Refreshes all data in MongoDB when called.
  */

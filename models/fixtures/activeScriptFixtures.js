@@ -5,8 +5,8 @@ import { ArchivedIssues } from "../archivedIssues.js";
 
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
-    "Reminder for Status Update",
-    // "Today's Status Update",
+    "Support students in planning a Status Update for their project",
+    // "Planning and scoping end-of-quarter deliverables"
     // "Scoping Research Sprints",
     // "Fully planning sprints",
     // "Sending updated sprints after SIG",
@@ -16,8 +16,7 @@ const populateActiveScripts = async () => {
 
   for (let currScriptName of scriptsToActivateNames) {
     // get the template script from the script library
-    let templateScript = await OrchestrationScript.findOne({ name: currScriptName });
-    templateScript = templateScript.toObject();
+    let templateScript = await OrchestrationScript.findOne({ name: currScriptName }).lean();
     templateScript["script_id"] = templateScript._id;
     delete templateScript._id
     delete templateScript.__v

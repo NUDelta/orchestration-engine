@@ -111,15 +111,21 @@ const createScripts = async () => {
   // });
   // await comingToOhScriptNot.save();)
 
-  await new OrchestrationScript(overcommittedOnSprint).save();
-  await new OrchestrationScript(undercommittedOnSprint).save();
-  await new OrchestrationScript(updateSprintAfterSig).save();
+  // await new OrchestrationScript(overcommittedOnSprint).save();
+  // await new OrchestrationScript(undercommittedOnSprint).save();
+  // await new OrchestrationScript(updateSprintAfterSig).save();
+  // await new OrchestrationScript(remindStudentAboutStatusUpdate).save();
+  // await new OrchestrationScript(remindFacultyAboutStatusUpdate).save();
+  // await new OrchestrationScript(readThroughEOQChecklist).save();
+
   await new OrchestrationScript(remindStudentAboutStatusUpdate).save();
-  await new OrchestrationScript(remindFacultyAboutStatusUpdate).save();
-  await new OrchestrationScript(readThroughEOQChecklist).save();
   await new OrchestrationScript(discussEOQDeliverablesAtSig).save();
 };
 
+/**
+ * Creates documents in the ScriptLibrary collection corresponding to Orchestration Scripts.
+ * @returns {Promise<void>}
+ */
 export const createScriptLibraryFixtures = async () => {
   // clear out the script library
   await OrchestrationScript.deleteMany({}).exec();
@@ -128,6 +134,10 @@ export const createScriptLibraryFixtures = async () => {
   await createScripts();
 };
 
+/**
+ * Checks to see if the ScriptLibrary collection is empty.
+ * @returns {Promise<boolean>} promise that, if resolved, returns true if ScriptLibrary is empty.
+ */
 export const isScriptLibraryEmpty = async () => {
   let foundScripts = await OrchestrationScript.find({});
   return foundScripts.length === 0;
