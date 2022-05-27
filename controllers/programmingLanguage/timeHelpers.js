@@ -36,7 +36,7 @@ export const weeksBefore = async function (eventDate, numWeeks) {
  * @param numDays number of days to get time before venue.
  * @returns {Promise<Date>} date numDays before venue's start time.
  */
-export const daysBefore = async function (venue, numDays) {
+export const daysBeforeVenue = async function (venue, numDays) {
   return before(
     venue,
     {
@@ -53,7 +53,7 @@ export const daysBefore = async function (venue, numDays) {
  * @param numHours number of hours to get time before venue.
  * @returns {Promise<Date>} date numHours before venue's start time.
  */
-export const hoursBefore = async function (venue, numHours) {
+export const hoursBeforeVenue = async function (venue, numHours) {
   return before(
     venue,
     {
@@ -70,7 +70,7 @@ export const hoursBefore = async function (venue, numHours) {
  * @param numMinutes number of minutes to get time before venue.
  * @returns {Promise<Date>} date numMinutes before venue's start time.
  */
-export const minutesBefore = async function (venue, numMinutes) {
+export const minutesBeforeVenue = async function (venue, numMinutes) {
   return before(
     venue,
     {
@@ -105,7 +105,7 @@ export const weeksAfter = async function (eventDate, numWeeks) {
  * @param numDays number of days to get time after venue.
  * @returns {Promise<Date>} date numDays after venue's start time.
  */
-export const daysAfter = async function (venue, numDays) {
+export const daysAfterVenue = async function (venue, numDays) {
   return after(
     venue,
     {
@@ -122,7 +122,7 @@ export const daysAfter = async function (venue, numDays) {
  * @param numHours number of hours to get time after venue.
  * @returns {Promise<Date>} date numHours after venue's end time.
  */
-export const hoursAfter = async function (venue, numHours) {
+export const hoursAfterVenue = async function (venue, numHours) {
   return after(
     venue,
     {
@@ -139,7 +139,7 @@ export const hoursAfter = async function (venue, numHours) {
  * @param numMinutes number of minutes to get time after venue.
  * @returns {Promise<Date>} date numMinutes after venue's start time.
  */
-export const minutesAfter = async function (venue, numMinutes) {
+export const minutesAfterVenue = async function (venue, numMinutes) {
   return after(
     venue,
     {
@@ -155,11 +155,11 @@ export const minutesAfter = async function (venue, numMinutes) {
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<Date>} date start time of a venue.
  */
-export const startOf = async function (venue) {
+export const startOfVenue = async function (venue) {
   return computeNextVenue(
-    venue.day_of_week,
-    venue.start_time,
-    venue.end_time,
+    venue.dayOfWeek,
+    venue.startTime,
+    venue.endTime,
     venue.timezone
   ).start_time;
 };
@@ -169,11 +169,11 @@ export const startOf = async function (venue) {
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @returns {Promise<Date>} date end time of a venue.
  */
-export const endOf = async function (venue) {
+export const endOfVenue = async function (venue) {
   return computeNextVenue(
-    venue.day_of_week,
-    venue.start_time,
-    venue.end_time,
+    venue.dayOfWeek,
+    venue.startTime,
+    venue.endTime,
     venue.timezone
   ).end_time;
 };
@@ -256,9 +256,9 @@ export const getLast = async function (venue) {
 const before = function (venue, timeBefore) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
   let nextVenue = computeNextVenue(
-    venue.day_of_week,
-    venue.start_time,
-    venue.end_time,
+    venue.dayOfWeek,
+    venue.startTime,
+    venue.endTime,
     venue.timezone
   );
 
@@ -297,9 +297,9 @@ const before = function (venue, timeBefore) {
 const after = function (venue, timeAfter) {
   // logic: check to see if the venue is still coming this week (if not send to next week)
   let nextVenue = computeNextVenue(
-    venue.day_of_week,
-    venue.start_time,
-    venue.end_time,
+    venue.dayOfWeek,
+    venue.startTime,
+    venue.endTime,
     venue.timezone
   );
 

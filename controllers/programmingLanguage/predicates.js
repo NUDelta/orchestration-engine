@@ -22,9 +22,12 @@ export const isDayOfVenue = async function (venue) {
  * @returns {Promise<boolean>} true if today is the day of date.
  */
 export const isDayOf = async function (date) {
-  let todayWeekday = DateTime.now().weekdayLong;
-  let dateWeekday = DateTime.fromJSDate(date).weekdayLong;
-  return todayWeekday.trim().toLowerCase() === dateWeekday.trim().toLowerCase();
+  let todayDate = DateTime.now().startOf("day");
+  let targetDate = DateTime.fromJSDate(date).startOf("day");
+
+  return todayDate.hasSame(targetDate, "year") &&
+    todayDate.hasSame(targetDate, "month") &&
+    todayDate.hasSame(targetDate, "day");
 };
 
 /**
@@ -42,6 +45,7 @@ export const isWeekOf = async function (date) {
  Filtering predicates.
  TODO:
  - think about chaining predicates (this field and that field)
+ - consider: what if where and whereAll were Array extensions?
  */
 
 /**
