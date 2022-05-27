@@ -1,61 +1,12 @@
-import * as scriptTargetFn from "./lib/scriptTargetFn.js";
-import * as sprintLogFn from './lib/sprintLogFn.js';
-import * as venueFn from './lib/venueFn.js';
-import * as triggerFn from './lib/triggerFn.js';
-import * as communicationFn from './lib/communicationFn.js';
-import * as peopleFn from './lib/peopleFn.js';
-import * as projectFn from "./lib/projectFn.js";
-import { floorDateToNearestFiveMinutes } from "../imports/utils.js";
-
-// TODO: target should be a single object with student and project (see issue 1)
-/**
- * Class that provides an execution environment where detectors and feedback functions in scripts
- * can run.
- *
- * The environment provides targets on the this context, and programming language functions on the
- * object's prototype. As a caveat, all programming languages functions used in an orchestration
- * script must be pre-pended with "this." so that they refer to the functions in the environment's
- * prototype.
- */
-export class ExecutionEnv {
-  constructor(targets, scriptFn) {
-    function addToContext(obj, dest) {
-      for (const key in obj) {
-        dest[key] = obj[key];
-      }
-    }
-    this.scriptFn = scriptFn;
-    addToContext(targets, this);
-  }
-
-  async runScript() {
-    let boundScriptToExecute = this.scriptFn.bind(this);
-    return await boundScriptToExecute();
-  }
-}
-
-// add programming language functions to the execution env's prototype
-const scriptingLanguageFns = {
-  ...scriptTargetFn,
-  ...sprintLogFn,
-  ...venueFn,
-  ...triggerFn,
-  ...communicationFn,
-  ...peopleFn,
-  ...projectFn
-};
-
-for (const [key, value] of Object.entries(scriptingLanguageFns)) {
-  ExecutionEnv.prototype[key] = value;
-}
-
 // TODO: need to catch errors if things fail
+import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
+import { ExecutionEnv } from "./executionEnv.js";
+
 /**
  * Computes the targets specified by the target function in the orchestration script.
  * @param targetFn function that specifies targets.
  * @return {Promise<*>}
  */
-
 export async function computeTargets(targetFn) {
   // TODO: this should load in all the projects, students, sigs, etc. before createing the execution env
 

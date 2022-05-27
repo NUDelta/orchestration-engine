@@ -40,6 +40,8 @@ export const isWeekOf = async function (date) {
 
 /*
  Filtering predicates.
+ TODO:
+ - think about chaining predicates (this field and that field)
  */
 
 /**

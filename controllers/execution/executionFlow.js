@@ -2,12 +2,13 @@
  * This file contains functions to execute the monitoring of scripts, creation of issues,
  * and delivery of feedback.
  */
-import { MonitoredScripts } from "../models/monitoredScripts.js";
-import { ActiveIssues } from "../models/activeIssues.js";
-import { ArchivedIssues } from "../models/archivedIssues.js";
+import { MonitoredScripts } from "../../models/monitoredScripts.js";
+import { ActiveIssues } from "../../models/activeIssues.js";
+import { ArchivedIssues } from "../../models/archivedIssues.js";
 
-import { computeTargets, runDetector, getFeedbackOpportunity, ExecutionEnv } from "./executor.js";
-import { floorDateToNearestFiveMinutes } from "../imports/utils.js";
+import { ExecutionEnv } from "./executionEnv.js";
+import { computeTargets, runDetector, getFeedbackOpportunity } from "./executionFns.js";
+import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 
 /**
  * TODO: comment
@@ -82,6 +83,7 @@ export const checkMonitoredScripts = async () => {
  * @return {Promise<*[]>}
  */
 export const checkActiveIssues = async () => {
+  // TODO: will need to refresh data here before continuing based on the targets
   // get all issues
   let activeIssues = await ActiveIssues.find({});
 

@@ -3,7 +3,7 @@ import { Router } from "express";
 import { OrchestrationScript } from "../models/scriptLibrary.js";
 import { MonitoredScripts } from "../models/monitoredScripts.js";
 import mongoose from "mongoose";
-import { runSimulationOfScript } from "../imports/tester.js";
+import { runSimulationOfScript } from "../controllers/simulator/scriptSimulator.js";
 
 export const scriptRouter = new Router();
 

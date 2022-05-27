@@ -23,7 +23,7 @@ import {
   checkActiveIssues,
   checkMonitoredScripts,
   cleanUpActiveIssues
-} from "./controllers/executionFlow.js";
+} from "./controllers/execution/executionFlow.js";
 
 // setup application
 const app = express();
