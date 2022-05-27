@@ -1,50 +1,51 @@
 /**
- * Remind students to discuss status update with their mentor 1 week before it.
- * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+ * Support students in planning a Status Update for their project.
  */
 export default {
-  name: "Reminder for Status Update",
-  description: "Students should plan to discuss their status update plan with mentors.",
+  name: "Support students in planning a Status Update for their project",
+  description: "Students each get 1 Status Update opportunity per quarter where they can get help on something from an entire community. Being a very limited resource, this requires students to plan how to use the venue carefully so that are benefiting from the feedback that an entire community can give.",
   timeframe: "week",
   repeat: false,
-  target: (async function() {
-    return await this.getNonPhdProjects();
+  applicable_set: (async function() {
+    return this.projects.filter(
+      this.whereAll("students", "role", "NonPhdStudent")
+    );
   }).toString(),
-  detector: (async function() {
-    // get date 1 week before status update date
-    let statusUpdateDate = await this.getStatusUpdateDate();
-    let shiftedDate = new Date(statusUpdateDate);
-    shiftedDate.setDate(shiftedDate.getDate() - 7);
-
-    // check if current month and date equal shifted date
-    let currDate = new Date();
-    return (currDate.getDate() === shiftedDate.getDate()) &&
-      (currDate.getMonth() === shiftedDate.getMonth()) &&
-      (currDate.getFullYear() === shiftedDate.getFullYear());
+  situation_detector: (async function() {
+    return await this.isDayOf(
+      await this.weeksBefore(this.project.statusUpdateDate, 1)
+    );
   }).toString(),
-  actionable_feedback: [
-    // TODO: also support notification at next office hours as an alternate strategy
+  strategies: [
     {
-      feedback_message: "You have a status update in 1 week! Make sure to meet with your mentor to discuss your plan.",
-      feedback_opportunity: (async function () {
-        return await this.during(await this.venue("Studio"));
-      }).toString(),
-      feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject();
+      name: "Remind student(s) to begin planning for Status Update",
+      description: "Prompt student to start planning their Status Update and share plan with their mentor",
+      strategy_function: (async function () {
+        return await this.messageChannel({
+          message: "Your status update is a week from today! It's a good opportunity to get help from the entire community to progress your research work. Try to plan an activity that will benefit most from this opportunity, and discuss it with your mentor--<@${ this.project.sigHead.slackId }>--over the next week during during SIG and/or Office Hours",
+          projectName: this.project.name,
+          opportunity: (async function () {
+            return await this.startOfVenue(
+              await this.venues.find(this.where("name", "Studio Meeting"))
+            );
+          }).toString()
+        })
       }).toString()
     },
     {
-      feedback_message: "${ this.project } has their status update next week.",
-      feedback_opportunity: (async function () {
-        return await this.before(await this.venue("Studio"), {
-          hours: 0,
-          minutes: 30,
-          seconds: 0
-        });
-      }).toString(),
-      feedback_outlet: (async function () {
-        return await this.sendSlackMessageToFacultyMentor();
+      name: "Check in on your student's preparation for Status Update",
+      description: "Discuss how your students are planning to use Status Update later this week.",
+      strategy_function: (async function () {
+        return await this.messagePeople({
+          message: "Your student(s), ${ this.project.students.map(student => { return student.name }).join(' and ') }, have a Status Update this week. During SIG, try to check in on their Status Update plan and see if they might need any support or feedback.",
+          people: [this.project.sigHead.name],
+          opportunity: (async function () {
+            return await this.minutesBeforeVenue(
+              await this.venues.find(this.where("kind", "SigMeeting")), 30
+            );
+          }).toString()
+        })
       }).toString()
-    }
+    },
   ]
 };
