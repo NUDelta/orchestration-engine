@@ -20,8 +20,8 @@
     "test": "mocha",
     "lines": "cloc --exclude-dir=node_modules,.idea --exclude-ext=json ."
   },
-  "engines" : {
-    "node" : "^16.x"
+  "engines": {
+    "node": "^16.x"
   },
   "type": "module",
   "dependencies": {
@@ -38,6 +38,7 @@
     "mongoose": "^6.2.4",
     "mongoose-function": "^0.1.0",
     "node-schedule": "^2.1.0",
+    "object-hash": "^3.0.0",
     "sinon": "^13.0.1"
   },
   "devDependencies": {
