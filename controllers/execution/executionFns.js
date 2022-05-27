@@ -1,18 +1,74 @@
 // TODO: need to catch errors if things fail
-import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 import { ExecutionEnv } from "./executionEnv.js";
+import { getAllProjects } from "../dataFetchers/fetchProjects.js";
+import { getAllPeople } from "../dataFetchers/fetchPeople.js";
+import { getAllProcesses } from "../dataFetchers/fetchProcesses.js";
+import {
+  getAllSocialStructures,
+  getSocialStructuresForProject
+} from "../dataFetchers/fetchSocialStructures.js";
+import { getAllVenues, getVenuesForProject } from "../dataFetchers/fetchVenues.js";
+
+// TODO: error checking
+/**
+ * Fetches all organization data objects form the Studio API.
+ * @returns {Promise<{processes: [], projects: [], venues: [], socialStructures: [], people: []}>}
+ */
+export async function fetchAlOrgObjs () {
+  // fetch and return all organization objects
+  return {
+    projects: await getAllProjects(),
+    people: await getAllPeople(),
+    processes: await getAllProcesses(),
+    socialStructures: await getAllSocialStructures(),
+    venues: await getAllVenues()
+  };
+}
 
 /**
- * Computes the targets specified by the target function in the orchestration script.
- * @param targetFn function that specifies targets.
- * @return {Promise<*>}
+ * Computes applicable set of organization objects that a script will be run on.
+ * @param applicableSetFn function to run to generate list of organization objects that make up the
+ * applicable set. Typically, these functions will be filters on the existing organization objects.
+ * @returns {Promise<[]>} promise that, when resolved, returns a list of organization objects.
  */
-export async function computeTargets(targetFn) {
-  // TODO: this should load in all the projects, students, sigs, etc. before createing the execution env
+export async function computeApplicableSet (applicableSetFn) {
+  // get all targets
+  let allOrgObjs = await fetchAlOrgObjs();
 
-  // generate targets
-  let targetExecEnv = new ExecutionEnv({}, targetFn);
+  // compute applicable subset
+  let targetExecEnv = new ExecutionEnv(allOrgObjs, applicableSetFn);
   return await targetExecEnv.runScript();
+}
+
+/**
+ * Fetches organization objects from the Studio API that are relevant to the current target of a script.
+ * TODO: only project types are implemented right now.
+ * @param currTarget object the current organization object the orchestration script is being evaluated on.
+ * @returns {Promise<{processes: [], project, venues: [], socialStructures: []}>}
+ */
+export async function getRefreshedObjsForTarget (currTarget) {
+  let newObjs;
+  let targetType = currTarget.targetType;
+  switch (targetType) {
+    case "project":
+      newObjs = {
+        project: currTarget,
+        processes: await getAllProcesses(),
+        socialStructures: await getSocialStructuresForProject(currTarget.name),
+        venues: await getVenuesForProject(currTarget.name),
+      }
+      break;
+    case "person":
+      break;
+    case "process":
+      break;
+    case "social structure":
+      break;
+    case "venue":
+      break;
+  }
+
+  return newObjs;
 }
 
 // TODO: there needs to be one layer of abstraction higher where you iterate over all
@@ -23,51 +79,49 @@ export async function computeTargets(targetFn) {
 // TODO: need to catch errors if things fail
 /**
  * Used to run detector condition for an orchestration script.
- * @param target { students: [string], target: "string" }
- * @param detector function
- * @return {Promise<*>}
+ * @param orgObj object containing all the data from the organization that is relevant to the current target.
+ * @param situationDetector function that evaluates whether an orchestration script should run.
+ * @return {Promise<boolean>} promise that, if resolved, will be true if the situationDetector is fulfilled.
  */
-export async function runDetector(target, detector) {
+export async function executeSituationDetector(orgObj, situationDetector) {
   // create script execution environment and run script
-  let scriptExecutionEnv = new ExecutionEnv(target, detector);
+  let scriptExecutionEnv = new ExecutionEnv(orgObj, situationDetector);
   return await scriptExecutionEnv.runScript();
 }
 
 /**
  * Used to run trigger function for actionable feedback in orchestration scripts.
- * @param target { students: [string], target: "string" }
- * @param actionableFeedback list of feedback opportunities.
- * @return {Promise<*[]>}
+ * @param orgObj object containing all the data from the organization that is relevant to the current target.
+ * @param strategies list of strategy objects to evaluate.
+ * @return {Promise<*[]>} promise that, if resolved, will be a list of computed strategies.
  */
-export async function getFeedbackOpportunity(target, actionableFeedback) {
+export async function executeStrategies(orgObj, strategies) {
   // compute when each feedback opportunity should be executed
-  let computedFeedbackOpportunities = [];
-  for (let feedbackItemIndex in actionableFeedback) {
+  let computedStrategies = [];
+  for (let strategyItemIndex in strategies) {
     // get current feedback opportunity
-    let currActionableFeedback = actionableFeedback[feedbackItemIndex];
+    let currStrategy = strategies[strategyItemIndex];
 
-    // TODO: make sure this is using all the target information from when(...)
     // create execution envs for computing trigger date and feedback outlets
-    let triggerDateExecutionEnv = new ExecutionEnv(target,
-      currActionableFeedback.feedback_opportunity);
+    let strategyFnRunner = new ExecutionEnv(
+      orgObj,
+      currStrategy.strategy_function
+    );
 
-    // get opportunity date, and floor
-    let opportunityDate = await triggerDateExecutionEnv.runScript();
+    // get opportunity fn, output fn, and args for the output fn
+    let { opportunity_fn, outlet_fn, outlet_args } = await strategyFnRunner.runScript();
 
-    // create object to hold curr computed feedback opportunity
-    let computedFeedbackOpportunity = {
-      opportunity: floorDateToNearestFiveMinutes(opportunityDate),
-      target: {
-        message: currActionableFeedback.feedback_message,
-        resources: [], // TODO, implement
-        ...target
-      },
-      outlet_fn: currActionableFeedback.feedback_outlet
-    };
+    // compute the opportunity
+    let opportunityFnRunner = new ExecutionEnv(orgObj, opportunity_fn);
+    let computedOpportunity = await opportunityFnRunner.runScript()
 
-    // store trigger date
-    computedFeedbackOpportunities.push(computedFeedbackOpportunity);
+    // add computed strategies
+    computedStrategies.push({
+      opportunity: computedOpportunity,
+      outlet_fn: outlet_fn,
+      outlet_args: outlet_args
+    });
   }
 
-  return computedFeedbackOpportunities;
+  return computedStrategies;
 }

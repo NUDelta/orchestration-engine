@@ -5,6 +5,11 @@
 import mongoose from "mongoose";
 
 // TODO: add resources to actionable feedback
+
+/**
+ * Issues that have become stale and are no longer monitored for.
+ * @type {Model<T & Document<any, any, any>>}
+ */
 export const ArchivedIssues = mongoose.model("ArchivedIssues",
   new mongoose.Schema({
     script_id: { type: mongoose.Schema.Types.ObjectId, ref: "MonitoredScripts"},
@@ -12,20 +17,13 @@ export const ArchivedIssues = mongoose.model("ArchivedIssues",
     date_triggered: { type: Date, required: true },
     date_expired: { type: Date, required: true, default: Date.now() },
     repeat: { type: Boolean, required: true },
-    target: {
-      students: [ { type: String, required: true } ],
-      project: { type: String, required: true }
-    },
-    detector: { type: String, required: true }, // TODO: is this needed for a archived issue?
-    computed_actionable_feedback: [
+    issue_target: { type: Object, required: true },
+    target_hash: { type: String, required: true }, // used to check if an existing issue is present
+    computed_strategies: [
       {
         opportunity: { type: Date, required: true },
-        target: {
-          message: { type: String, required: true },
-          students: [ { type: String, required: true } ],
-          project: { type: String, required: true },
-        },
-        outlet_fn: { type: String, required: true } // function that returns where the feedback should go
+        outlet_fn: { type: String, required: true }, // function that returns where the feedback should go
+        outlet_args: { type: Object, required: true }
       }
     ]
   })
