@@ -1,6 +1,7 @@
 import * as feedbackFns from "../programmingLanguage/feedbackFunctions.js";
 import * as predicateFns from "../programmingLanguage/predicates.js";
 import * as timeHelperFns from "../programmingLanguage/timeHelpers.js";
+import * as studioFns from "../../imports/studioAPI/requests.js";
 
 /**
  * Class that provides an execution environment where detectors and feedback functions in scripts
@@ -12,27 +13,38 @@ import * as timeHelperFns from "../programmingLanguage/timeHelpers.js";
  * prototype.
  */
 export class ExecutionEnv {
-  constructor(targets, scriptFn) {
+  /**
+   * Creates a new instance of the ExecutionEnv class
+   * @param orgObjs object values to include in the ExecutionEnv namespace.
+   * @param scriptFn function script to run using targets of this class.
+   */
+  constructor(orgObjs, scriptFn) {
     function addToContext(obj, dest) {
       for (const key in obj) {
         dest[key] = obj[key];
       }
     }
     this.scriptFn = scriptFn;
-    addToContext(targets, this);
+    addToContext(orgObjs, this);
   }
 
-  async runScript() {
+  /**
+   * Runs scriptFn using the targets and programming languages attached to the scope of the class.
+   * @param args optional args tht can be passed to the scriptFn.
+   * @returns {Promise<*>} promise that, when resolved, is the output of scriptFn.
+   */
+  async runScript(args=undefined) {
     let boundScriptToExecute = this.scriptFn.bind(this);
-    return await boundScriptToExecute();
+    return await boundScriptToExecute(args);
   }
 }
 
-// add programming language functions to the execution env's prototype
+// add programming language functions to the ExecutionEnv's prototype
 const scriptingLanguageFns = {
   ...feedbackFns,
   ...predicateFns,
-  ...timeHelperFns
+  ...timeHelperFns,
+  ...studioFns
 };
 
 for (const [key, value] of Object.entries(scriptingLanguageFns)) {
