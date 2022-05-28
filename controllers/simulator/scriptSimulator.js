@@ -41,23 +41,26 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
         console.log(`\n${ currDate.toDateString() }`);
       }
 
-      // add some jitter to the timestamp (0 - 30 seconds) to simulate lag on server
-      let step1Jitter = Math.round(Math.random() * 30);
-      clock.tick(step1Jitter * 1000);
+      // add some jitter to the timestamp (0 - 30 seconds + up to 1000ms) to simulate lag on server
+      let step1JitterSeconds = Math.round(Math.random() * 30) * 1000; // 0-30 s * 1000 ms/s
+      let step1JitterMilliseconds = Math.round(Math.random() * 1000); // 0-1000 ms
+      clock.tick(step1JitterSeconds + step1JitterMilliseconds);
 
       // step (1): check all monitored scripts, and create issues for triggered scripts
       let createdIssues = await checkMonitoredScripts();
 
-      // add more jitter to the timestamp (60 - 120 seconds) to simulate completion time of step 1
-      let step2Jitter = Math.round(60 + (Math.random() * 60));
-      clock.tick(step2Jitter * 1000);
+      // add more jitter to the timestamp (60 - 120 seconds + up to 1000ms) to simulate completion time of step 1
+      let step2JitterSeconds = Math.round(60 + (Math.random() * 60))  * 1000; // 60-120 s * 1000 ms/s
+      let step2JitterMilliseconds = Math.round(Math.random() * 1000); // 0-1000 ms
+      clock.tick(step2JitterSeconds + step2JitterMilliseconds);
 
       // step (2): check active issues to see if any feedback was triggered
       let deliveredStrategies = await checkActiveIssues();
 
-      // add more jitter to the timestamp (60 - 120 seconds) to simulate completion time of step 2
-      let step3Jitter = Math.round(60 + (Math.random() * 120));
-      clock.tick(step3Jitter  * 1000);
+      // add more jitter to the timestamp (60 - 120 seconds + up to 1000ms) to simulate completion time of step 2
+      let step3JitterSeconds = Math.round(60 + (Math.random() * 120)) * 1000; // 60-120 s * 1000 ms/s
+      let step3JitterMilliseconds = Math.round(Math.random() * 1000); // 0-1000 ms
+      clock.tick(step3JitterSeconds + step3JitterMilliseconds);
 
       // step (3): clean-up issues based on expiry time
       let [archivedIssues, activeIssues] = await archiveStaleIssues();
@@ -85,8 +88,11 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
       }
 
       // tick clock by 1 hour - jitter that was added above
-      let totalJitter = step1Jitter + step2Jitter + step3Jitter;
-      clock.tick(tickAmount - (totalJitter * 1000));
+      let totalJitter = step1JitterSeconds + step1JitterMilliseconds +
+        step2JitterSeconds + step2JitterMilliseconds +
+        step3JitterSeconds + step3JitterMilliseconds;
+
+      clock.tick(tickAmount - totalJitter);
       currDate = new Date();
     }
 

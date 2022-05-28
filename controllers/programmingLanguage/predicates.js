@@ -17,13 +17,14 @@ import { DateTime } from "luxon";
  * @returns {Promise<boolean>} boolean whether today is the day of the venue.
  */
 export const isDayOfVenue = async function (venue) {
-  let todayWeekday = DateTime.now().weekdayLong;
+  // get the current weekday in the timezone of the venue
+  let todayWeekday = DateTime.now().setZone(venue.timezone).weekdayLong;
   return venue.day_of_week.trim().toLowerCase() === todayWeekday.trim().toLowerCase();
 };
 
 /**
  * Returns true if today is the day of the passed in date.
- * @param date date to check if today is the same day of.
+ * @param date date in UTC TZ to check if today is the same day of.
  * @returns {Promise<boolean>} true if today is the day of date.
  */
 export const isDayOf = async function (date) {
@@ -37,7 +38,7 @@ export const isDayOf = async function (date) {
 
 /**
  * Returns true if today is same week of the passed in date.
- * @param date date to check if today is the same week of.
+ * @param date date in UTC TZ to check if today is the same week of. da
  * @returns {Promise<boolean>} true if today is the week of date.
  */
 export const isWeekOf = async function (date) {

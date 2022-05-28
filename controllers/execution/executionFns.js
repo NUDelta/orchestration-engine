@@ -8,6 +8,7 @@ import {
   getSocialStructuresForProject
 } from "../dataFetchers/fetchSocialStructures.js";
 import { getAllVenues, getVenuesForProject } from "../dataFetchers/fetchVenues.js";
+import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 
 // TODO: error checking
 /**
@@ -115,9 +116,12 @@ export async function executeStrategies(orgObj, strategies) {
     let opportunityFnRunner = new ExecutionEnv(orgObj, opportunity_fn);
     let computedOpportunity = await opportunityFnRunner.runScript()
 
+    // floor to nearest 5 minutes to make sure any drift on server doesn't prevent matching
+    let flooredComputedOpportunity = floorDateToNearestFiveMinutes(computedOpportunity);
+
     // add computed strategies
     computedStrategies.push({
-      opportunity: computedOpportunity,
+      opportunity: flooredComputedOpportunity,
       outlet_fn: outlet_fn,
       outlet_args: outlet_args
     });

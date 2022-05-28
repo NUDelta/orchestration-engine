@@ -349,7 +349,8 @@ const after = function (venue, timeAfter) {
  */
 const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime, timezone) {
   // create new DateTime object for the current week in the venue's timezone
-  let currentWeekDate = DateTime.now().setZone(timezone);
+  // zero out the time (hours, mins, secs, milliseconds)
+  let currentWeekDate = DateTime.now().setZone(timezone).startOf("day");
 
   // get the number of days to shift date based on when the next venue is
   // note that this is sunday = 0 while luxon is monday = 0
