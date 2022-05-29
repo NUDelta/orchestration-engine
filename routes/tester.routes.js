@@ -113,7 +113,7 @@ testerRouter.get("/people", async (req, res) => {
   // res.json((await getAllPeople()).filter(where("role", "NonPhdStudent")))
 
   // people who are phd students
-  res.json((await getAllPeople()).filter(where("role", "PhdStudent")))
+  res.json((await getAllPeople()))
 });
 
 testerRouter.get("/processes", async (req, res) => {
