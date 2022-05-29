@@ -6,35 +6,45 @@ import { ArchivedIssues } from "../archivedIssues.js";
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
     "Support students in planning a Status Update for their project",
-    // "Planning and scoping end-of-quarter deliverables"
-    // "Scoping Research Sprints",
-    // "Fully planning sprints",
-    // "Sending updated sprints after SIG",
-    // "Have students read EOQ checklist before last SIG",
-    // "Discuss EOQ deliverables during SIG"
+    // "Preparing for EOQ deliverables by reading through checklist",
+    // "Planning and scoping end-of-quarter deliverables",
   ];
 
   for (let currScriptName of scriptsToActivateNames) {
-    // get the template script from the script library
-    let templateScript = await OrchestrationScript.findOne({ name: currScriptName }).lean();
-    templateScript["script_id"] = templateScript._id;
-    delete templateScript._id
-    delete templateScript.__v
+    // check if there is already an MonitoredScripts for currScriptName
+    let relevantScript = await MonitoredScripts.findOne({ name: currScriptName });
 
-    let newActiveScript = new MonitoredScripts(templateScript);
-    await newActiveScript.save();
+    // if no script found, add it
+    if (relevantScript === null) {
+      // get the template script from the script library
+      let templateScript = await OrchestrationScript.findOne({ name: currScriptName }).lean();
+      templateScript["script_id"] = templateScript._id;
+      delete templateScript._id
+      delete templateScript.__v
+
+      let newActiveScript = new MonitoredScripts(templateScript);
+      await newActiveScript.save();
+    }
   }
 };
 
-export const createActiveScriptFixtures = async () => {
-  // clear out active scripts
-  await MonitoredScripts.deleteMany({}).exec();
+/**
+ * Creates documents in the MonitoredScripts collection.
+ * @param shouldEmpty
+ * @returns {Promise<void>}
+ */
+export const createActiveScriptFixtures = async (shouldEmpty=false) => {
+  // clear out collections if specified
+  if (shouldEmpty) {
+    // clear out active scripts
+    await MonitoredScripts.deleteMany({}).exec();
 
-  // clear out active issues
-  await ActiveIssues.deleteMany({}).exec();
+    // clear out active issues
+    await ActiveIssues.deleteMany({}).exec();
 
-  // clear out archived issues
-  await ArchivedIssues.deleteMany({}).exec();
+    // clear out archived issues
+    await ArchivedIssues.deleteMany({}).exec();
+  }
 
   // populate active scripts
   await populateActiveScripts();
