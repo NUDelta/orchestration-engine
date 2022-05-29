@@ -1,34 +1,39 @@
 /**
- * Have students send updated sprint logs the day after SIG
- * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+ * Supporting students in planning for end-of-quarter deliverables.
  */
 export default {
-  name: "Have students read EOQ checklist before last SIG",
-  description: "Students should read through the EOQ checklist prior to final SIG and plan what their deliverables will be.",
+  name: "Preparing for EOQ deliverables by reading through checklist",
+  description: "As the quarter closes, we want students to reflect on what they have learned about their research workAt the last SIG meeting for the quarter, make sure we discuss what each student's EOQ deliverables will be.",
   timeframe: "week",
   repeat: false,
-  target: (async function() {
-    return await this.getAllProjects();
+  applicable_set: (async function() {
+    return this.projects;
   }).toString(),
-  // TODO: change this to run when it's the same week as the last SIG meeting (or have feedback opportunity run immediately)
-  detector: (async function() {
-    return true; // trigger immediately
+  situation_detector: (async function() {
+    return await this.isDayOf(
+      await this.daysBefore(
+        (await this.getLast(this.venues.find(this.where("kind", "SigMeeting")))).start_time, 1)
+    );
   }).toString(),
-  actionable_feedback: [
+  strategies: [
     {
-      feedback_message: "Today is our last SIG for the quarter! Try to read through the EOQ checklist (https://docs.google.com/document/d/1GXvf4m7M9D6b_j8hacTxN9JhsDvZgdqSQmgwLiLHlRY/edit?usp=sharing) before our SIG today, and plan what your EOQ deliverables will be.",
-      feedback_opportunity: (async function () {
-        // get time for last sig meeting
-        let lastSigMeetingTime = await this.lastSigMeeting();
-
-        // sent notification 3 hours before last SIG starts
-        let outputTime = new Date(lastSigMeetingTime.start_time);
-        outputTime.setHours(outputTime.getHours() - 3);
-        return outputTime;
-      }).toString(),
-      feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject();
+      name: "Prepare to discuss end-of-quarter deliverables at next SIG",
+      description: "Prompt students to review their EOQ checklists and their research canvases to think about what shape their EOQ deliverables may take.",
+      strategy_function: (async function () {
+        return await this.messageChannel({
+          message: "Tomorrow is our last SIG meeting of the quarter! Now is a good time to think about how you'd like to wrap up the quarter, and what your end-of-quarter deliverables will be. \n\n Before our meeting, try to: (1) read through the <${ this.project.tools.eoqChecklist.url }|end-of-quarter check-list> and your self-assessments (${ this.project.students.map(student => { return '<' + student.tools.eoqSelfAssessment.url+ '|' + student.name.split(' ')[0] + '`s EOQ Self-Assessment>'}).join('; ') }) to help plan your final sprint; (2) read through your current project canvases (<${ this.project.tools.practicalResearchCanvas.url }|Practical Research Canvas>; <${ this.project.tools.researchResearchCanvas.url }|Research Research Canvas>) and think about what sections of it you have advanced this quarter; and (3) think about how you would demonstrate this learning through a research talk or paper.",
+          projectName: this.project.name,
+          opportunity: (async function () {
+            console.log(await this.daysBeforeVenue(
+              await this.venues.find(this.where("kind", "SigMeeting")), 1
+            ));
+            return await this.daysBeforeVenue(
+              await this.venues.find(this.where("kind", "SigMeeting")), 1
+            );
+          }).toString()
+        })
       }).toString()
     }
   ]
 };
+

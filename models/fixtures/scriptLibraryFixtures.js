@@ -13,7 +13,7 @@ import discussEOQDeliverablesAtSig from "./exampleScriptFixtures/discussEOQDeliv
 const createScripts = async () => {
   let scriptsToAdd = [
     new OrchestrationScript(remindStudentAboutStatusUpdate),
-    // new OrchestrationScript(readThroughEOQChecklist),
+    new OrchestrationScript(readThroughEOQChecklist),
     // new OrchestrationScript(discussEOQDeliverablesAtSig),
   ];
 

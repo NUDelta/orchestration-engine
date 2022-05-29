@@ -6,7 +6,7 @@ import { ArchivedIssues } from "../archivedIssues.js";
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
     "Support students in planning a Status Update for their project",
-    // "Preparing for EOQ deliverables by reading through checklist",
+    "Preparing for EOQ deliverables by reading through checklist",
     // "Planning and scoping end-of-quarter deliverables",
   ];
 
