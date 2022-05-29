@@ -72,8 +72,19 @@ export const getProjectForPerson = async (personName) => {
  *      name: String,
  *      role: String,
  *      email: String,
- *      slackId: String
- *     }
+ *      slackId: String,
+ *      tools:{
+ *        individualProgressMap: {
+ *          url: String
+ *        },
+ *        midQuarterCheckIn: {
+ *          url: String
+ *        },
+ *        eoqSelfAssessment: {
+ *          url: String
+ *        },
+ *      }
+ *    }
  *   ],
  *   sigHead: {
  *     name: String,
@@ -91,7 +102,16 @@ export const getProjectForPerson = async (personName) => {
  *   statusUpdateDate: Date
  *   tools: {
  *     // current sprint log
- *     sprintLog: sprintLogObject from Studio API
+ *     sprintLog: sprintLogObject from Studio API,
+ *     practicalResearchCanvas: {
+ *       url: String
+ *     },
+ *    researchResearchCanvas: {
+ *       url: String
+ *     },
+ *    eoqChecklist: {
+ *       url: String
+ *     },
  *   },
  * }
  * @param projApiObj project object from Studio API.
@@ -114,7 +134,18 @@ const formatProjectOrgObj = (projApiObj) => {
         name: student.name,
         role: student.role,
         email: student.email,
-        slackId: student.slack_id
+        slackId: student.slack_id,
+        tools:{
+          individualProgressMap: {
+            url: student.individual_progress_map ?? ""
+          },
+          midQuarterCheckIn: {
+            url: student.mid_quarter_check_in ?? ""
+          },
+          eoqSelfAssessment: {
+            url: student.eoq_self_assessment ?? ""
+          },
+        }
       }
     }),
     facultyMentor: {
@@ -126,7 +157,16 @@ const formatProjectOrgObj = (projApiObj) => {
     slackChannel: projApiObj.slack_channel,
     statusUpdateDate: DateTime.fromISO(projApiObj.status_update_date).toJSDate(),
     tools: {
-      sprintLog: projApiObj.sprint_log.current_sprint
+      sprintLog: projApiObj.sprint_log.current_sprint,
+      practicalResearchCanvas: {
+        url: projApiObj.practical_research_canvas
+      },
+      researchResearchCanvas: {
+        url: projApiObj.research_research_canvas
+      },
+      eoqChecklist: {
+        url: projApiObj.eoq_checklist
+      },
     }
   };
 };

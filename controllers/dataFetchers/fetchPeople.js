@@ -54,6 +54,17 @@ export const getPersonByName = async (personName) => {
  *      role: String,
  *      email: String,
  *      slackId: String,
+ *    },
+ *    tools:{
+ *      individualProgressMap: {
+ *        url: String
+ *      },
+ *     midQuarterCheckIn: {
+ *        url: String
+ *      },
+ *     eoqSelfAssessment: {
+ *        url: String
+ *      },
  *    }
  * }
  * @param personApiObj person object from Studio API.
@@ -79,6 +90,17 @@ const formatPersonOrgObject = (personApiObj) => {
     role: personApiObj.role,
     email: personApiObj.email,
     slackId: personApiObj.slack_id,
-    sigHead: sigHeadObj
+    sigHead: sigHeadObj,
+    tools:{
+      individualProgressMap: {
+        url: personApiObj.individual_progress_map ?? ""
+      },
+      midQuarterCheckIn: {
+        url: personApiObj.mid_quarter_check_in ?? ""
+      },
+      eoqSelfAssessment: {
+        url: personApiObj.eoq_self_assessment ?? ""
+      },
+    }
   };
 };

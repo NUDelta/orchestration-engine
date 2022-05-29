@@ -49,8 +49,8 @@ try {
   if (NODE_ENV === "development") {
     // TODO: populate DB with fixtures here
     console.log("Development -- Populating databases for development.");
-    await createScriptLibraryFixtures();
-    await createActiveScriptFixtures();
+    await createScriptLibraryFixtures(true);
+    await createActiveScriptFixtures(true);
   }
 
   if (NODE_ENV === "production") {
@@ -58,8 +58,14 @@ try {
     if (await isScriptLibraryEmpty() && await isMonitoredScriptsEmpty()) {
       console.log("Production -- Databases are empty. Populating.");
       // populate them if they are
-      await createScriptLibraryFixtures();
-      await createActiveScriptFixtures();
+      await createScriptLibraryFixtures(true);
+      await createActiveScriptFixtures(true);
+    }
+    // populate any new scripts not already in the collection
+    else {
+      console.log("Production -- Databases are NOT empty. Only adding new scripts");
+      await createScriptLibraryFixtures(false);
+      await createActiveScriptFixtures(false);
     }
   }
 }
