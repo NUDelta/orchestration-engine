@@ -62,7 +62,12 @@ export const checkMonitoredScripts = async () => {
       if (scriptDidTrigger) {
         // check if issue already exists in database
         // match on both the script ID and the hash of the target b/c together they are unique
-        const targetHash = hash(currOrgObjTarget);
+        // TODO: this is buggy if the tools update -- should do it on everything but the tools I think
+        const targetHashObject = {
+          targetType: currOrgObjTarget.targetType,
+          name: currOrgObjTarget.name,
+        };
+        const targetHash = hash(targetHashObject);
         let foundIssue = await ActiveIssues.findOne({
           script_id: currScript._id,
           target_hash: targetHash
