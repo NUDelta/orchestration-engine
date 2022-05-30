@@ -24,9 +24,6 @@ export default {
           message: "Tomorrow is our last SIG meeting of the quarter! Now is a good time to think about how you'd like to wrap up the quarter, and what your end-of-quarter deliverables will be. \n\n Before our meeting, try to: (1) read through the <${ this.project.tools.eoqChecklist.url }|end-of-quarter check-list> and your self-assessments (${ this.project.students.map(student => { return '<' + student.tools.eoqSelfAssessment.url+ '|' + student.name.split(' ')[0] + '`s EOQ Self-Assessment>'}).join('; ') }) to help plan your final sprint; (2) read through your current project canvases (<${ this.project.tools.practicalResearchCanvas.url }|Practical Research Canvas>; <${ this.project.tools.researchResearchCanvas.url }|Research Research Canvas>) and think about what sections of it you have advanced this quarter; and (3) think about how you would demonstrate this learning through a research talk or paper.",
           projectName: this.project.name,
           opportunity: (async function () {
-            console.log(await this.daysBeforeVenue(
-              await this.venues.find(this.where("kind", "SigMeeting")), 1
-            ));
             return await this.daysBeforeVenue(
               await this.venues.find(this.where("kind", "SigMeeting")), 1
             );
