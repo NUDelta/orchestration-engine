@@ -14,7 +14,7 @@ const createScripts = async () => {
   let scriptsToAdd = [
     new OrchestrationScript(remindStudentAboutStatusUpdate),
     new OrchestrationScript(readThroughEOQChecklist),
-    // new OrchestrationScript(discussEOQDeliverablesAtSig),
+    new OrchestrationScript(discussEOQDeliverablesAtSig),
   ];
 
   // check if script is already in the database, by name
