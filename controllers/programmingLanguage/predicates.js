@@ -2,6 +2,7 @@
  * This module contains predicates for the programming language.
  */
 import { DateTime } from "luxon";
+import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 
 /*
  TODO:
@@ -38,7 +39,7 @@ export const isDayOf = async function (date) {
 
 /**
  * Returns true if today is same week of the passed in date.
- * @param date date in UTC TZ to check if today is the same week of. da
+ * @param date date in UTC TZ to check if today is the same week of.
  * @returns {Promise<boolean>} true if today is the week of date.
  */
 export const isWeekOf = async function (date) {
@@ -46,6 +47,17 @@ export const isWeekOf = async function (date) {
   let dateWeek = DateTime.fromJSDate(date).weekNumber;
   return todayWeek === dateWeek;
 };
+
+/**
+ * Returns true if the current date/time is equal to the date passed in.
+ * @param date date in UTC TZ to check if today is the same week of.
+ * @returns {Promise<boolean>} true if the current time is the same as date.
+ */
+export const currentlyIs = async function (date) {
+  // round testing date to nearest 5 minutes before comparing
+  let currDate = floorDateToNearestFiveMinutes(new Date());
+  return currDate.getTime() === date.getTime();
+}
 
 /*
  Filtering predicates.

@@ -1,10 +1,9 @@
 import { OrchestrationScript } from "../scriptLibrary.js";
 
-import remindStudentAboutStatusUpdate
-  from "./exampleScriptFixtures/remindStudentAboutStatusUpdate.js";
+import remindStudentAboutStatusUpdate from "./exampleScriptFixtures/remindStudentAboutStatusUpdate.js";
 import readThroughEOQChecklist from "./exampleScriptFixtures/readThroughEOQChecklist.js";
 import discussEOQDeliverablesAtSig from "./exampleScriptFixtures/discussEOQDeliverablesAtSig.js";
-
+import sprintUnderPoints from "./exampleScriptFixtures/undercommittedOnSprint.js";
 
 /**
  * Creates orchestration scripts documents and saves them to the script_library collection.
@@ -15,6 +14,7 @@ const createScripts = async () => {
     new OrchestrationScript(remindStudentAboutStatusUpdate),
     new OrchestrationScript(readThroughEOQChecklist),
     new OrchestrationScript(discussEOQDeliverablesAtSig),
+    new OrchestrationScript(sprintUnderPoints),
   ];
 
   // check if script is already in the database, by name

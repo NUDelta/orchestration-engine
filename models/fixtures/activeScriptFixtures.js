@@ -8,6 +8,7 @@ const populateActiveScripts = async () => {
     "Support students in planning a Status Update for their project",
     "Preparing for EOQ deliverables by reading through checklist",
     "Planning and scoping end-of-quarter deliverables",
+    "Fully planning sprints"
   ];
 
   for (let currScriptName of scriptsToActivateNames) {

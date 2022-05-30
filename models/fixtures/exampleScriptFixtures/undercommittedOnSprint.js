@@ -1,31 +1,42 @@
 /**
- * Students not planning all of their points.
- * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+ * Supporting students in fully planning their sprints.
  */
 export default {
   name: "Fully planning sprints",
-  description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings.",
+  description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings. They may struggle to do so if they don't know their project risks, don't know how to setup stories for the risks, are stuck and need help but don't know from where, etc.",
   timeframe: "sprint",
   repeat: false,
-  target: (async function() {
-    return await this.getProjectsInSig("Collective Experiences");
+  applicable_set: (async function() {
+    return this.projects.filter(
+      this.whereAll("students", "role", "NonPhdStudent")
+    );
   }).toString(),
-  // TODO: check if it's the start of the SIG meeting before running this script
-  detector: (async function() {
-    let currentSprint = await this.getCurrentSprintLog();
-    let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
-    let currPointsAvailable = currentSprint.totalPoints.point_available;
-    return currPointsCommitted < (0.75 * currPointsAvailable);
+  situation_detector: (async function() {
+    let isCurrentlySig = await this.currentlyIs(
+      await this.startOfVenue(
+        await this.venues.find(this.where("kind", "SigMeeting"))
+      )
+    );
+
+    let isUnderPoints = this.project.tools.sprintLog.totalPoints.pointsCommitted.total <
+      0.9 * this.project.tools.sprintLog.totalPoints.pointAvailable;
+    return isCurrentlySig && isUnderPoints;
   }).toString(),
-  actionable_feedback: [
+  strategies: [
     {
-      feedback_message: "Looks like you still have points to plan for your sprint. Let's discuss how you may use these points during SIG.",
-      feedback_opportunity: (async function () {
-        return await this.during(await this.venue("SIG"));
-      }).toString(),
-      feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject();
+      name: "Discuss students being under points",
+      description: "Discuss with your students for why they are under points.",
+      strategy_function: (async function () {
+        return await this.messagePeople({
+          message: "It looks like ${ this.project.name } (${ this.project.students.map(student => { return student.name.split(' ')[0] }).join(' and ') }) is under points (${ this.project.tools.sprintLog.totalPoints.pointsCommitted.total } points committed out of ${ this.project.tools.sprintLog.totalPoints.pointAvailable } points available; <${ this.project.tools.sprintLog.url }|Sprint Log>).\n\nDuring SIG, try to see if they are struggling with the planning process. Some common issues can include: \n-not knowing project risks \n-don't know the appropriate stories or tasks for project risks \n-are blocked on something, but don't know where to get help",
+          people: [this.project.sigHead.name],
+          opportunity: (async function () {
+            return await this.startOfVenue(
+              await this.venues.find(this.where("kind", "SigMeeting"))
+            );
+          }).toString()
+        })
       }).toString()
-    }
+    },
   ]
 };
