@@ -1,33 +1,42 @@
 /**
- * TODO: this really should have a check where if it's week 1 of a sprint, then its only half the available points.
- * Students over-committing to a sprint.
- * @type {EnforceDocument<T & Document<any, any, any>, {}, {}>}
+ * Supporting students in fully planning their sprints.
  */
 export default {
-  name: "Scoping Research Sprints",
-  description: "Students should scope their research to the available points, and not be way over-committed.",
+  name: "Scoping sprint plans to time constraints",
+  description: "Students should aim to plan their sprints within the time constraints they are given. If over points, they may need help re-scoping the deliverables they have for their sprint and/or slicing down on some of their stories to meeting their deliverables within the points they have available.",
   timeframe: "sprint",
   repeat: false,
-  target: (async function() {
-    return await this.getAllProjects();
+  applicable_set: (async function() {
+    return this.projects.filter(
+      this.whereAll("students", "role", "NonPhdStudent")
+    );
   }).toString(),
-  // TODO: check if it's the start of the SIG meeting before running this script
-  detector: (async function() {
-    let currentSprint = await this.getCurrentSprintLog();
-    let currPointsCommitted = currentSprint.totalPoints.points_committed.total;
-    let currPointsAvailable = currentSprint.totalPoints.point_available;
+  situation_detector: (async function() {
+    let isCurrentlySig = await this.currentlyIs(
+      await this.startOfVenue(
+        await this.venues.find(this.where("kind", "SigMeeting"))
+      )
+    );
 
-    return currPointsCommitted >= (1.25 * currPointsAvailable);
+    let isOverPoints = this.project.tools.sprintLog.totalPoints.pointsCommitted.total >=
+      1.1 * this.project.tools.sprintLog.totalPoints.pointAvailable;
+    return isCurrentlySig && isOverPoints;
   }).toString(),
-  actionable_feedback: [
+  strategies: [
     {
-      feedback_message: "Looks like you have planned way more than your available points. Let's talk about slicing strategies today during SIG.",
-      feedback_opportunity: (async function () {
-        return await this.during(await this.venue("SIG"));
-      }).toString(),
-      feedback_outlet: (async function () {
-        return await this.sendSlackMessageForProject();
+      name: "Discuss students being over points",
+      description: "Discuss with your students for why they are over points.",
+      strategy_function: (async function () {
+        return await this.messagePeople({
+          message: "It looks like ${ this.project.name } (${ this.project.students.map(student => { return student.name.split(' ')[0] }).join(' and ') }) is over points (${ this.project.tools.sprintLog.totalPoints.pointsCommitted.total } points committed out of ${ this.project.tools.sprintLog.totalPoints.pointAvailable } points available; <${ this.project.tools.sprintLog.url }|Sprint Log>).\n\nDuring SIG, try to see if there are ways they can re-scope their sprint. Some ways to do this include: \n-slicing down on deliverables (e.g., 1 user test instead of 2) \n-finding ways to get help on things if they are taking a long time (e.g., from peers on tech) \n-re-planning by deferring stories to the following sprint if it's not possible within the current one, but still doing a set of stories that advance their research understanding",
+          people: [this.project.sigHead.name],
+          opportunity: (async function () {
+            return await this.startOfVenue(
+              await this.venues.find(this.where("kind", "SigMeeting"))
+            );
+          }).toString()
+        })
       }).toString()
-    }
+    },
   ]
 };
