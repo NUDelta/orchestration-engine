@@ -60,6 +60,32 @@ export const getProjectForPerson = async (personName) => {
   }
 };
 
+// TODO: still not optimized. May need a route on Studio API side.
+/**
+ * Returns a list of projects from the organization, given a list of people.
+ * @param peopleList list of strings corresponding to people's names.
+ * @returns {Promise<[]>} list of projects.
+ */
+export const getProjectsForPeople = async (peopleList) => {
+  try {
+    // create a list of projects to return, including only 1 per person
+    let includedPeople = new Set();
+    let outputProjects = [];
+
+    for (let person of peopleList) {
+      if (!includedPeople.has(person)) {
+        includedPeople.add(person);
+        outputProjects.push(getProjectForPerson(person));
+      }
+    }
+
+    return (await Promise.all(outputProjects)).flat();
+  } catch (error) {
+    console.error(`Error in fetching data from Studio API: ${ error }`);
+    return error;
+  }
+}
+
 /**
  * Converts JSON project from Studio API into a representation for programming on.
  * The returned project object is structured as follows:

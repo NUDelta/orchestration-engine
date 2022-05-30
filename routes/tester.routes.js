@@ -25,7 +25,10 @@ import {
   getAllSocialStructures,
   getSocialStructuresForPerson, getSocialStructuresForProject
 } from "../controllers/dataFetchers/fetchSocialStructures.js";
-import { computeApplicableSet } from "../controllers/execution/executionFns.js";
+import {
+  computeApplicableSet,
+  getRefreshedObjsForTarget
+} from "../controllers/execution/executionFns.js";
 
 export const testerRouter = new Router();
 
@@ -148,18 +151,18 @@ testerRouter.get("/venues", async (req, res) => {
 
 testerRouter.get("/socialStructures", async (req, res) => {
   // get all social structures
-  // res.json(await getAllSocialStructures());
+  res.json(await getAllSocialStructures());
 
   // get social structures for a person
   // res.json(await getSocialStructuresForPerson("Cindy Hu"));
 
   // get social structures for a project
-  res.json(await getSocialStructuresForProject("CE for Relationship Development"));
+  // res.json(await getSocialStructuresForProject("CE for Relationship Development"));
 });
 
 testerRouter.get("/execution", async (req, res) => {
   // console.log(await computeApplicableSet(async function() {
   //   return this.projects.filter(this.whereAll("students", "role", "NonPhdStudent"));
   // }))
-  res.json({})
+  res.json(await getRefreshedObjsForTarget((await getSocialStructuresForProject("CE for Relationship Development"))[0]))
 });

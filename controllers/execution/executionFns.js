@@ -1,13 +1,17 @@
 // TODO: need to catch errors if things fail
 import { ExecutionEnv } from "./executionEnv.js";
-import { getAllProjects } from "../dataFetchers/fetchProjects.js";
+import {
+  getAllProjects,
+  getProjectByName,
+  getProjectForPerson, getProjectsForPeople
+} from "../dataFetchers/fetchProjects.js";
 import { getAllPeople } from "../dataFetchers/fetchPeople.js";
 import { getAllProcesses } from "../dataFetchers/fetchProcesses.js";
 import {
   getAllSocialStructures,
   getSocialStructuresForProject
 } from "../dataFetchers/fetchSocialStructures.js";
-import { getAllVenues, getVenuesForProject } from "../dataFetchers/fetchVenues.js";
+import { getAllVenues, getVenuesForProject, getVenuesForSig } from "../dataFetchers/fetchVenues.js";
 import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 
 // TODO: error checking
@@ -50,6 +54,7 @@ export async function computeApplicableSet (applicableSetFn) {
 export async function getRefreshedObjsForTarget (currTarget) {
   let newObjs;
   let targetType = currTarget.targetType;
+  // TODO: should processes be current processes?
   switch (targetType) {
     case "project":
       newObjs = {
@@ -57,13 +62,21 @@ export async function getRefreshedObjsForTarget (currTarget) {
         processes: await getAllProcesses(),
         socialStructures: await getSocialStructuresForProject(currTarget.name),
         venues: await getVenuesForProject(currTarget.name),
-      }
+      };
       break;
     case "person":
       break;
     case "process":
       break;
     case "social structure":
+      newObjs = {
+        projects: await getProjectsForPeople(
+          currTarget.members.map(person => { return person.name })
+        ),
+        processes: await getAllProcesses(),
+        socialStructure: currTarget,
+        venues: await getVenuesForSig(currTarget.name),
+      };
       break;
     case "venue":
       break;
