@@ -8,6 +8,8 @@ import sprintOverPoints from "./exampleScriptFixtures/overcommittedOnSprint.js";
 import usingVenuesThroughoutWeek from "./exampleScriptFixtures/usingVenuesThroughoutWeek.js";
 import usingVenuesThroughoutWeekJonathan
   from "./exampleScriptFixtures/usingVenuesThroughoutWeekJonathan.js";
+import researchProgressForPhdStudents
+  from "./exampleScriptFixtures/researchProgressForPhdStudents.js";
 
 /**
  * Creates orchestration scripts documents and saves them to the script_library collection.
@@ -22,6 +24,7 @@ const createScripts = async () => {
     new OrchestrationScript(sprintOverPoints),
     new OrchestrationScript(usingVenuesThroughoutWeek),
     new OrchestrationScript(usingVenuesThroughoutWeekJonathan),
+    new OrchestrationScript(researchProgressForPhdStudents),
   ];
 
   // check if script is already in the database, by name

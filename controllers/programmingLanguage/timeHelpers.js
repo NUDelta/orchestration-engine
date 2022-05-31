@@ -209,7 +209,7 @@ export const eveningOfVenue = async function (venue) {
  * Generic function for computing the Date for a venue at a time of day.
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @param timeOfDay string what time of day the date should be computed for.
- * @returns Date date of next venue at timeOfDay.
+ * @returns {Date} of next venue at timeOfDay.
  */
 const getTimeOfDayForVenue = function (venue, timeOfDay) {
   // get the next instance the venue
@@ -223,6 +223,18 @@ const getTimeOfDayForVenue = function (venue, timeOfDay) {
   let startTime = nextVenue.start_time;
   let timezone = venue.timezone;
 
+  // change time based on timeOfDay
+  return setTimeOfDayForDate(startTime, timezone, timeOfDay);
+};
+
+/**
+ * Sets and returns a date when the time set to timeOfDay.
+ * @param date to change time for.
+ * @param timezone string timezone of the date. needed to set timeOfDay.
+ * @param timeOfDay string what time of day to have for the date.
+ * @returns {Date} date at timeOfDay.
+ */
+const setTimeOfDayForDate = function (date, timezone, timeOfDay) {
   // change time based on timeOfDay
   let timeSetter = {
     minute: 0,
@@ -245,12 +257,12 @@ const getTimeOfDayForVenue = function (venue, timeOfDay) {
 
   // set timestamp and return.
   let setTimestamp = DateTime
-    .fromJSDate(startTime)
+    .fromJSDate(date)
     .setZone(timezone)
     .set(timeSetter);
 
   return setTimestamp.toUTC().toJSDate();
-};
+}
 
 /**
  * Returns the Date corresponding to the start time of a venue.

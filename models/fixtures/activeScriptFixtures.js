@@ -12,6 +12,7 @@ const populateActiveScripts = async () => {
     "Scoping sprint plans to time constraints",
     "Using venues throughout the week for progressing research work",
     "Using venues throughout the week for progressing research work -- Jonathan",
+    "Research progress for Ph.D. students",
   ];
 
   for (let currScriptName of scriptsToActivateNames) {
