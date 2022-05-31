@@ -5,6 +5,9 @@ import readThroughEOQChecklist from "./exampleScriptFixtures/readThroughEOQCheck
 import discussEOQDeliverablesAtSig from "./exampleScriptFixtures/discussEOQDeliverablesAtSig.js";
 import sprintUnderPoints from "./exampleScriptFixtures/undercommittedOnSprint.js";
 import sprintOverPoints from "./exampleScriptFixtures/overcommittedOnSprint.js";
+import usingVenuesThroughoutWeek from "./exampleScriptFixtures/usingVenuesThroughoutWeek.js";
+import usingVenuesThroughoutWeekJonathan
+  from "./exampleScriptFixtures/usingVenuesThroughoutWeekJonathan.js";
 
 /**
  * Creates orchestration scripts documents and saves them to the script_library collection.
@@ -16,7 +19,9 @@ const createScripts = async () => {
     new OrchestrationScript(readThroughEOQChecklist),
     new OrchestrationScript(discussEOQDeliverablesAtSig),
     new OrchestrationScript(sprintUnderPoints),
-    new OrchestrationScript(sprintOverPoints)
+    new OrchestrationScript(sprintOverPoints),
+    new OrchestrationScript(usingVenuesThroughoutWeek),
+    new OrchestrationScript(usingVenuesThroughoutWeekJonathan),
   ];
 
   // check if script is already in the database, by name

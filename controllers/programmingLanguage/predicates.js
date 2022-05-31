@@ -20,7 +20,7 @@ import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 export const isDayOfVenue = async function (venue) {
   // get the current weekday in the timezone of the venue
   let todayWeekday = DateTime.now().setZone(venue.timezone).weekdayLong;
-  return venue.day_of_week.trim().toLowerCase() === todayWeekday.trim().toLowerCase();
+  return venue.dayOfWeek.trim().toLowerCase() === todayWeekday.trim().toLowerCase();
 };
 
 /**

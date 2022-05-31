@@ -104,6 +104,7 @@ export async function executeSituationDetector(orgObj, situationDetector) {
 }
 
 /**
+ * TODO: handle cases where the opportunity is undefined
  * Used to run trigger function for actionable feedback in orchestration scripts.
  * @param orgObj object containing all the data from the organization that is relevant to the current target.
  * @param strategies list of strategy objects to evaluate.

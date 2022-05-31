@@ -10,6 +10,7 @@ import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
   - ^ in general for this: morning, noon, afternoon
   - Having things like "beginning/middle/end of week"
   - May need separate before(...) and after(...) functions that work for getFirst() and getLast() since those return dates and not venue objects.
+  - Handle cases where the opportunity doesn't exist (e.g., OH for RALE is on-demand only)
  */
 
 /**
@@ -166,6 +167,89 @@ export const minutesAfterVenue = async function (venue, numMinutes) {
       seconds: 0
     }
   );
+};
+
+/**
+ * Returns the Date the morning of the next instance of venue.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @returns {Promise<Date>} date of next venue in the morning.
+ */
+export const morningOfVenue = async function (venue) {
+  return getTimeOfDayForVenue(venue, "morning");
+};
+
+/**
+ * Returns the Date the noon of the next instance of venue.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @returns {Promise<Date>} date of next venue at noon.
+ */
+export const noonOfVenue = async function (venue) {
+  return getTimeOfDayForVenue(venue, "noon");
+};
+
+/**
+ * Returns the Date the afternoon of the next instance of venue.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @returns {Promise<Date>} date of next venue in the afternoon.
+ */
+export const afternoonOfVenue = async function (venue) {
+  return getTimeOfDayForVenue(venue, "afternoon");
+};
+
+/**
+ * Returns the Date the evening of the next instance of venue.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @returns {Promise<Date>} date of next venue in the evening.
+ */
+export const eveningOfVenue = async function (venue) {
+  return getTimeOfDayForVenue(venue, "evening");
+};
+
+/**
+ * Generic function for computing the Date for a venue at a time of day.
+ * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
+ * @param timeOfDay string what time of day the date should be computed for.
+ * @returns Date date of next venue at timeOfDay.
+ */
+const getTimeOfDayForVenue = function (venue, timeOfDay) {
+  // get the next instance the venue
+  let nextVenue = computeNextVenue(
+    venue.dayOfWeek,
+    venue.startTime,
+    venue.endTime,
+    venue.timezone
+  );
+
+  let startTime = nextVenue.start_time;
+  let timezone = venue.timezone;
+
+  // change time based on timeOfDay
+  let timeSetter = {
+    minute: 0,
+    second: 0
+  };
+  switch(timeOfDay) {
+    case "morning":
+      timeSetter.hour = 9;
+      break;
+    case "noon":
+      timeSetter.hour = 12;
+      break;
+    case "afternoon":
+      timeSetter.hour = 15;
+      break;
+    case "evening":
+      timeSetter.hour = 18;
+      break;
+  }
+
+  // set timestamp and return.
+  let setTimestamp = DateTime
+    .fromJSDate(startTime)
+    .setZone(timezone)
+    .set(timeSetter);
+
+  return setTimestamp.toUTC().toJSDate();
 };
 
 /**

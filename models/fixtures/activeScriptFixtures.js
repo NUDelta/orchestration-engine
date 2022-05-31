@@ -9,7 +9,9 @@ const populateActiveScripts = async () => {
     "Preparing for EOQ deliverables by reading through checklist",
     "Planning and scoping end-of-quarter deliverables",
     "Fully planning sprints",
-    "Scoping sprint plans to time constraints"
+    "Scoping sprint plans to time constraints",
+    "Using venues throughout the week for progressing research work",
+    "Using venues throughout the week for progressing research work -- Jonathan",
   ];
 
   for (let currScriptName of scriptsToActivateNames) {
