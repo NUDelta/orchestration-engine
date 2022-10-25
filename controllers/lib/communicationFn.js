@@ -38,7 +38,7 @@ export const sendSlackMessageForProject = async function() {
       }
     );
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 };
 
@@ -71,7 +71,7 @@ export const sendSlackMessageToSig = async function () {
       );
     }
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 };
 
@@ -108,7 +108,7 @@ export const sendSlackMessageToFacultyMentor = async function () {
       );
     }
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 }
 
@@ -130,7 +130,7 @@ export const getSlackChannelForProject = async function() {
         });
       slackChannels.push(response.body);
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error }`);
+      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     }
   }
 
@@ -154,7 +154,7 @@ export const getSlackIdForPerson = async function(people) {
         });
       slackIds.push(response.body);
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error }`);
+      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     }
   }
 

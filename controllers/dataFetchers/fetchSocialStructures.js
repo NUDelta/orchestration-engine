@@ -12,7 +12,7 @@ export const getAllSocialStructures = async () => {
     // setup each object and return
     return response.body.map(struct => { return formatSocialStructureOrgObject(struct); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -32,7 +32,7 @@ export const getSocialStructuresForPerson = async (personName) => {
     // setup each object and return
     return response.body.map(struct => { return formatSocialStructureOrgObject(struct); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -52,7 +52,7 @@ export const getSocialStructuresForProject = async (projectName) => {
     // setup each object and return
     return response.body.map(struct => { return formatSocialStructureOrgObject(struct); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };

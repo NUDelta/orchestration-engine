@@ -14,7 +14,7 @@ export const getAllVenues = async () => {
     // setup each object and return
     return response.body.map(venue => { return formatVenueOrgObject(venue); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -36,7 +36,7 @@ export const getVenuesForProject = async (projectName) => {
     // setup each object and return
     return response.body.map(venue => { return formatVenueOrgObject(venue); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -58,7 +58,7 @@ export const getVenuesForPerson = async (personName) => {
     // setup each object and return
     return response.body.map(venue => { return formatVenueOrgObject(venue); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -80,7 +80,7 @@ export const getVenuesForSig = async (sigName) => {
     // setup each object and return
     return response.body.map(venue => { return formatVenueOrgObject(venue); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };

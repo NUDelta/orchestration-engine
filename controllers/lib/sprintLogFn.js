@@ -103,7 +103,7 @@ const getSprintLogForProject = async function (projectName) {
       });
     projectSprintLog = response.body;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return projectSprintLog;
@@ -129,7 +129,7 @@ const getCurrentSprint = async function () {
         responseType: 'json'
       });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return currentSprintInfo.body;

@@ -12,7 +12,7 @@ export const getAllPeople = async () => {
     // setup each object and return
     return response.body.map(person => { return formatPersonOrgObject(person); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -34,7 +34,7 @@ export const getPersonByName = async (personName) => {
     // setup each object and return
     return formatPersonOrgObject(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };

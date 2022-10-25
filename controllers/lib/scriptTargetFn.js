@@ -27,7 +27,7 @@ export const getAllProjects = async function() {
 
     projResponse = response.body;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   // return an object with { students: [student1Name, student2Name...], project: projName }
@@ -83,7 +83,7 @@ export const getNonPhdProjects = async function () {
     });
 
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return output;
@@ -113,7 +113,7 @@ export const getAllStudents = async function() {
       return projResponse.name;
     });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return {
@@ -161,7 +161,7 @@ export const getStudentsInSig = async function(sigName) {
     });
 
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return output;
@@ -193,7 +193,7 @@ export const getNonPhdStudents = async function() {
       return projResponse.name;
     });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return {
@@ -229,7 +229,7 @@ export const getPhdStudents = async function() {
       return projResponse.name;
     });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return {
@@ -259,7 +259,7 @@ export const getFaculty = async function() {
       return facultyObj.name;
     });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return {
@@ -294,7 +294,7 @@ const getAllStudentObjs = async function() {
       });
     nonPhdBody = nonPhdResponse.body;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return [...phdBody, ...nonPhdBody];
@@ -324,7 +324,7 @@ const getAllProjectObjsForStudentList = async function(studentNames) {
 
     projResponses = await Promise.all(projPromises);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   // return only unique and non empty projects

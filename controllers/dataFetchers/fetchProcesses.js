@@ -14,7 +14,7 @@ export const getAllProcesses = async () => {
     // setup each object and return
     return response.body.map(process => { return formatProcessOrgObject(process); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -32,7 +32,7 @@ export const getCurrentProcesses = async () => {
     // setup each object and return
     return formatProcessOrgObject(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };

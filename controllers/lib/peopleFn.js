@@ -32,7 +32,7 @@ export const getSigHeadForProject = async function() {
         });
       sigHeads = sigHeads.concat(response.body["sig_head"]);
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error }`);
+      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     }
   }
 
@@ -60,7 +60,7 @@ export const getStudentsOnProject = async function() {
         });
       studentsOnProj = studentsOnProj.concat(response.body["students"]);
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error }`);
+      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     }
   }
 

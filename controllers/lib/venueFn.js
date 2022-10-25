@@ -50,7 +50,7 @@ export const venue = async function (venueName) {
        { responseType: 'json' });
      venueInfo = response.body;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   // if SIG or office hours, get the SIG of the students and then return just the venue for them
@@ -62,7 +62,7 @@ export const venue = async function (venueName) {
       let response = await got.get(`${ studioAPIUrl }/projects/`, { responseType: 'json' });
       projectInfo = response.body;
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error }`);
+      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     }
 
     // get project + sig
@@ -117,7 +117,7 @@ export const firstSigMeeting = async function () {
 
     return venueInfo;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 };
 
@@ -140,7 +140,7 @@ export const lastSigMeeting = async function () {
 
     return venueInfo;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 };
 

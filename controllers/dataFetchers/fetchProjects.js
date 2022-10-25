@@ -13,7 +13,7 @@ export const getAllProjects = async () => {
     // setup each object and return
     return response.body.map(proj => { return formatProjectOrgObj(proj); });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -34,7 +34,7 @@ export const getProjectByName = async (projName) => {
     // format project and return
     return formatProjectOrgObj(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -55,7 +55,7 @@ export const getProjectForPerson = async (personName) => {
     // format project and return
     return formatProjectOrgObj(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 };
@@ -81,7 +81,7 @@ export const getProjectsForPeople = async (peopleList) => {
 
     return (await Promise.all(outputProjects)).flat();
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
     return error;
   }
 }

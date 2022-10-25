@@ -43,7 +43,7 @@ const getProjectByName = async function (projName) {
 
     output = filteredProjs[0];
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error }`);
+    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
   }
 
   return output;
