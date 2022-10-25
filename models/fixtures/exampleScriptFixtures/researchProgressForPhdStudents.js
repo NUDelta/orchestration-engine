@@ -23,7 +23,7 @@ export default {
           opportunity: (async function () {
             // TODO: this is a bit unnatural rn
             return await this.daysBefore(
-              await this.afternoonOfVenue(
+              await this.morningOfVenue(
                 await this.venues.find(this.where("kind", "SigMeeting"))),
               2
             );
@@ -36,7 +36,7 @@ export default {
       description: "Help students articulate their updated understanding of the research work, and give mentors the opportunity to review deliverables before the SIG meeting later that day.",
       strategy_function: (async function () {
         return await this.messageChannel({
-          message: "Share your deliverables (or whatever slice of them you were able to finish) in a thread before SIG tomorrow afternoon. Please include a couple sentences about: \n(1) what risk you were trying to address this week was; \n(2) what you ended up delivering to address that risk; \n(3) what new understanding, risks, and/or questions that deliverable has surfaced; and \n(4) what (if any) feedback you'd like from <@${ this.socialStructure.sigHead.slackId }>.",
+          message: "Share your deliverables (or whatever slice of them you were able to finish) in a thread before tomorrow's SIG. Please include a couple sentences about: \n(1) what risk you were trying to address this week was; \n(2) what you ended up delivering to address that risk; \n(3) what new understanding, risks, and/or questions that deliverable has surfaced; and \n(4) what (if any) feedback you'd like from <@${ this.socialStructure.sigHead.slackId }>.",
           sigName: this.socialStructure.name,
           opportunity: (async function () {
             // TODO: this is a bit unnatural rn
@@ -54,7 +54,7 @@ export default {
       description: "Help students reflect on how the last week went, and plan their research sprint for the next week.",
       strategy_function: (async function () {
         return await this.messageChannel({
-          message: "We have SIG later today! Please fill out the <https://docs.google.com/spreadsheets/d/1GebxbBnnuCiGs9sZ82nMRKNItCGa3SD3O2n1qVwp2WA/edit#gid=2081621068|MicroBoard> before the meeting, including: (1) a reflection on how things went this week; (2) plans for the next week; and (3) any agenda items that you'd like to discuss with the group.",
+          message: "We have SIG later today! Please fill out the <https://docs.google.com/spreadsheets/d/1AmVEs2zOF-ffg7qNCpLyxqCjz8qgSrVohU4WUQSX4-Q/edit#gid=0|MicroBoard> before the meeting, including: \n(1) a reflection on how things went this week; \n(2) plans for the next week; and \n(3) any agenda items that you'd like to discuss with the group.",
           sigName: this.socialStructure.name,
           opportunity: (async function () {
             return await this.morningOfVenue(
