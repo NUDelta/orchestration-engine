@@ -9,15 +9,22 @@ export const dataRouter = new Router();
 /**
  * Refreshes all data in MongoDB when called.
  */
-dataRouter.get("/refreshData", async (req, res) => {
-  try {
-    // clear existing data and refresh with fixtures
-    await createScriptLibraryFixtures();
-    await createActiveScriptFixtures();
+dataRouter.post("/refreshData", async (req, res) => {
+  let shouldClear;
 
-    res.send("Data refreshed.");
-  } catch (e) {
-    let errorMessage = `Error when refreshing data via API route: ${ e }`;
+  try {
+    // get parameters
+    shouldClear = req.body.shouldClear ?? false;
+
+    // clear existing data and refresh with fixtures
+    await createScriptLibraryFixtures(shouldClear);
+    await createActiveScriptFixtures(shouldClear);
+
+    let msg = `Orchestration Script data refreshed. Existing data was cleared? ${ shouldClear }`;
+    console.log(msg);
+    res.send(msg);
+  } catch (error) {
+    let errorMessage = `Error when refreshing data via API route: ${ error.stack }`;
     console.error(errorMessage);
     res.send(errorMessage);
   }
