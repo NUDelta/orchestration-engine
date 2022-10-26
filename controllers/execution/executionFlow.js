@@ -176,6 +176,8 @@ export const archiveStaleIssues = async () => {
       });
       issuesToArchive.push(currArchivedIssue);
 
+      // TODO: is this needed? if the old issues are being flushed after their timeframe, won't the new one just start again based on their triggers?
+      // the code to create active issues only checks if there's an existing active issue for the script (not in archived issues)
       // create new issue if repeat is specified
       if (issue.repeat) {
         // TODO: this is pretty repetitive of just creating a new active issue. try to pull out.

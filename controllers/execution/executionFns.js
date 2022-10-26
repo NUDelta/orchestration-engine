@@ -104,7 +104,6 @@ export async function executeSituationDetector(orgObj, situationDetector) {
 }
 
 /**
- * TODO: handle cases where the opportunity is undefined
  * Used to run trigger function for actionable feedback in orchestration scripts.
  * @param orgObj object containing all the data from the organization that is relevant to the current target.
  * @param strategies list of strategy objects to evaluate.
@@ -117,28 +116,34 @@ export async function executeStrategies(orgObj, strategies) {
     // get current feedback opportunity
     let currStrategy = strategies[strategyItemIndex];
 
-    // create execution envs for computing trigger date and feedback outlets
-    let strategyFnRunner = new ExecutionEnv(
-      orgObj,
-      currStrategy.strategy_function
-    );
+    // TODO: handle cases where the opportunity is undefined
+    // try to compute opportunity, if it exists
+    try {
+      // create execution envs for computing trigger date and feedback outlets
+      let strategyFnRunner = new ExecutionEnv(
+        orgObj,
+        currStrategy.strategy_function
+      );
 
-    // get opportunity fn, output fn, and args for the output fn
-    let { opportunity_fn, outlet_fn, outlet_args } = await strategyFnRunner.runScript();
+      // get opportunity fn, output fn, and args for the output fn
+      let { opportunity_fn, outlet_fn, outlet_args } = await strategyFnRunner.runScript();
 
-    // compute the opportunity
-    let opportunityFnRunner = new ExecutionEnv(orgObj, opportunity_fn);
-    let computedOpportunity = await opportunityFnRunner.runScript()
+      // compute the opportunity
+      let opportunityFnRunner = new ExecutionEnv(orgObj, opportunity_fn);
+      let computedOpportunity = await opportunityFnRunner.runScript()
 
-    // floor to nearest 5 minutes to make sure any drift on server doesn't prevent matching
-    let flooredComputedOpportunity = floorDateToNearestFiveMinutes(computedOpportunity);
+      // floor to nearest 5 minutes to make sure any drift on server doesn't prevent matching
+      let flooredComputedOpportunity = floorDateToNearestFiveMinutes(computedOpportunity);
 
-    // add computed strategies
-    computedStrategies.push({
-      opportunity: flooredComputedOpportunity,
-      outlet_fn: outlet_fn,
-      outlet_args: outlet_args
-    });
+      // add computed strategies
+      computedStrategies.push({
+        opportunity: flooredComputedOpportunity,
+        outlet_fn: outlet_fn,
+        outlet_args: outlet_args
+      });
+    } catch (error) {
+      console.error(`Error in computing opportunity: \nOrg Object: ${ JSON.stringify(orgObj, null, 4) }\nStrategy: ${ JSON.stringify(currStrategy, null, 4) }`);
+    }
   }
 
   return computedStrategies;
