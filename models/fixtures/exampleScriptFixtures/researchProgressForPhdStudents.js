@@ -5,7 +5,7 @@ export default {
   name: "Research progress for Ph.D. students",
   description: "Students have multiple opportunities to get support from their mentors and their peers for their work.",
   timeframe: "sprint",
-  repeat: false,
+  repeat: true,
   applicable_set: (async function() {
     return this.socialStructures.filter(this.where("name", "Summer BBQ"));
   }).toString(),
@@ -14,7 +14,7 @@ export default {
   }).toString(),
   strategies: [
     {
-      name: "Clear deliverable for the week",
+      name: "Progress on work",
       description: "Help students articulate what their planned deliverable is this week, and any risks or blockers in achieving it.",
       strategy_function: (async function () {
         return await this.messageChannel({
@@ -23,8 +23,9 @@ export default {
           opportunity: (async function () {
             // TODO: this is a bit unnatural rn
             return await this.daysBefore(
-              await this.morningOfVenue(
-                await this.venues.find(this.where("kind", "SigMeeting"))),
+              await this.noonOfVenue(
+                await this.venues.find(this.where("kind", "SigMeeting"))
+              ),
               2
             );
           }).toString()

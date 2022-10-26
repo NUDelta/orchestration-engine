@@ -5,6 +5,7 @@ export default {
   name: "Support students in planning a Status Update for their project",
   description: "Students each get 1 Status Update opportunity per quarter where they can get help on something from an entire community. Being a very limited resource, this requires students to plan how to use the venue carefully so that are benefiting from the feedback that an entire community can give.",
   timeframe: "week",
+  // TODO: will this repeat across quarters? i think the repeat logic rn will cause it to not...
   repeat: false,
   applicable_set: (async function() {
     return this.projects.filter(
@@ -22,7 +23,7 @@ export default {
       description: "Prompt student to start planning their Status Update and share plan with their mentor",
       strategy_function: (async function () {
         return await this.messageChannel({
-          message: "Your status update is a week from today! It's a good opportunity to get help from the entire community to progress your research work. Try to plan an activity that will benefit most from this opportunity, and discuss it with your mentor--<@${ this.project.sigHead.slackId }>--over the next week during during SIG and/or Office Hours",
+          message: "Your status update is a week from today! It's a good opportunity to get help from the entire community to progress your research work. \nIn planning your Status Update, consider: \n(1) what are the risks in your research understanding?; \n(2) what feedback from the community would be helpful to address these risks? (note: think about how this whole community can provide you support in a way that a 1-1 with a mentor or peer may not); and \n(3) what activity might you do to elicit this feedback? \n\n As you prepare, make sure to discuss your plans with your mentor--<@${ this.project.sigHead.slackId }>--during your next SIG meeting and/or Office Hours.",
           projectName: this.project.name,
           opportunity: (async function () {
             return await this.startOfVenue(
