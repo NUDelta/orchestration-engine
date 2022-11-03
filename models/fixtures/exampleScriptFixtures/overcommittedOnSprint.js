@@ -4,7 +4,7 @@
 export default {
   name: "Scoping sprint plans to time constraints",
   description: "Students should aim to plan their sprints within the time constraints they are given. If over points, they may need help re-scoping the deliverables they have for their sprint and/or slicing down on some of their stories to meeting their deliverables within the points they have available.",
-  timeframe: "sprint",
+  timeframe: "week",
   repeat: false,
   applicable_set: (async function() {
     return this.projects.filter(

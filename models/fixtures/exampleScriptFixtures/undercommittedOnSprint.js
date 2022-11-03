@@ -4,7 +4,7 @@
 export default {
   name: "Fully planning sprints",
   description: "Students should aim to plan most of their sprints so that we can discuss plans during SIG meetings. They may struggle to do so if they don't know their project risks, don't know how to setup stories for the risks, are stuck and need help but don't know from where, etc.",
-  timeframe: "sprint",
+  timeframe: "week",
   repeat: false,
   applicable_set: (async function() {
     return this.projects.filter(
