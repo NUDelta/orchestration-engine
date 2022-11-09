@@ -129,6 +129,10 @@ export const getProjectsForPeople = async (peopleList) => {
  *   tools: {
  *     // current sprint log
  *     sprintLog: sprintLogObject from Studio API,
+ *     compass: {
+ *        url: String
+ *      },
+ *    },
  *     practicalResearchCanvas: {
  *       url: String
  *     },
@@ -184,6 +188,9 @@ const formatProjectOrgObj = (projApiObj) => {
     statusUpdateDate: DateTime.fromISO(projApiObj.status_update_date).toJSDate(),
     tools: {
       sprintLog: projApiObj.sprint_log.current_sprint,
+      compass: {
+        url: projApiObj.compass
+      },
       practicalResearchCanvas: {
         url: projApiObj.practical_research_canvas
       },

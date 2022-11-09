@@ -10,6 +10,7 @@ import usingVenuesThroughoutWeekJonathan
   from "./exampleScriptFixtures/usingVenuesThroughoutWeekJonathan.js";
 import researchProgressForPhdStudents
   from "./exampleScriptFixtures/researchProgressForPhdStudents.js";
+import compassInActionCues from "./exampleScriptFixtures/compassInActionCues.js";
 
 /**
  * Creates orchestration scripts documents and saves them to the script_library collection.
@@ -25,6 +26,7 @@ const createScripts = async () => {
     new OrchestrationScript(usingVenuesThroughoutWeek),
     new OrchestrationScript(usingVenuesThroughoutWeekJonathan),
     new OrchestrationScript(researchProgressForPhdStudents),
+    new OrchestrationScript(compassInActionCues),
   ];
 
   // check if script is already in the database, by name
