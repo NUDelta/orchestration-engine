@@ -8,7 +8,7 @@ const populateActiveScripts = async () => {
     "Support students in planning a Status Update for their project",
     "Fully planning sprints",
     "Scoping sprint plans to time constraints",
-    "Using venues throughout the week for progressing research work",
+    // "Using venues throughout the week for progressing research work",
     "Research progress for Ph.D. students",
     "Compass in-action cues",
 

@@ -25,21 +25,21 @@ export default {
   }).toString(),
   strategies: [
     // Pre/Post SIG
-    {
-      name: "Pre-SIG meeting",
-      description: "Have students update their Compass before SIG meeting.",
-      strategy_function: (async function () {
-        return await this.messageChannel({
-          message: "SIG is today! Please update your <${ this.project.tools.compass.url }|Compass> with what you did in the past week, and what you’re planning on doing. You’ll be presenting your Compass during SIG!",
-          projectName: this.project.name,
-          opportunity: (async function () {
-            return await this.morningOfVenue(
-              await this.venues.find(this.where("kind", "SigMeeting"))
-            );
-          }).toString()
-        })
-      }).toString()
-    },
+    // {
+    //   name: "Pre-SIG meeting",
+    //   description: "Have students update their Compass before SIG meeting.",
+    //   strategy_function: (async function () {
+    //     return await this.messageChannel({
+    //       message: "SIG is today! Please update your <${ this.project.tools.compass.url }|Compass> with what you did in the past week, and what you’re planning on doing. You’ll be presenting your Compass during SIG!",
+    //       projectName: this.project.name,
+    //       opportunity: (async function () {
+    //         return await this.morningOfVenue(
+    //           await this.venues.find(this.where("kind", "SigMeeting"))
+    //         );
+    //       }).toString()
+    //     })
+    //   }).toString()
+    // },
     {
       name: "Post-SIG meeting",
       description: "Have students update their Compass after SIG meeting.",
@@ -56,21 +56,21 @@ export default {
       }).toString()
     },
     // Pre/Post Office Hours
-    {
-      name: "Pre Office Hours",
-      description: "Have students update their Compass before Office Hours.",
-      strategy_function: (async function () {
-        return await this.messageChannel({
-          message: "OH is today! Update your <${ this.project.tools.compass.url }|Compass>! What did you work on recently, and how did it address a risk? What are some immediate next steps you’ll be working on, and why does it address a risk?",
-          projectName: this.project.name,
-          opportunity: (async function () {
-            return await this.morningOfVenue(
-              await this.venues.find(this.where("kind", "OfficeHours"))
-            );
-          }).toString()
-        })
-      }).toString()
-    },
+    // {
+    //   name: "Pre Office Hours",
+    //   description: "Have students update their Compass before Office Hours.",
+    //   strategy_function: (async function () {
+    //     return await this.messageChannel({
+    //       message: "OH is today! Update your <${ this.project.tools.compass.url }|Compass>! What did you work on recently, and how did it address a risk? What are some immediate next steps you’ll be working on, and why does it address a risk?",
+    //       projectName: this.project.name,
+    //       opportunity: (async function () {
+    //         return await this.morningOfVenue(
+    //           await this.venues.find(this.where("kind", "OfficeHours"))
+    //         );
+    //       }).toString()
+    //     })
+    //   }).toString()
+    // },
     {
       name: "Post Office Hours",
       description: "Have students update their Compass after Office Hours.",
@@ -87,21 +87,21 @@ export default {
       }).toString()
     },
     // Pre/Post Studio
-    {
-      name: "Pre-Studio meeting",
-      description: "Have students update their Compass before Studio.",
-      strategy_function: (async function () {
-        return await this.messageChannel({
-          message: "DTR is today! Update your <${ this.project.tools.compass.url }|Compass>! What did you work on recently, and how did it address a risk? What will you be working on in PR and LIP, and why do they address risks?",
-          projectName: this.project.name,
-          opportunity: (async function () {
-            return await this.morningOfVenue(
-              await this.venues.find(this.where("name", "Studio Meeting"))
-            );
-          }).toString()
-        })
-      }).toString()
-    },
+    // {
+    //   name: "Pre-Studio meeting",
+    //   description: "Have students update their Compass before Studio.",
+    //   strategy_function: (async function () {
+    //     return await this.messageChannel({
+    //       message: "DTR is today! Update your <${ this.project.tools.compass.url }|Compass>! What did you work on recently, and how did it address a risk? What will you be working on in PR and LIP, and why do they address risks?",
+    //       projectName: this.project.name,
+    //       opportunity: (async function () {
+    //         return await this.morningOfVenue(
+    //           await this.venues.find(this.where("name", "Studio Meeting"))
+    //         );
+    //       }).toString()
+    //     })
+    //   }).toString()
+    // },
     {
       name: "Post-Studio meeting",
       description: "Have students update their Compass after Studio.",
