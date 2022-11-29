@@ -10,7 +10,7 @@ const populateActiveScripts = async () => {
     "Scoping sprint plans to time constraints",
     // "Using venues throughout the week for progressing research work",
     "Research progress for Ph.D. students",
-    "Compass in-action cues",
+    // "Compass in-action cues",
 
     // "Preparing for EOQ deliverables by reading through checklist",
     // "Planning and scoping end-of-quarter deliverables",
