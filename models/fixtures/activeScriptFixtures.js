@@ -5,7 +5,7 @@ import { ArchivedIssues } from "../archivedIssues.js";
 
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
-    // "Support students in planning a Status Update for their project",
+    "Support students in planning a Status Update for their project",
     // "Fully planning sprints",
     // "Scoping sprint plans to time constraints",
     // "Using venues throughout the week for progressing research work",

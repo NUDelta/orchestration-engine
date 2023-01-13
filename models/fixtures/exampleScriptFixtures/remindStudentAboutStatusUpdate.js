@@ -23,7 +23,7 @@ export default {
       description: "Prompt student to start planning their Status Update and share plan with their mentor",
       strategy_function: (async function () {
         return await this.messageChannel({
-          message: "Your status update is a week from today! It's a good opportunity to get help from the entire community to progress your research work. \nIn planning your Status Update, consider: \n(1) what are the risks in your research understanding?; \n(2) what feedback from the community would be helpful to address these risks? (note: think about how this whole community can provide you support in a way that a 1-1 with a mentor or peer may not); and \n(3) what activity might you do to elicit this feedback? \n\n As you prepare, make sure to discuss your plans with your mentor--<@${ this.project.sigHead.slackId }>--during your next SIG meeting and/or Office Hours.",
+          message: "Your status update is a week from today! It's a good opportunity to get help from the entire community to progress your research work. \n\nIn planning your Status Update, consider: \n(1) what are the risks in your research understanding?; \n(2) what feedback from the community would be helpful to address these risks? (note: think about how this whole community can provide you support in a way that a 1-1 with a mentor or peer may not); and \n(3) what activity might you do to elicit this feedback? \n\n As you prepare, make sure to discuss your plans with your mentor--<@${ this.project.sigHead.slackId }>--during your next SIG meeting and/or Office Hours.",
           projectName: this.project.name,
           opportunity: (async function () {
             return await this.startOfVenue(
@@ -33,6 +33,7 @@ export default {
         })
       }).toString()
     },
+    // TODO: this breaks if the SIG is the same day as studio since the situation detector activates at the start of the day
     {
       name: "Check in on your student's preparation for Status Update",
       description: "Discuss how your students are planning to use Status Update later this week.",

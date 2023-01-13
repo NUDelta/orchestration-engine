@@ -122,6 +122,8 @@ export const after = async function(venue, timeAfter) {
 };
 
 // TODO: write test cases to check this more rigorously.
+// TODO (BUG): a venue that occurs the day before when the script is activated might break it
+// Ex: Status Update script for "2023-01-27T18:00:00.000Z" but SIG meeting is "2023-01-26T21:30:00.000Z"
 /**
  * Computes the date and time of the next available venue.
  * 
