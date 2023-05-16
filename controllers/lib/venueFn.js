@@ -8,8 +8,8 @@
  * }
  **/
 
-import { studioAPIUrl } from "../../index.js";
-import got from "got";
+import { studioAPIUrl } from '../../index.js';
+import got from 'got';
 
 // TODO: separate out the logic here into smaller controllers
 /**
@@ -29,40 +29,43 @@ export const venue = async function (venueName) {
   // parse venue name
   let parsedVenueName;
   switch (venueName) {
-    case "SIG":
-      parsedVenueName = "sig";
+    case 'SIG':
+      parsedVenueName = 'sig';
       break;
-    case "Studio":
-      parsedVenueName = "studio";
+    case 'Studio':
+      parsedVenueName = 'studio';
       break;
-    case "Office Hours":
-      parsedVenueName = "officehours";
+    case 'Office Hours':
+      parsedVenueName = 'officehours';
       break;
     default:
-      parsedVenueName = ""
+      parsedVenueName = '';
       break;
   }
 
   // select which venue to query for
   let venueInfo;
   try {
-     let response = await got.get(`${ studioAPIUrl }/venues/${ parsedVenueName }`,
-       { responseType: 'json' });
-     venueInfo = response.body;
+    let response = await got.get(`${studioAPIUrl}/venues/${parsedVenueName}`, {
+      responseType: 'json',
+    });
+    venueInfo = response.body;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 
   // if SIG or office hours, get the SIG of the students and then return just the venue for them
   let filteredVenue;
-  if ((parsedVenueName === "sig") || parsedVenueName === "officehours") {
+  if (parsedVenueName === 'sig' || parsedVenueName === 'officehours') {
     // get all projects
     let projectInfo;
     try {
-      let response = await got.get(`${ studioAPIUrl }/projects/`, { responseType: 'json' });
+      let response = await got.get(`${studioAPIUrl}/projects/`, {
+        responseType: 'json',
+      });
       projectInfo = response.body;
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+      console.error(`Error in fetching data from Studio API: ${error.stack}`);
     }
 
     // get project + sig
@@ -94,7 +97,7 @@ export const venue = async function (venueName) {
     day_of_week: filteredVenue.day_of_week,
     start_time: filteredVenue.start_time,
     end_time: filteredVenue.end_time,
-    timezone: filteredVenue.timezone
+    timezone: filteredVenue.timezone,
   };
 };
 
@@ -106,18 +109,17 @@ export const firstSigMeeting = async function () {
   // get info about first SIG meeting based on the this.project
   let venueInfo;
   try {
-    let response = await got.get(`${ studioAPIUrl }/venues/sig/firstSig`,
-      {
-        searchParams: {
-          projName: this.project
-        },
-        responseType: 'json'
-      });
+    let response = await got.get(`${studioAPIUrl}/venues/sig/firstSig`, {
+      searchParams: {
+        projName: this.project,
+      },
+      responseType: 'json',
+    });
     venueInfo = response.body;
 
     return venueInfo;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 };
 
@@ -129,18 +131,17 @@ export const lastSigMeeting = async function () {
   // get info about first SIG meeting based on the this.project
   let venueInfo;
   try {
-    let response = await got.get(`${ studioAPIUrl }/venues/sig/lastSig`,
-      {
-        searchParams: {
-          projName: this.project
-        },
-        responseType: 'json'
-      });
+    let response = await got.get(`${studioAPIUrl}/venues/sig/lastSig`, {
+      searchParams: {
+        projName: this.project,
+      },
+      responseType: 'json',
+    });
     venueInfo = response.body;
 
     return venueInfo;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 };
 

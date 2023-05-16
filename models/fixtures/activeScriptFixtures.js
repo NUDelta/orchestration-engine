@@ -1,11 +1,11 @@
-import { MonitoredScripts } from "../monitoredScripts.js";
-import { OrchestrationScript } from "../scriptLibrary.js";
-import { ActiveIssues } from "../activeIssues.js";
-import { ArchivedIssues } from "../archivedIssues.js";
+import { MonitoredScripts } from '../monitoredScripts.js';
+import { OrchestrationScript } from '../scriptLibrary.js';
+import { ActiveIssues } from '../activeIssues.js';
+import { ArchivedIssues } from '../archivedIssues.js';
 
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
-    "Support students in planning a Status Update for their project",
+    'Support students in planning a Status Update for their project',
     // "Fully planning sprints",
     // "Scoping sprint plans to time constraints",
     // "Using venues throughout the week for progressing research work",
@@ -18,15 +18,19 @@ const populateActiveScripts = async () => {
 
   for (let currScriptName of scriptsToActivateNames) {
     // check if there is already an MonitoredScripts for currScriptName
-    let relevantScript = await MonitoredScripts.findOne({ name: currScriptName });
+    let relevantScript = await MonitoredScripts.findOne({
+      name: currScriptName,
+    });
 
     // if no script found, add it
     if (relevantScript === null) {
       // get the template script from the script library
-      let templateScript = await OrchestrationScript.findOne({ name: currScriptName }).lean();
-      templateScript["script_id"] = templateScript._id;
-      delete templateScript._id
-      delete templateScript.__v
+      let templateScript = await OrchestrationScript.findOne({
+        name: currScriptName,
+      }).lean();
+      templateScript['script_id'] = templateScript._id;
+      delete templateScript._id;
+      delete templateScript.__v;
 
       let newActiveScript = new MonitoredScripts(templateScript);
       await newActiveScript.save();
@@ -39,7 +43,7 @@ const populateActiveScripts = async () => {
  * @param shouldEmpty
  * @returns {Promise<void>}
  */
-export const createActiveScriptFixtures = async (shouldEmpty=false) => {
+export const createActiveScriptFixtures = async (shouldEmpty = false) => {
   // clear out collections if specified
   if (shouldEmpty) {
     // clear out active scripts

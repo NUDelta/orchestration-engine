@@ -2,8 +2,8 @@
  * This model is for orchestration scripts that have been activated from the ScriptLibrary.
  */
 
-import mongoose from "mongoose";
-import { scriptSchema } from "./scriptLibrary.js";
+import mongoose from 'mongoose';
+import { scriptSchema } from './scriptLibrary.js';
 
 // TODO: add resources to actionable feedback
 
@@ -12,4 +12,7 @@ import { scriptSchema } from "./scriptLibrary.js";
  * Inherits the scriptSchema.
  * @type {Model<any>}
  */
-export const MonitoredScripts = mongoose.model("MonitoredScripts", scriptSchema);
+export const MonitoredScripts = mongoose.model(
+  'MonitoredScripts',
+  scriptSchema
+);

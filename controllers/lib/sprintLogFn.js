@@ -8,8 +8,8 @@
  * }
  **/
 
-import got from "got";
-import { studioAPIUrl } from "../../index.js";
+import got from 'got';
+import { studioAPIUrl } from '../../index.js';
 
 // TODO: this can be made into a generic that looks for any single or multiple key words/phrases
 /**
@@ -19,13 +19,13 @@ import { studioAPIUrl } from "../../index.js";
  * @return {Promise<boolean>}
  */
 export const hasPrototypeTask = async function (taskList) {
-  let searchTerm = "prototype"; // TODO: should also have prototyping
+  let searchTerm = 'prototype'; // TODO: should also have prototyping
   let hasPrototypeTask = false;
 
   // search for term "prototype" in task description
   for (let taskIndex in taskList) {
     let currentTask = taskList[taskIndex];
-    let currentTaskDescription = currentTask["description"].toLowerCase();
+    let currentTaskDescription = currentTask['description'].toLowerCase();
 
     if (currentTaskDescription.includes(searchTerm)) {
       hasPrototypeTask = true;
@@ -46,8 +46,8 @@ export const getTasksForSprint = async function () {
   let sprintInfo = await getCurrentSprint();
   let sprint;
 
-  for (let sprintIndex in relevantSprintLog["sprints"]) {
-    let currentSprint = relevantSprintLog["sprints"][sprintIndex];
+  for (let sprintIndex in relevantSprintLog['sprints']) {
+    let currentSprint = relevantSprintLog['sprints'][sprintIndex];
     if (currentSprint.name === sprintInfo.name) {
       sprint = currentSprint;
       break;
@@ -56,10 +56,10 @@ export const getTasksForSprint = async function () {
 
   // get all tasks for the sprint
   let tasks = [];
-  for (let storyIndex in sprint["stories"]) {
+  for (let storyIndex in sprint['stories']) {
     // append tasks from each story to tasks array
-    let currStory = sprint["stories"][storyIndex];
-    tasks.push(...currStory["tasks"]);
+    let currStory = sprint['stories'][storyIndex];
+    tasks.push(...currStory['tasks']);
   }
 
   // return tasks
@@ -72,8 +72,8 @@ export const getCurrentSprintLog = async function () {
   let sprintInfo = await getCurrentSprint();
   let sprint;
 
-  for (let sprintIndex in relevantSprintLog["sprints"]) {
-    let currentSprint = relevantSprintLog["sprints"][sprintIndex];
+  for (let sprintIndex in relevantSprintLog['sprints']) {
+    let currentSprint = relevantSprintLog['sprints'][sprintIndex];
     if (currentSprint.name === sprintInfo.name) {
       sprint = currentSprint;
       break;
@@ -94,16 +94,17 @@ const getSprintLogForProject = async function (projectName) {
   let projectSprintLog;
   try {
     let response = await got.get(
-      `${ studioAPIUrl }/projects/fetchSprintLogForProject`,
+      `${studioAPIUrl}/projects/fetchSprintLogForProject`,
       {
         searchParams: {
-          projectName: projectName
+          projectName: projectName,
         },
-        responseType: 'json'
-      });
+        responseType: 'json',
+      }
+    );
     projectSprintLog = response.body;
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 
   return projectSprintLog;
@@ -120,16 +121,14 @@ const getCurrentSprint = async function () {
   // fetch sprint for current date
   let currentSprintInfo;
   try {
-    currentSprintInfo = await got.get(
-      `${ studioAPIUrl }/sprints/currentSprint`,
-      {
-        searchParams: {
-          timestamp: currDate.toISOString()
-        },
-        responseType: 'json'
-      });
+    currentSprintInfo = await got.get(`${studioAPIUrl}/sprints/currentSprint`, {
+      searchParams: {
+        timestamp: currDate.toISOString(),
+      },
+      responseType: 'json',
+    });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 
   return currentSprintInfo.body;

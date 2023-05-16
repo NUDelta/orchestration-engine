@@ -1,5 +1,5 @@
-import { DateTime } from "luxon";
-import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
+import { DateTime } from 'luxon';
+import { getFromStudioAPI } from '../../imports/studioAPI/requests.js';
 
 /**
  * Returns all processes in the organization.
@@ -9,12 +9,14 @@ import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
 export const getAllProcesses = async () => {
   try {
     // get data from Studio API
-    let response = await getFromStudioAPI("sprints");
+    let response = await getFromStudioAPI('sprints');
 
     // setup each object and return
-    return response.body.map(process => { return formatProcessOrgObject(process); });
+    return response.body.map((process) => {
+      return formatProcessOrgObject(process);
+    });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
     return error;
   }
 };
@@ -27,12 +29,12 @@ export const getAllProcesses = async () => {
 export const getCurrentProcesses = async () => {
   try {
     // get data from Studio API
-    let response = await getFromStudioAPI("sprints/currentSprint");
+    let response = await getFromStudioAPI('sprints/currentSprint');
 
     // setup each object and return
     return formatProcessOrgObject(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
     return error;
   }
 };
@@ -53,10 +55,10 @@ export const getCurrentProcesses = async () => {
 const formatProcessOrgObject = (processApiObj) => {
   // generate the organization data object
   return {
-    targetType: "process",
+    targetType: 'process',
     name: processApiObj.name,
     kind: processApiObj.kind,
     startDay: DateTime.fromISO(processApiObj.start_day).toJSDate(),
-    endDay: DateTime.fromISO(processApiObj.end_day).toJSDate()
+    endDay: DateTime.fromISO(processApiObj.end_day).toJSDate(),
   };
 };

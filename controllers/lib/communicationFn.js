@@ -15,30 +15,27 @@
  * }
  **/
 
-import { studioAPIUrl } from "../../index.js";
-import got from "got";
+import { studioAPIUrl } from '../../index.js';
+import got from 'got';
 
 // TODO: support message (with text and/or resources) being inject this into the function
 /**
  * Sends a message to a Project Channel, given a project and message.
  * @return {Promise<void>}
  */
-export const sendSlackMessageForProject = async function() {
+export const sendSlackMessageForProject = async function () {
   // get project and message
   let projName = this.project;
   let message = this.message;
 
   // send message to project channel
   try {
-    await got.post(
-      `${ studioAPIUrl }/slack/sendMessageToProjChannel`,
-      {
-        json: { projName, message },
-        responseType: "json"
-      }
-    );
+    await got.post(`${studioAPIUrl}/slack/sendMessageToProjChannel`, {
+      json: { projName, message },
+      responseType: 'json',
+    });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 };
 
@@ -53,25 +50,24 @@ export const sendSlackMessageToSig = async function () {
 
   try {
     // get sig name for project
-    let sigNameResponse = await got.get(`${ studioAPIUrl }/projects/projectByName`,
+    let sigNameResponse = await got.get(
+      `${studioAPIUrl}/projects/projectByName`,
       {
         searchParams: { projName },
-        responseType: 'json'
-      });
+        responseType: 'json',
+      }
+    );
 
     let sigName = sigNameResponse.body.sig_name;
     if (sigName !== undefined) {
       // send message to SIG channel
-      await got.post(
-        `${ studioAPIUrl }/slack/sendMessageToSigChannel`,
-        {
-          json: { sigName, message },
-          responseType: "json"
-        }
-      );
+      await got.post(`${studioAPIUrl}/slack/sendMessageToSigChannel`, {
+        json: { sigName, message },
+        responseType: 'json',
+      });
     }
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 };
 
@@ -82,38 +78,37 @@ export const sendSlackMessageToSig = async function () {
 export const sendSlackMessageToFacultyMentor = async function () {
   // get project and message
   let projName = this.project;
-  let message = eval('`'+ this.message + '`');
+  let message = eval('`' + this.message + '`');
 
   try {
     // get info for project
-    let projectInfoResponse = await got.get(`${ studioAPIUrl }/projects/projectByName`,
+    let projectInfoResponse = await got.get(
+      `${studioAPIUrl}/projects/projectByName`,
       {
         searchParams: { projName },
-        responseType: 'json'
-      });
+        responseType: 'json',
+      }
+    );
 
     // get the faculty mentor and send a message to them
     let facultyMentorName = projectInfoResponse.body.faculty_mentor.name;
     if (facultyMentorName !== undefined) {
       // send message to SIG channel
-      await got.post(
-        `${ studioAPIUrl }/slack/sendMessageToPeople`,
-        {
-          json: {
-            people: JSON.stringify([facultyMentorName]),
-            message: message
-          },
-          responseType: "json"
-        }
-      );
+      await got.post(`${studioAPIUrl}/slack/sendMessageToPeople`, {
+        json: {
+          people: JSON.stringify([facultyMentorName]),
+          message: message,
+        },
+        responseType: 'json',
+      });
     }
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
-}
+};
 
 // TODO: fix to use single project (this is old code)
-export const getSlackChannelForProject = async function() {
+export const getSlackChannelForProject = async function () {
   // get projects
   let projects = this.projects;
   let slackChannels = [];
@@ -121,16 +116,17 @@ export const getSlackChannelForProject = async function() {
   for (let currProj of projects) {
     try {
       let response = await got.get(
-        `${ studioAPIUrl }/slack/slackChannelForProject`,
+        `${studioAPIUrl}/slack/slackChannelForProject`,
         {
           searchParams: {
-            projectName: currProj
+            projectName: currProj,
           },
-          responseType: 'json'
-        });
+          responseType: 'json',
+        }
+      );
       slackChannels.push(response.body);
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+      console.error(`Error in fetching data from Studio API: ${error.stack}`);
     }
   }
 
@@ -138,26 +134,23 @@ export const getSlackChannelForProject = async function() {
 };
 
 // TODO: why does this take an input instead of using the info from this?
-export const getSlackIdForPerson = async function(people) {
+export const getSlackIdForPerson = async function (people) {
   // get people
   let slackIds = [];
 
   for (let person of people) {
     try {
-      let response = await got.get(
-        `${ studioAPIUrl }/users/slackIdForPerson`,
-        {
-          searchParams: {
-            personName: person
-          },
-          responseType: 'json'
-        });
+      let response = await got.get(`${studioAPIUrl}/users/slackIdForPerson`, {
+        searchParams: {
+          personName: person,
+        },
+        responseType: 'json',
+      });
       slackIds.push(response.body);
     } catch (error) {
-      console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+      console.error(`Error in fetching data from Studio API: ${error.stack}`);
     }
   }
 
   return slackIds;
 };
-

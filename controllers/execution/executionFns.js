@@ -1,32 +1,37 @@
 // TODO: need to catch errors if things fail
-import { ExecutionEnv } from "./executionEnv.js";
+import { ExecutionEnv } from './executionEnv.js';
 import {
   getAllProjects,
   getProjectByName,
-  getProjectForPerson, getProjectsForPeople
-} from "../dataFetchers/fetchProjects.js";
-import { getAllPeople } from "../dataFetchers/fetchPeople.js";
-import { getAllProcesses } from "../dataFetchers/fetchProcesses.js";
+  getProjectForPerson,
+  getProjectsForPeople,
+} from '../dataFetchers/fetchProjects.js';
+import { getAllPeople } from '../dataFetchers/fetchPeople.js';
+import { getAllProcesses } from '../dataFetchers/fetchProcesses.js';
 import {
   getAllSocialStructures,
-  getSocialStructuresForProject
-} from "../dataFetchers/fetchSocialStructures.js";
-import { getAllVenues, getVenuesForProject, getVenuesForSig } from "../dataFetchers/fetchVenues.js";
-import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
+  getSocialStructuresForProject,
+} from '../dataFetchers/fetchSocialStructures.js';
+import {
+  getAllVenues,
+  getVenuesForProject,
+  getVenuesForSig,
+} from '../dataFetchers/fetchVenues.js';
+import { floorDateToNearestFiveMinutes } from '../../imports/utils.js';
 
 // TODO: error checking
 /**
  * Fetches all organization data objects form the Studio API.
  * @returns {Promise<{processes: [], projects: [], venues: [], socialStructures: [], people: []}>}
  */
-export async function fetchAlOrgObjs () {
+export async function fetchAlOrgObjs() {
   // fetch and return all organization objects
   return {
     projects: await getAllProjects(),
     people: await getAllPeople(),
     processes: await getAllProcesses(),
     socialStructures: await getAllSocialStructures(),
-    venues: await getAllVenues()
+    venues: await getAllVenues(),
   };
 }
 
@@ -36,7 +41,7 @@ export async function fetchAlOrgObjs () {
  * applicable set. Typically, these functions will be filters on the existing organization objects.
  * @returns {Promise<[]>} promise that, when resolved, returns a list of organization objects.
  */
-export async function computeApplicableSet (applicableSetFn) {
+export async function computeApplicableSet(applicableSetFn) {
   // get all targets
   let allOrgObjs = await fetchAlOrgObjs();
 
@@ -51,12 +56,12 @@ export async function computeApplicableSet (applicableSetFn) {
  * @param currTarget object the current organization object the orchestration script is being evaluated on.
  * @returns {Promise<{processes: [], project, venues: [], socialStructures: []}>}
  */
-export async function getRefreshedObjsForTarget (currTarget) {
+export async function getRefreshedObjsForTarget(currTarget) {
   let newObjs;
   let targetType = currTarget.targetType;
   // TODO: should processes be current processes?
   switch (targetType) {
-    case "project":
+    case 'project':
       newObjs = {
         project: currTarget,
         processes: await getAllProcesses(),
@@ -64,21 +69,23 @@ export async function getRefreshedObjsForTarget (currTarget) {
         venues: await getVenuesForProject(currTarget.name),
       };
       break;
-    case "person":
+    case 'person':
       break;
-    case "process":
+    case 'process':
       break;
-    case "social structure":
+    case 'social structure':
       newObjs = {
         projects: await getProjectsForPeople(
-          currTarget.members.map(person => { return person.name })
+          currTarget.members.map((person) => {
+            return person.name;
+          })
         ),
         processes: await getAllProcesses(),
         socialStructure: currTarget,
         venues: await getVenuesForSig(currTarget.name),
       };
       break;
-    case "venue":
+    case 'venue':
       break;
   }
 
@@ -126,23 +133,31 @@ export async function executeStrategies(orgObj, strategies) {
       );
 
       // get opportunity fn, output fn, and args for the output fn
-      let { opportunity_fn, outlet_fn, outlet_args } = await strategyFnRunner.runScript();
+      let { opportunity_fn, outlet_fn, outlet_args } =
+        await strategyFnRunner.runScript();
 
       // compute the opportunity
       let opportunityFnRunner = new ExecutionEnv(orgObj, opportunity_fn);
-      let computedOpportunity = await opportunityFnRunner.runScript()
+      let computedOpportunity = await opportunityFnRunner.runScript();
 
       // floor to nearest 5 minutes to make sure any drift on server doesn't prevent matching
-      let flooredComputedOpportunity = floorDateToNearestFiveMinutes(computedOpportunity);
+      let flooredComputedOpportunity =
+        floorDateToNearestFiveMinutes(computedOpportunity);
 
       // add computed strategies
       computedStrategies.push({
         opportunity: flooredComputedOpportunity,
         outlet_fn: outlet_fn,
-        outlet_args: outlet_args
+        outlet_args: outlet_args,
       });
     } catch (error) {
-      console.error(`Error in computing opportunity: \nOrg Object: ${ JSON.stringify(orgObj, null, 4) }\nStrategy: ${ JSON.stringify(currStrategy, null, 4) }`);
+      console.error(
+        `Error in computing opportunity: \nOrg Object: ${JSON.stringify(
+          orgObj,
+          null,
+          4
+        )}\nStrategy: ${JSON.stringify(currStrategy, null, 4)}`
+      );
     }
   }
 

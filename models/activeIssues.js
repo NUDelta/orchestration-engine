@@ -2,7 +2,7 @@
  * This model is the activated issues caused by detectors returning true for a student or project.
  */
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // TODO: add resources to actionable feedback
 
@@ -11,9 +11,13 @@ import mongoose from "mongoose";
  * These are monitored for to see if a strategy should be delivered.
  * @type {Model<T & Document<any, any, any>>}
  */
-export const ActiveIssues = mongoose.model("ActiveIssues",
+export const ActiveIssues = mongoose.model(
+  'ActiveIssues',
   new mongoose.Schema({
-    script_id: { type: mongoose.Schema.Types.ObjectId, ref: "MonitoredScripts"},
+    script_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'MonitoredScripts',
+    },
     name: { type: String, required: true },
     date_triggered: { type: Date, default: Date.now() },
     expiry_time: { type: Date, required: true },
@@ -24,8 +28,8 @@ export const ActiveIssues = mongoose.model("ActiveIssues",
       {
         opportunity: { type: Date, required: true },
         outlet_fn: { type: String, required: true }, // function that returns where the feedback should go
-        outlet_args: { type: Object, required: true }
-      }
-    ]
+        outlet_args: { type: Object, required: true },
+      },
+    ],
   })
 );

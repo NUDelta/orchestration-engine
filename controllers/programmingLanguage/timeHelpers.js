@@ -1,8 +1,8 @@
 /**
  * This module contains helper functions for manipulating dates.
  */
-import { DateTime } from "luxon";
-import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
+import { DateTime } from 'luxon';
+import { getFromStudioAPI } from '../../imports/studioAPI/requests.js';
 
 /*
   TODO:
@@ -24,7 +24,7 @@ export const weeksBefore = async function (eventDate, numWeeks) {
   let shiftedTime = DateTime.fromJSDate(eventDate).minus({
     hours: numWeeks * 7 * 24, // numWeeks * 7 days/week * 24 hours/day
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   // return the shifted time
@@ -42,7 +42,7 @@ export const daysBefore = async function (eventDate, numDays) {
   let shiftedTime = DateTime.fromJSDate(eventDate).minus({
     hours: numDays * 24, // numDays * 24 hours/day
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   // return the shifted time
@@ -56,14 +56,11 @@ export const daysBefore = async function (eventDate, numDays) {
  * @returns {Promise<Date>} date numDays before venue's start time.
  */
 export const daysBeforeVenue = async function (venue, numDays) {
-  return before(
-    venue,
-    {
-      hours: numDays * 24, // numDays * 24 hours/day
-      minutes: 0,
-      seconds: 0
-    }
-  );
+  return before(venue, {
+    hours: numDays * 24, // numDays * 24 hours/day
+    minutes: 0,
+    seconds: 0,
+  });
 };
 
 /**
@@ -73,14 +70,11 @@ export const daysBeforeVenue = async function (venue, numDays) {
  * @returns {Promise<Date>} date numHours before venue's start time.
  */
 export const hoursBeforeVenue = async function (venue, numHours) {
-  return before(
-    venue,
-    {
-      hours: numHours,
-      minutes: 0,
-      seconds: 0
-    }
-  );
+  return before(venue, {
+    hours: numHours,
+    minutes: 0,
+    seconds: 0,
+  });
 };
 
 /**
@@ -90,14 +84,11 @@ export const hoursBeforeVenue = async function (venue, numHours) {
  * @returns {Promise<Date>} date numMinutes before venue's start time.
  */
 export const minutesBeforeVenue = async function (venue, numMinutes) {
-  return before(
-    venue,
-    {
-      hours: 0,
-      minutes: numMinutes,
-      seconds: 0
-    }
-  );
+  return before(venue, {
+    hours: 0,
+    minutes: numMinutes,
+    seconds: 0,
+  });
 };
 
 /**
@@ -111,7 +102,7 @@ export const weeksAfter = async function (eventDate, numWeeks) {
   let shiftedTime = DateTime.fromJSDate(eventDate).plus({
     hours: numWeeks * 7 * 24, // numWeeks * 7 days/week * 24 hours/day
     minutes: 0,
-    seconds: 0
+    seconds: 0,
   });
 
   // return the shifted time
@@ -125,14 +116,11 @@ export const weeksAfter = async function (eventDate, numWeeks) {
  * @returns {Promise<Date>} date numDays after venue's start time.
  */
 export const daysAfterVenue = async function (venue, numDays) {
-  return after(
-    venue,
-    {
-      hours: numDays * 24, // numDays * 24 hours/day
-      minutes: 0,
-      seconds: 0
-    }
-  );
+  return after(venue, {
+    hours: numDays * 24, // numDays * 24 hours/day
+    minutes: 0,
+    seconds: 0,
+  });
 };
 
 /**
@@ -142,14 +130,11 @@ export const daysAfterVenue = async function (venue, numDays) {
  * @returns {Promise<Date>} date numHours after venue's end time.
  */
 export const hoursAfterVenue = async function (venue, numHours) {
-  return after(
-    venue,
-    {
-      hours: numHours,
-      minutes: 0,
-      seconds: 0
-    }
-  );
+  return after(venue, {
+    hours: numHours,
+    minutes: 0,
+    seconds: 0,
+  });
 };
 
 /**
@@ -159,14 +144,11 @@ export const hoursAfterVenue = async function (venue, numHours) {
  * @returns {Promise<Date>} date numMinutes after venue's start time.
  */
 export const minutesAfterVenue = async function (venue, numMinutes) {
-  return after(
-    venue,
-    {
-      hours: 0,
-      minutes: numMinutes,
-      seconds: 0
-    }
-  );
+  return after(venue, {
+    hours: 0,
+    minutes: numMinutes,
+    seconds: 0,
+  });
 };
 
 /**
@@ -175,7 +157,7 @@ export const minutesAfterVenue = async function (venue, numMinutes) {
  * @returns {Promise<Date>} date of next venue in the morning.
  */
 export const morningOfVenue = async function (venue) {
-  return getTimeOfDayForVenue(venue, "morning");
+  return getTimeOfDayForVenue(venue, 'morning');
 };
 
 /**
@@ -184,7 +166,7 @@ export const morningOfVenue = async function (venue) {
  * @returns {Promise<Date>} date of next venue at noon.
  */
 export const noonOfVenue = async function (venue) {
-  return getTimeOfDayForVenue(venue, "noon");
+  return getTimeOfDayForVenue(venue, 'noon');
 };
 
 /**
@@ -193,7 +175,7 @@ export const noonOfVenue = async function (venue) {
  * @returns {Promise<Date>} date of next venue in the afternoon.
  */
 export const afternoonOfVenue = async function (venue) {
-  return getTimeOfDayForVenue(venue, "afternoon");
+  return getTimeOfDayForVenue(venue, 'afternoon');
 };
 
 /**
@@ -202,7 +184,7 @@ export const afternoonOfVenue = async function (venue) {
  * @returns {Promise<Date>} date of next venue in the evening.
  */
 export const eveningOfVenue = async function (venue) {
-  return getTimeOfDayForVenue(venue, "evening");
+  return getTimeOfDayForVenue(venue, 'evening');
 };
 
 /**
@@ -238,31 +220,30 @@ const setTimeOfDayForDate = function (date, timezone, timeOfDay) {
   // change time based on timeOfDay
   let timeSetter = {
     minute: 0,
-    second: 0
+    second: 0,
   };
-  switch(timeOfDay) {
-    case "morning":
+  switch (timeOfDay) {
+    case 'morning':
       timeSetter.hour = 9;
       break;
-    case "noon":
+    case 'noon':
       timeSetter.hour = 12;
       break;
-    case "afternoon":
+    case 'afternoon':
       timeSetter.hour = 15;
       break;
-    case "evening":
+    case 'evening':
       timeSetter.hour = 18;
       break;
   }
 
   // set timestamp and return.
-  let setTimestamp = DateTime
-    .fromJSDate(date)
+  let setTimestamp = DateTime.fromJSDate(date)
     .setZone(timezone)
     .set(timeSetter);
 
   return setTimestamp.toUTC().toJSDate();
-}
+};
 
 /**
  * Returns the Date corresponding to the start time of a venue.
@@ -300,11 +281,9 @@ export const endOfVenue = async function (venue) {
 export const getFirst = async function (venue) {
   try {
     // query studio api for first instance of venue
-    let response = await getFromStudioAPI(
-      "venues/firstInstance",
-      {
-        venueName: venue.name
-      });
+    let response = await getFromStudioAPI('venues/firstInstance', {
+      venueName: venue.name,
+    });
 
     // parse info and return
     let responseBody = response.body;
@@ -312,10 +291,10 @@ export const getFirst = async function (venue) {
       name: responseBody.name,
       start_time: DateTime.fromISO(responseBody.start_time).toJSDate(),
       end_time: DateTime.fromISO(responseBody.end_time).toJSDate(),
-      timezone: responseBody.timezone
+      timezone: responseBody.timezone,
     };
   } catch (error) {
-    console.error(`Error in getFirst PL function: ${ error }`);
+    console.error(`Error in getFirst PL function: ${error}`);
     return {};
   }
 };
@@ -328,11 +307,9 @@ export const getFirst = async function (venue) {
 export const getLast = async function (venue) {
   try {
     // query studio api for first instance of venue
-    let response = await getFromStudioAPI(
-      "venues/lastInstance",
-      {
-        venueName: venue.name
-      });
+    let response = await getFromStudioAPI('venues/lastInstance', {
+      venueName: venue.name,
+    });
 
     // parse info and return
     let responseBody = response.body;
@@ -340,10 +317,10 @@ export const getLast = async function (venue) {
       name: responseBody.name,
       start_time: DateTime.fromISO(responseBody.start_time).toJSDate(),
       end_time: DateTime.fromISO(responseBody.end_time).toJSDate(),
-      timezone: responseBody.timezone
+      timezone: responseBody.timezone,
     };
   } catch (error) {
-    console.error(`Error in getLast PL function: ${ error }`);
+    console.error(`Error in getLast PL function: ${error}`);
     return {};
   }
 };
@@ -381,7 +358,7 @@ const before = function (venue, timeBefore) {
   let shiftedTime = DateTime.fromJSDate(nextVenue.start_time).minus({
     hours: timeBefore.hours,
     minutes: timeBefore.minutes,
-    seconds: timeBefore.seconds
+    seconds: timeBefore.seconds,
   });
 
   // return the time that script should trigger
@@ -422,7 +399,7 @@ const after = function (venue, timeAfter) {
   let shiftedTime = DateTime.fromJSDate(nextVenue.end_time).plus({
     hours: timeAfter.hours,
     minutes: timeAfter.minutes,
-    seconds: timeAfter.seconds
+    seconds: timeAfter.seconds,
   });
 
   // return the time that script should trigger
@@ -443,10 +420,15 @@ const after = function (venue, timeAfter) {
  * @param venueEndTime
  * @param timezone
  */
-const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime, timezone) {
+const computeNextVenue = function (
+  targetDayOfWeek,
+  venueStartTime,
+  venueEndTime,
+  timezone
+) {
   // create new DateTime object for the current week in the venue's timezone
   // zero out the time (hours, mins, secs, milliseconds)
-  let currentWeekDate = DateTime.now().setZone(timezone).startOf("day");
+  let currentWeekDate = DateTime.now().setZone(timezone).startOf('day');
 
   // get the number of days to shift date based on when the next venue is
   // note that this is sunday = 0 while luxon is monday = 0
@@ -463,18 +445,18 @@ const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime
   let nextVenueDate = currentWeekDate.plus({ days: nextVenueDayShift });
 
   // create new start and end times for the venue
-  let [startHours, startMinutes, startSeconds] = venueStartTime.split(":");
+  let [startHours, startMinutes, startSeconds] = venueStartTime.split(':');
   let nextVenueStartTime = nextVenueDate.set({
     hour: startHours,
     minute: startMinutes,
-    second: startSeconds
+    second: startSeconds,
   });
 
-  let [endHours, endMinutes, endSeconds] = venueEndTime.split(":");
+  let [endHours, endMinutes, endSeconds] = venueEndTime.split(':');
   let nextVenueEndTime = nextVenueDate.set({
     hour: endHours,
     minute: endMinutes,
-    second: endSeconds
+    second: endSeconds,
   });
 
   // console.log('Current date', currDate)
@@ -490,7 +472,7 @@ const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime
   // careful tho since the venue may still be applicable with the after function
   return {
     start_time: nextVenueStartTime.toUTC().toJSDate(),
-    end_time: nextVenueEndTime.toUTC().toJSDate()
+    end_time: nextVenueEndTime.toUTC().toJSDate(),
   };
 };
 
@@ -503,25 +485,25 @@ const computeNextVenue = function (targetDayOfWeek, venueStartTime, venueEndTime
 const dayOfWeekToIndex = function (dayString) {
   let dayIndex;
   switch (dayString) {
-    case "Sunday":
+    case 'Sunday':
       dayIndex = 0;
       break;
-    case "Monday":
+    case 'Monday':
       dayIndex = 1;
       break;
-    case "Tuesday":
+    case 'Tuesday':
       dayIndex = 2;
       break;
-    case "Wednesday":
+    case 'Wednesday':
       dayIndex = 3;
       break;
-    case "Thursday":
+    case 'Thursday':
       dayIndex = 4;
       break;
-    case "Friday":
+    case 'Friday':
       dayIndex = 5;
       break;
-    case "Saturday":
+    case 'Saturday':
       dayIndex = 6;
       break;
   }

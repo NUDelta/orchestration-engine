@@ -1,12 +1,16 @@
-import sinon from "sinon";
+import sinon from 'sinon';
 import {
   checkActiveIssues,
   checkMonitoredScripts,
-  archiveStaleIssues
-} from "../execution/executionFlow.js";
+  archiveStaleIssues,
+} from '../execution/executionFlow.js';
 
-const ObjectId = (m = Math, d = Date, h = 16, s = s => m.floor(s).toString(h)) =>
-  s(d.now() / 1000) + ' '.repeat(h).replace(/./g, () => s(m.random() * h));
+const ObjectId = (
+  m = Math,
+  d = Date,
+  h = 16,
+  s = (s) => m.floor(s).toString(h)
+) => s(d.now() / 1000) + ' '.repeat(h).replace(/./g, () => s(m.random() * h));
 
 /**
  * Simulates all monitored orchestration scripts from simStartDate to simEndDate.
@@ -15,7 +19,11 @@ const ObjectId = (m = Math, d = Date, h = 16, s = s => m.floor(s).toString(h)) =
  * @param tickAmount number of miliseconds to tick the internal clock each iteration.
  * @returns {Promise<boolean|*>} promise if resolved will return true if simulation was successful.
  */
-export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount) => {
+export const runSimulationOfScript = async (
+  simStartDate,
+  simEndDate,
+  tickAmount
+) => {
   try {
     // setup clock
     let clock;
@@ -26,7 +34,7 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
     let endDate = simEndDate;
 
     // simulate and check the trigger
-    console.log(`------ Simulating from ${ currDate } to ${ endDate } ------ `);
+    console.log(`------ Simulating from ${currDate} to ${endDate} ------ `);
     while (currDate < endDate) {
       // pull out date components
       let currHours = currDate.getHours();
@@ -34,11 +42,15 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
       let currSecs = currDate.getSeconds();
 
       // compute the current date string
-      let currTimeStr = `${ padDate(currHours, 2, "0") }:${ padDate(currMins, 2, "0") }`;
+      let currTimeStr = `${padDate(currHours, 2, '0')}:${padDate(
+        currMins,
+        2,
+        '0'
+      )}`;
 
       // print day/date only if time is 00:00
-      if (currHours=== 0 && currMins === 0 && currSecs === 0) {
-        console.log(`\n${ currDate.toDateString() }`);
+      if (currHours === 0 && currMins === 0 && currSecs === 0) {
+        console.log(`\n${currDate.toDateString()}`);
       }
 
       // add some jitter to the timestamp (0 - 30 seconds + up to 1000ms) to simulate lag on server
@@ -50,7 +62,7 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
       let createdIssues = await checkMonitoredScripts();
 
       // add more jitter to the timestamp (60 - 120 seconds + up to 1000ms) to simulate completion time of step 1
-      let step2JitterSeconds = Math.round(60 + (Math.random() * 60))  * 1000; // 60-120 s * 1000 ms/s
+      let step2JitterSeconds = Math.round(60 + Math.random() * 60) * 1000; // 60-120 s * 1000 ms/s
       let step2JitterMilliseconds = Math.round(Math.random() * 1000); // 0-1000 ms
       clock.tick(step2JitterSeconds + step2JitterMilliseconds);
 
@@ -58,7 +70,7 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
       let deliveredStrategies = await checkActiveIssues();
 
       // add more jitter to the timestamp (60 - 120 seconds + up to 1000ms) to simulate completion time of step 2
-      let step3JitterSeconds = Math.round(60 + (Math.random() * 120)) * 1000; // 60-120 s * 1000 ms/s
+      let step3JitterSeconds = Math.round(60 + Math.random() * 120) * 1000; // 60-120 s * 1000 ms/s
       let step3JitterMilliseconds = Math.round(Math.random() * 1000); // 0-1000 ms
       clock.tick(step3JitterSeconds + step3JitterMilliseconds);
 
@@ -72,25 +84,36 @@ export const runSimulationOfScript = async (simStartDate, simEndDate, tickAmount
           let currOppScriptName = deliveredStrategy.name;
           let currOppTargetProj = deliveredStrategy.issue_target.name;
           let currOppTargetSts = deliveredStrategy.issue_target.students;
-          let currOppFeedback = deliveredStrategy.delivered_strategy.outlet_args.message;
+          let currOppFeedback =
+            deliveredStrategy.delivered_strategy.outlet_args.message;
 
-          console.log("--------------------------------------------------------------");
-          console.log(`Feedback for ${ currOppScriptName } sent at ${ currTimeStr } to ${ currOppTargetProj }'s Slack Channel:\n${ currOppFeedback }`);
-          console.log("--------------------------------------------------------------");
+          console.log(
+            '--------------------------------------------------------------'
+          );
+          console.log(
+            `Feedback for ${currOppScriptName} sent at ${currTimeStr} to ${currOppTargetProj}'s Slack Channel:\n${currOppFeedback}`
+          );
+          console.log(
+            '--------------------------------------------------------------'
+          );
 
           feedbackWasPresented = true;
         }
       }
 
       // print current time only if its a multiple of 6 and time was not included with feedback
-      if ((currHours % 6 === 0) && (currMins === 0) && !feedbackWasPresented) {
+      if (currHours % 6 === 0 && currMins === 0 && !feedbackWasPresented) {
         console.log(currTimeStr);
       }
 
       // tick clock by 1 hour - jitter that was added above
-      let totalJitter = step1JitterSeconds + step1JitterMilliseconds +
-        step2JitterSeconds + step2JitterMilliseconds +
-        step3JitterSeconds + step3JitterMilliseconds;
+      let totalJitter =
+        step1JitterSeconds +
+        step1JitterMilliseconds +
+        step2JitterSeconds +
+        step2JitterMilliseconds +
+        step3JitterSeconds +
+        step3JitterMilliseconds;
 
       clock.tick(tickAmount - totalJitter);
       currDate = new Date();

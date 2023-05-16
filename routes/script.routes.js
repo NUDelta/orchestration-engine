@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { runSimulationOfScript } from "../controllers/simulator/scriptSimulator.js";
+import { Router } from 'express';
+import { runSimulationOfScript } from '../controllers/simulator/scriptSimulator.js';
 
 export const scriptRouter = new Router();
 
@@ -44,8 +44,8 @@ export const scriptRouter = new Router();
 //   res.json(activatedScript);
 // });
 
-scriptRouter.post("/runSimulationForScripts", async (req, res) => {
-  let tickAmount
+scriptRouter.post('/runSimulationForScripts', async (req, res) => {
+  let tickAmount;
   let startDate;
   let endDate;
 
@@ -59,14 +59,15 @@ scriptRouter.post("/runSimulationForScripts", async (req, res) => {
     let output = await runSimulationOfScript(
       new Date(startDate),
       new Date(endDate),
-      tickAmount);
+      tickAmount
+    );
 
     if (output) {
       // return 200 status if successful
       res.status(200).send(`Script simulation completed.`);
     }
   } catch (error) {
-    console.error(`Error in /runTestForScript route: ${ error.stack }`);
+    console.error(`Error in /runTestForScript route: ${error.stack}`);
     res.json(error);
   }
 });

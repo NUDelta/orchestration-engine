@@ -1,5 +1,5 @@
-import { DateTime } from "luxon";
-import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
+import { DateTime } from 'luxon';
+import { getFromStudioAPI } from '../../imports/studioAPI/requests.js';
 
 /**
  * Returns all projects in the organization.
@@ -8,12 +8,14 @@ import { getFromStudioAPI } from "../../imports/studioAPI/requests.js";
 export const getAllProjects = async () => {
   try {
     // get data from Studio API
-    let response = await getFromStudioAPI("projects", { populateTools: true });
+    let response = await getFromStudioAPI('projects', { populateTools: true });
 
     // setup each object and return
-    return response.body.map(proj => { return formatProjectOrgObj(proj); });
+    return response.body.map((proj) => {
+      return formatProjectOrgObj(proj);
+    });
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
     return error;
   }
 };
@@ -26,15 +28,15 @@ export const getAllProjects = async () => {
 export const getProjectByName = async (projName) => {
   try {
     // get data from Studio API
-    let response = await getFromStudioAPI("projects/byName", {
+    let response = await getFromStudioAPI('projects/byName', {
       projectName: projName,
-      populateTools: true
+      populateTools: true,
     });
 
     // format project and return
     return formatProjectOrgObj(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
     return error;
   }
 };
@@ -47,15 +49,15 @@ export const getProjectByName = async (projName) => {
 export const getProjectForPerson = async (personName) => {
   try {
     // get data from Studio API
-    let response = await getFromStudioAPI("projects/forPerson", {
+    let response = await getFromStudioAPI('projects/forPerson', {
       personName: personName,
-      populateTools: true
+      populateTools: true,
     });
 
     // format project and return
     return formatProjectOrgObj(response.body);
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
     return error;
   }
 };
@@ -81,10 +83,10 @@ export const getProjectsForPeople = async (peopleList) => {
 
     return (await Promise.all(outputProjects)).flat();
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
     return error;
   }
-}
+};
 
 /**
  * Converts JSON project from Studio API into a representation for programming on.
@@ -150,56 +152,58 @@ export const getProjectsForPeople = async (peopleList) => {
 const formatProjectOrgObj = (projApiObj) => {
   // generate the organization data object
   return {
-    targetType: "project",
+    targetType: 'project',
     name: projApiObj.name,
     sig: projApiObj.sig_name,
     sigHead: {
       name: projApiObj.sig_head.name,
       role: projApiObj.sig_head.role,
       email: projApiObj.sig_head.email,
-      slackId: projApiObj.sig_head.slack_id
+      slackId: projApiObj.sig_head.slack_id,
     },
-    students: projApiObj.students.map(student => {
+    students: projApiObj.students.map((student) => {
       return {
         name: student.name,
         role: student.role,
         email: student.email,
         slackId: student.slack_id,
-        tools:{
+        tools: {
           individualProgressMap: {
-            url: student.individual_progress_map ?? ""
+            url: student.individual_progress_map ?? '',
           },
           midQuarterCheckIn: {
-            url: student.mid_quarter_check_in ?? ""
+            url: student.mid_quarter_check_in ?? '',
           },
           eoqSelfAssessment: {
-            url: student.eoq_self_assessment ?? ""
+            url: student.eoq_self_assessment ?? '',
           },
-        }
-      }
+        },
+      };
     }),
     facultyMentor: {
       name: projApiObj.faculty_mentor.name,
       role: projApiObj.faculty_mentor.role,
       email: projApiObj.faculty_mentor.email,
-      slackId: projApiObj.faculty_mentor.slack_id
+      slackId: projApiObj.faculty_mentor.slack_id,
     },
     slackChannel: projApiObj.slack_channel,
-    statusUpdateDate: DateTime.fromISO(projApiObj.status_update_date).toJSDate(),
+    statusUpdateDate: DateTime.fromISO(
+      projApiObj.status_update_date
+    ).toJSDate(),
     tools: {
       sprintLog: projApiObj.sprint_log.current_sprint,
       compass: {
-        url: projApiObj.compass
+        url: projApiObj.compass,
       },
       practicalResearchCanvas: {
-        url: projApiObj.practical_research_canvas
+        url: projApiObj.practical_research_canvas,
       },
       researchResearchCanvas: {
-        url: projApiObj.research_research_canvas
+        url: projApiObj.research_research_canvas,
       },
       eoqChecklist: {
-        url: projApiObj.eoq_checklist
+        url: projApiObj.eoq_checklist,
       },
-    }
+    },
   };
 };

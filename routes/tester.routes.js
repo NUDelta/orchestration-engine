@@ -1,38 +1,49 @@
-import { Router } from "express";
+import { Router } from 'express';
 import {
   getAllProjects,
   getProjectByName,
-  getProjectForPerson
-} from "../controllers/dataFetchers/fetchProjects.js";
-import { getFirst, getLast } from "../controllers/programmingLanguage/timeHelpers.js";
+  getProjectForPerson,
+} from '../controllers/dataFetchers/fetchProjects.js';
+import {
+  getFirst,
+  getLast,
+} from '../controllers/programmingLanguage/timeHelpers.js';
 import {
   isDayOf,
   isDayOfVenue,
-  isWeekOf, where, whereAll, whereSome
-} from "../controllers/programmingLanguage/predicates.js";
-import { DateTime } from "luxon";
-import { getAllPeople, getPersonByName } from "../controllers/dataFetchers/fetchPeople.js";
+  isWeekOf,
+  where,
+  whereAll,
+  whereSome,
+} from '../controllers/programmingLanguage/predicates.js';
+import { DateTime } from 'luxon';
+import {
+  getAllPeople,
+  getPersonByName,
+} from '../controllers/dataFetchers/fetchPeople.js';
 import {
   getAllProcesses,
-  getCurrentProcesses
-} from "../controllers/dataFetchers/fetchProcesses.js";
+  getCurrentProcesses,
+} from '../controllers/dataFetchers/fetchProcesses.js';
 import {
   getAllVenues,
   getVenuesForPerson,
-  getVenuesForProject, getVenuesForSig
-} from "../controllers/dataFetchers/fetchVenues.js";
+  getVenuesForProject,
+  getVenuesForSig,
+} from '../controllers/dataFetchers/fetchVenues.js';
 import {
   getAllSocialStructures,
-  getSocialStructuresForPerson, getSocialStructuresForProject
-} from "../controllers/dataFetchers/fetchSocialStructures.js";
+  getSocialStructuresForPerson,
+  getSocialStructuresForProject,
+} from '../controllers/dataFetchers/fetchSocialStructures.js';
 import {
   computeApplicableSet,
-  getRefreshedObjsForTarget
-} from "../controllers/execution/executionFns.js";
+  getRefreshedObjsForTarget,
+} from '../controllers/execution/executionFns.js';
 
 export const testerRouter = new Router();
 
-testerRouter.get("/projects", async (req, res) => {
+testerRouter.get('/projects', async (req, res) => {
   // console.log(generatePredicate("name", "project").toString());
   // console.log(nameIs)
   // console.log(testPredicate)
@@ -78,10 +89,7 @@ testerRouter.get("/projects", async (req, res) => {
   // )));
 
   // fetching projects for a sig
-  res.json(projects.filter(where(
-    "sig",
-    "Collective Experiences"
-  )));
+  res.json(projects.filter(where('sig', 'Collective Experiences')));
 
   // fetching projects where a student is in the list of people
   // res.json(projects.filter(whereSome(
@@ -104,8 +112,7 @@ testerRouter.get("/projects", async (req, res) => {
   // )));
 });
 
-
-testerRouter.get("/people", async (req, res) => {
+testerRouter.get('/people', async (req, res) => {
   // get all people
   // res.json(await getAllPeople());
 
@@ -116,10 +123,10 @@ testerRouter.get("/people", async (req, res) => {
   // res.json((await getAllPeople()).filter(where("role", "NonPhdStudent")))
 
   // people who are phd students
-  res.json((await getAllPeople()))
+  res.json(await getAllPeople());
 });
 
-testerRouter.get("/processes", async (req, res) => {
+testerRouter.get('/processes', async (req, res) => {
   // get all processes
   // res.json(await getAllProcesses());
 
@@ -127,10 +134,10 @@ testerRouter.get("/processes", async (req, res) => {
   // res.json(await getCurrentProcesses());
 
   // filter for sprint 3
-  res.json((await getAllProcesses()).filter(where("name", "Sprint 3")));
+  res.json((await getAllProcesses()).filter(where('name', 'Sprint 3')));
 });
 
-testerRouter.get("/venues", async (req, res) => {
+testerRouter.get('/venues', async (req, res) => {
   // get all venues
   // res.json(await getAllVenues());
 
@@ -146,10 +153,14 @@ testerRouter.get("/venues", async (req, res) => {
   // filter for office hours
   // res.json((await getVenuesForProject("CE for Relationship Development")).filter(where("kind", "OfficeHours")));
 
-  res.json((await getVenuesForProject("CE for Relationship Development")).find(where("kind", "OfficeHours")));
+  res.json(
+    (await getVenuesForProject('CE for Relationship Development')).find(
+      where('kind', 'OfficeHours')
+    )
+  );
 });
 
-testerRouter.get("/socialStructures", async (req, res) => {
+testerRouter.get('/socialStructures', async (req, res) => {
   // get all social structures
   res.json(await getAllSocialStructures());
 
@@ -160,9 +171,15 @@ testerRouter.get("/socialStructures", async (req, res) => {
   // res.json(await getSocialStructuresForProject("CE for Relationship Development"));
 });
 
-testerRouter.get("/execution", async (req, res) => {
+testerRouter.get('/execution', async (req, res) => {
   // console.log(await computeApplicableSet(async function() {
   //   return this.projects.filter(this.whereAll("students", "role", "NonPhdStudent"));
   // }))
-  res.json(await getRefreshedObjsForTarget((await getSocialStructuresForProject("CE for Relationship Development"))[0]))
+  res.json(
+    await getRefreshedObjsForTarget(
+      (
+        await getSocialStructuresForProject('CE for Relationship Development')
+      )[0]
+    )
+  );
 });

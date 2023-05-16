@@ -8,12 +8,17 @@
  * @param opportunity string function to compute the date when message should be delivered.
  * @returns {Promise<{opportunity_fn: string, outlet_fn: string, outlet_args: {}}>}
  */
-export const messageChannel = async ({ message="", projectName, sigName, opportunity }={}) => {
+export const messageChannel = async ({
+  message = '',
+  projectName,
+  sigName,
+  opportunity,
+} = {}) => {
   // structure output object
   let outputObj = {
-    outlet_fn: "",
+    outlet_fn: '',
     outlet_args: {},
-    opportunity_fn: ""
+    opportunity_fn: '',
   };
 
   // check if projectName or sigName was passed in
@@ -24,7 +29,7 @@ export const messageChannel = async ({ message="", projectName, sigName, opportu
     outputObj.outlet_fn = sendSlackMessageToSigChannel;
     outputObj.outlet_args = { sigName, message };
   }
-  outputObj.opportunity_fn = new Function(`return ${ opportunity }`)();
+  outputObj.opportunity_fn = new Function(`return ${opportunity}`)();
 
   return outputObj;
 };
@@ -38,12 +43,12 @@ export const messageChannel = async ({ message="", projectName, sigName, opportu
  * @param opportunity string function to compute the date when message should be delivered.
  * @returns {Promise<{opportunity_fn: *, outlet_fn: ((function({people: *, message: *}): Promise<void>)|*), outlet_args: {message: *, people: *}}>}
  */
-export const messagePeople = async  ({ message, people, opportunity }={}) => {
+export const messagePeople = async ({ message, people, opportunity } = {}) => {
   // structure output object
   return {
     outlet_fn: sendSlackMessageToPeople,
     outlet_args: { people, message },
-    opportunity_fn: new Function(`return ${ opportunity }`)()
+    opportunity_fn: new Function(`return ${opportunity}`)(),
   };
 };
 
@@ -77,15 +82,18 @@ export const selectFollowUpInteraction = () => {
  * @param message string message to send.
  * @returns {Promise<void>}
  */
-const sendSlackMessageToProjectChannel = async function ({ projectName, message }) {
+const sendSlackMessageToProjectChannel = async function ({
+  projectName,
+  message,
+}) {
   try {
     // must use this and include the post to studio api function since this is run in the exec. env
-    await this.postToStudioApi("slack/messageProjectChannel", {
+    await this.postToStudioApi('slack/messageProjectChannel', {
       projName: projectName,
-      message: eval('`'+ message + '`')
+      message: eval('`' + message + '`'),
     });
   } catch (error) {
-    console.error(`Error sendSlackMessageToProjectChannel: ${ error }`);
+    console.error(`Error sendSlackMessageToProjectChannel: ${error}`);
   }
 };
 
@@ -98,12 +106,12 @@ const sendSlackMessageToProjectChannel = async function ({ projectName, message 
 const sendSlackMessageToSigChannel = async function ({ sigName, message }) {
   try {
     // must use this and include the post to studio api function since this is run in the exec. env
-    await this.postToStudioApi("slack/messageSigChannel", {
+    await this.postToStudioApi('slack/messageSigChannel', {
       sigName: sigName,
-      message: eval('`'+ message + '`')
+      message: eval('`' + message + '`'),
     });
   } catch (error) {
-    console.error(`Error sendSlackMessageToProjectChannel: ${ error }`);
+    console.error(`Error sendSlackMessageToProjectChannel: ${error}`);
   }
 };
 
@@ -116,11 +124,11 @@ const sendSlackMessageToSigChannel = async function ({ sigName, message }) {
 const sendSlackMessageToPeople = async function ({ people, message }) {
   try {
     // must use this and include the post to studio api function since this is run in the exec. env
-    await this.postToStudioApi("slack/messagePeople", {
+    await this.postToStudioApi('slack/messagePeople', {
       people: JSON.stringify(people),
-      message: eval('`'+ message + '`')
+      message: eval('`' + message + '`'),
     });
   } catch (error) {
-    console.error(`Error in sendSlackMessageToPeople: ${ error.stack }`);
+    console.error(`Error in sendSlackMessageToPeople: ${error.stack}`);
   }
-}
+};

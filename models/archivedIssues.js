@@ -2,7 +2,7 @@
  * This model is the archived issues that have been fulfilled and expired.
  */
 
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // TODO: add resources to actionable feedback
 
@@ -10,9 +10,13 @@ import mongoose from "mongoose";
  * Issues that have become stale and are no longer monitored for.
  * @type {Model<T & Document<any, any, any>>}
  */
-export const ArchivedIssues = mongoose.model("ArchivedIssues",
+export const ArchivedIssues = mongoose.model(
+  'ArchivedIssues',
   new mongoose.Schema({
-    script_id: { type: mongoose.Schema.Types.ObjectId, ref: "MonitoredScripts"},
+    script_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'MonitoredScripts',
+    },
     name: { type: String, required: true },
     date_triggered: { type: Date, required: true },
     date_expired: { type: Date, required: true, default: Date.now() },
@@ -23,8 +27,8 @@ export const ArchivedIssues = mongoose.model("ArchivedIssues",
       {
         opportunity: { type: Date, required: true },
         outlet_fn: { type: String, required: true }, // function that returns where the feedback should go
-        outlet_args: { type: Object, required: true }
-      }
-    ]
+        outlet_args: { type: Object, required: true },
+      },
+    ],
   })
 );

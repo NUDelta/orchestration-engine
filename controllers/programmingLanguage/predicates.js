@@ -1,8 +1,8 @@
 /**
  * This module contains predicates for the programming language.
  */
-import { DateTime } from "luxon";
-import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
+import { DateTime } from 'luxon';
+import { floorDateToNearestFiveMinutes } from '../../imports/utils.js';
 
 /*
  TODO:
@@ -20,7 +20,9 @@ import { floorDateToNearestFiveMinutes } from "../../imports/utils.js";
 export const isDayOfVenue = async function (venue) {
   // get the current weekday in the timezone of the venue
   let todayWeekday = DateTime.now().setZone(venue.timezone).weekdayLong;
-  return venue.dayOfWeek.trim().toLowerCase() === todayWeekday.trim().toLowerCase();
+  return (
+    venue.dayOfWeek.trim().toLowerCase() === todayWeekday.trim().toLowerCase()
+  );
 };
 
 /**
@@ -29,12 +31,14 @@ export const isDayOfVenue = async function (venue) {
  * @returns {Promise<boolean>} true if today is the day of date.
  */
 export const isDayOf = async function (date) {
-  let todayDate = DateTime.now().startOf("day");
-  let targetDate = DateTime.fromJSDate(date).startOf("day");
+  let todayDate = DateTime.now().startOf('day');
+  let targetDate = DateTime.fromJSDate(date).startOf('day');
 
-  return todayDate.hasSame(targetDate, "year") &&
-    todayDate.hasSame(targetDate, "month") &&
-    todayDate.hasSame(targetDate, "day");
+  return (
+    todayDate.hasSame(targetDate, 'year') &&
+    todayDate.hasSame(targetDate, 'month') &&
+    todayDate.hasSame(targetDate, 'day')
+  );
 };
 
 /**
@@ -57,7 +61,7 @@ export const currentlyIs = async function (date) {
   // round testing date to nearest 5 minutes before comparing
   let currDate = floorDateToNearestFiveMinutes(new Date());
   return currDate.getTime() === date.getTime();
-}
+};
 
 /*
  Filtering predicates.
@@ -77,23 +81,25 @@ export const where = function (objPropertySpecifier, value) {
   // check if the input value is an array
   if (Array.isArray(value)) {
     return new Function(
-      "target",
-      String.raw`return ${ JSON.stringify(value) }.includes(target.${ objPropertySpecifier })`
+      'target',
+      String.raw`return ${JSON.stringify(
+        value
+      )}.includes(target.${objPropertySpecifier})`
     );
   }
 
   // wrap value if it's a string
   let wrappedValue;
-  if (typeof value === "string") {
-    wrappedValue = `"${ value }"`;
+  if (typeof value === 'string') {
+    wrappedValue = `"${value}"`;
   } else {
     wrappedValue = value;
   }
 
   // return a new predicate
   return new Function(
-    "target",
-    `return target.${ objPropertySpecifier } === ${ wrappedValue }`
+    'target',
+    `return target.${objPropertySpecifier} === ${wrappedValue}`
   );
 };
 
@@ -110,8 +116,8 @@ export const whereAll = function (listKey, objPropertySpecifier, value) {
 
   // return a new predicate
   return new Function(
-    "target",
-    `return target.${ listKey }.every(${ innerPredicate })`
+    'target',
+    `return target.${listKey}.every(${innerPredicate})`
   );
 };
 
@@ -128,8 +134,8 @@ export const whereSome = function (listKey, objPropertySpecifier, value) {
 
   // return a new predicate
   return new Function(
-    "target",
-    `return target.${ listKey }.some(${ innerPredicate })`
+    'target',
+    `return target.${listKey}.some(${innerPredicate})`
   );
 };
 

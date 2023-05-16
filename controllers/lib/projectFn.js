@@ -8,8 +8,8 @@
  * }
  **/
 
-import got from "got";
-import { studioAPIUrl } from "../../index.js";
+import got from 'got';
+import { studioAPIUrl } from '../../index.js';
 
 export const getStatusUpdateDate = async function () {
   let relevantProject = await getProjectByName(this.project);
@@ -29,11 +29,9 @@ const getProjectByName = async function (projName) {
 
   try {
     // get all projects
-    let response = await got.get(
-      `${ studioAPIUrl }/projects/`,
-      {
-        responseType: 'json'
-      });
+    let response = await got.get(`${studioAPIUrl}/projects/`, {
+      responseType: 'json',
+    });
     projectObjs = response.body;
 
     // filter projects based on sig
@@ -43,7 +41,7 @@ const getProjectByName = async function (projName) {
 
     output = filteredProjs[0];
   } catch (error) {
-    console.error(`Error in fetching data from Studio API: ${ error.stack }`);
+    console.error(`Error in fetching data from Studio API: ${error.stack}`);
   }
 
   return output;

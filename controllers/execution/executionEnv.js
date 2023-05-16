@@ -1,7 +1,7 @@
-import * as feedbackFns from "../programmingLanguage/feedbackFunctions.js";
-import * as predicateFns from "../programmingLanguage/predicates.js";
-import * as timeHelperFns from "../programmingLanguage/timeHelpers.js";
-import * as studioFns from "../../imports/studioAPI/requests.js";
+import * as feedbackFns from '../programmingLanguage/feedbackFunctions.js';
+import * as predicateFns from '../programmingLanguage/predicates.js';
+import * as timeHelperFns from '../programmingLanguage/timeHelpers.js';
+import * as studioFns from '../../imports/studioAPI/requests.js';
 
 /**
  * Class that provides an execution environment where detectors and feedback functions in scripts
@@ -33,7 +33,7 @@ export class ExecutionEnv {
    * @param args optional args tht can be passed to the scriptFn.
    * @returns {Promise<*>} promise that, when resolved, is the output of scriptFn.
    */
-  async runScript(args=undefined) {
+  async runScript(args = undefined) {
     let boundScriptToExecute = this.scriptFn.bind(this);
     return await boundScriptToExecute(args);
   }
@@ -44,7 +44,7 @@ const scriptingLanguageFns = {
   ...feedbackFns,
   ...predicateFns,
   ...timeHelperFns,
-  ...studioFns
+  ...studioFns,
 };
 
 for (const [key, value] of Object.entries(scriptingLanguageFns)) {

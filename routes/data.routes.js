@@ -1,6 +1,6 @@
-import { Router } from "express";
-import { createScriptLibraryFixtures } from "../models/fixtures/scriptLibraryFixtures.js";
-import { createActiveScriptFixtures } from "../models/fixtures/activeScriptFixtures.js";
+import { Router } from 'express';
+import { createScriptLibraryFixtures } from '../models/fixtures/scriptLibraryFixtures.js';
+import { createActiveScriptFixtures } from '../models/fixtures/activeScriptFixtures.js';
 
 export const dataRouter = new Router();
 
@@ -9,7 +9,7 @@ export const dataRouter = new Router();
 /**
  * Refreshes all data in MongoDB when called.
  */
-dataRouter.post("/refreshData", async (req, res) => {
+dataRouter.post('/refreshData', async (req, res) => {
   let shouldClear;
 
   try {
@@ -20,11 +20,11 @@ dataRouter.post("/refreshData", async (req, res) => {
     await createScriptLibraryFixtures(shouldClear);
     await createActiveScriptFixtures(shouldClear);
 
-    let msg = `Orchestration Script data refreshed. Existing data was cleared? ${ shouldClear }`;
+    let msg = `Orchestration Script data refreshed. Existing data was cleared? ${shouldClear}`;
     console.log(msg);
     res.send(msg);
   } catch (error) {
-    let errorMessage = `Error when refreshing data via API route: ${ error.stack }`;
+    let errorMessage = `Error when refreshing data via API route: ${error.stack}`;
     console.error(errorMessage);
     res.send(errorMessage);
   }

@@ -2,27 +2,26 @@
  * Orchestrating Compass' in-action cues before support venues.
  */
 export default {
-  name: "Compass in-action cues",
-  description: "Have students plan/re-plan as they work throughout the week using Compass",
-  timeframe: "week",
+  name: 'Compass in-action cues',
+  description:
+    'Have students plan/re-plan as they work throughout the week using Compass',
+  timeframe: 'week',
   repeat: true,
-  applicable_set: (async function() {
+  applicable_set: async function () {
     return this.projects.filter(
-      this.where("name",
-        [
-          "Orchestration Scripting Environments",
-          "Orchestrating Planning and Reflection",
-          "Collective Narrative",
-          "CE for Relationship Development",
-          "Path"
-        ]
-      )
+      this.where('name', [
+        'Orchestration Scripting Environments',
+        'Orchestrating Planning and Reflection',
+        'Collective Narrative',
+        'CE for Relationship Development',
+        'Path',
+      ])
     );
-  }).toString(),
-  situation_detector: (async function() {
+  }.toString(),
+  situation_detector: async function () {
     // always be running
     return true;
-  }).toString(),
+  }.toString(),
   strategies: [
     // Pre/Post SIG
     // {
@@ -41,19 +40,20 @@ export default {
     //   }).toString()
     // },
     {
-      name: "Post-SIG meeting",
-      description: "Have students update their Compass after SIG meeting.",
-      strategy_function: (async function () {
+      name: 'Post-SIG meeting',
+      description: 'Have students update their Compass after SIG meeting.',
+      strategy_function: async function () {
         return await this.messageChannel({
-          message: "SIG just happened! Update your <${ this.project.tools.compass.url }|Compass> with your takeaways! What are some immediate next steps you’ll be working on, and why does it address a risk?",
+          message:
+            'SIG just happened! Update your <${ this.project.tools.compass.url }|Compass> with your takeaways! What are some immediate next steps you’ll be working on, and why does it address a risk?',
           projectName: this.project.name,
-          opportunity: (async function () {
+          opportunity: async function () {
             return await this.endOfVenue(
-              await this.venues.find(this.where("kind", "SigMeeting"))
+              await this.venues.find(this.where('kind', 'SigMeeting'))
             );
-          }).toString()
-        })
-      }).toString()
+          }.toString(),
+        });
+      }.toString(),
     },
     // Pre/Post Office Hours
     // {
@@ -72,19 +72,20 @@ export default {
     //   }).toString()
     // },
     {
-      name: "Post Office Hours",
-      description: "Have students update their Compass after Office Hours.",
-      strategy_function: (async function () {
+      name: 'Post Office Hours',
+      description: 'Have students update their Compass after Office Hours.',
+      strategy_function: async function () {
         return await this.messageChannel({
-          message: "OH just happened! Update your <${ this.project.tools.compass.url }|Compass> with your takeaways! What are some immediate next steps you’ll be working on, and why does it address a risk?",
+          message:
+            'OH just happened! Update your <${ this.project.tools.compass.url }|Compass> with your takeaways! What are some immediate next steps you’ll be working on, and why does it address a risk?',
           projectName: this.project.name,
-          opportunity: (async function () {
+          opportunity: async function () {
             return await this.endOfVenue(
-              await this.venues.find(this.where("kind", "OfficeHours"))
+              await this.venues.find(this.where('kind', 'OfficeHours'))
             );
-          }).toString()
-        })
-      }).toString()
+          }.toString(),
+        });
+      }.toString(),
     },
     // Pre/Post Studio
     // {
@@ -103,19 +104,20 @@ export default {
     //   }).toString()
     // },
     {
-      name: "Post-Studio meeting",
-      description: "Have students update their Compass after Studio.",
-      strategy_function: (async function () {
+      name: 'Post-Studio meeting',
+      description: 'Have students update their Compass after Studio.',
+      strategy_function: async function () {
         return await this.messageChannel({
-          message: "Studio just happened! Update your <${ this.project.tools.compass.url }|Compass> to reflect what you learned! What are some immediate next steps you’ll be working on, and why does it address a risk?",
+          message:
+            'Studio just happened! Update your <${ this.project.tools.compass.url }|Compass> to reflect what you learned! What are some immediate next steps you’ll be working on, and why does it address a risk?',
           projectName: this.project.name,
-          opportunity: (async function () {
+          opportunity: async function () {
             return await this.endOfVenue(
-              await this.venues.find(this.where("name", "Studio Meeting"))
+              await this.venues.find(this.where('name', 'Studio Meeting'))
             );
-          }).toString()
-        })
-      }).toString()
+          }.toString(),
+        });
+      }.toString(),
     },
-  ]
+  ],
 };
