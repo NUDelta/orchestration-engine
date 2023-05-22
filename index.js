@@ -7,6 +7,7 @@ import schedule from 'node-schedule';
 
 // routes
 import { scriptRouter } from './routes/script.routes.js';
+import { activeIssuesRouter } from './routes/activeIssues.routes.js';
 import { dataRouter } from './routes/data.routes.js';
 import { testerRouter } from './routes/tester.routes.js';
 
@@ -84,6 +85,7 @@ mongoose.connection.on('error', (err) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 app.use('/scripts', scriptRouter);
+app.use('/activeIssues', 'activeIssuesRouter');
 app.use('/data', dataRouter);
 app.use('/tester', testerRouter);
 
