@@ -1,7 +1,7 @@
 /**
- * Creates a new ActiveIssue for a script.
+ * This controller handles the creation and manipulation of the ActiveIssues model.
  */
-import { ActiveIssues } from '../../../models/activeIssues.js';
+import { ActiveIssues } from '../../models/activeIssues.js';
 
 /**
  * Creates a new ActiveIssue that can be used to monitor for an opportunity to provide

@@ -7,7 +7,7 @@ import hash from 'object-hash';
 import { MonitoredScripts } from '../../models/monitoredScripts.js';
 import { ActiveIssues } from '../../models/activeIssues.js';
 import { ArchivedIssues } from '../../models/archivedIssues.js';
-import { createActiveIssue } from './imports/activeIssuesController.js';
+import { createActiveIssue } from '../modelControllers/activeIssuesController.js';
 
 import { ExecutionEnv } from './executionEnv.js';
 import {
