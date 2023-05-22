@@ -69,7 +69,7 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
     const createdIssue = await activeIssue.save();
 
     // return a successful response with the created issue
-    res.send(createdIssue);
+    res.status(200).json(createdIssue);
   } catch (error) {
     let errorMessage = `Error when creating ActiveIssue via API route: ${error.stack}`;
     console.error(errorMessage);
