@@ -10,6 +10,7 @@ import { scriptRouter } from './routes/script.routes.js';
 import { activeIssuesRouter } from './routes/activeIssues.routes.js';
 import { dataRouter } from './routes/data.routes.js';
 import { testerRouter } from './routes/tester.routes.js';
+import { simulatorRouter } from './routes/simulator.routes.js';
 
 // fixtures for development
 import {
@@ -88,6 +89,7 @@ app.use('/scripts', scriptRouter);
 app.use('/activeIssues', 'activeIssuesRouter');
 app.use('/data', dataRouter);
 app.use('/tester', testerRouter);
+app.use('/simulator', simulatorRouter);
 
 // catch any undefined routes
 app.all('*', (request, response) => {
