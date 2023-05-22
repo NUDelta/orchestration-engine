@@ -36,6 +36,7 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       strategyToEnact,
     } = req.body;
 
+    // TODO: run code transformer to add this and async/await before saving script
     // convert strategy into a function
     const strategyAsFn = {
       name: strategyToEnact.name,
