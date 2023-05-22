@@ -5,6 +5,24 @@ import { getRefreshedObjsForTarget } from '../controllers/execution/executionFns
 export const activeIssuesRouter = new Router();
 
 // TODO: needs testing
+/**
+ * Create an active issue.
+ * request body: {
+ *  scriptId: string,
+ *  scriptName: string,
+ *  dateTriggered: Date as string,
+ *  expiryTime: Date as string,
+ *  shouldRepeat: boolean,
+ *  issueTarget: {
+ *   targetType: string,
+ *   name: string,
+ *  },
+ *  strategyToEnact: {
+ *    name: string,
+ *    description: string,
+ *    strategy_function: string,
+ *  }
+ */
 activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
   try {
     // parse input from request body
@@ -18,10 +36,19 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       strategyToEnact,
     } = req.body;
 
+    // convert strategy into a function
+    const strategyAsFn = {
+      name: strategyToEnact.name,
+      description: strategyToEnact.description,
+      strategy_function: new Function(
+        `return ${strategyToEnact.strategy_function}`
+      )(),
+    };
+
     // compute strategy given the target and the script
     let refreshedOrgObjs = await getRefreshedObjsForTarget(issueTarget);
     let computedStrategies = await computedStrategies(refreshedOrgObjs, [
-      strategyToEnact,
+      strategyAsFn,
     ]);
     const targetHash = hash({
       targetType: issueTarget.targetType,
@@ -32,8 +59,8 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
     const activeIssue = createActiveIssue(
       scriptId,
       scriptName,
-      dateTriggered,
-      expiryTime,
+      new Date(dateTriggered),
+      new Date(expiryTime),
       shouldRepeat,
       issueTarget,
       targetHash,
