@@ -7,7 +7,24 @@ import { createMonitoredScript } from '../controllers/modelControllers/monitored
 
 export const scriptRouter = new Router();
 
-// TODO: test
+/**
+ * Route to create a new MonitoredScript.
+ * request body: {
+ *  scriptName: string,
+ *  scriptDescription: string,
+ *  scriptTimeframe: string,
+ *  shouldScriptRepeat: boolean,
+ *  applicableSet: string,
+ *  situationDetector: string,
+ *  strategies: [
+ *    {
+ *      name: string,
+ *      description: string,
+ *      strategyFunction: string,
+ *    }
+ *  ]
+ * }
+ */
 scriptRouter.post('/createScript', async (req, res) => {
   try {
     // parse out input from request body
@@ -21,31 +38,39 @@ scriptRouter.post('/createScript', async (req, res) => {
       strategies,
     } = req.body;
 
-    // TODO: run code transformer to add this and async/await before saving script
-    // TODO: will probably need to parse out functions from the request body before transforming
+    // transform code into OS-compatible code
     let transformedApplicableSet = transformOSCode(
       applicableSet,
       asyncThisConfig
     );
+
     let transformedSituationDetector = transformOSCode(
       situationDetector,
       asyncThisConfig
     );
+
     let transformedStrategies = strategies.map((strategy) => {
-      return transformOSCode(strategy, asyncThisConfig);
+      return {
+        name: strategy.name,
+        description: strategy.description,
+        strategy_function: transformOSCode(
+          strategy.strategyFunction,
+          asyncThisConfig
+        ),
+      };
     });
 
-    // TODO: convert functions back to strings before trying to save
-
-    // save script to database
+    // TODO: prior to creating, check if a script for the same goal / target already exists
+    // ^ this might be a bit tricky to compute, but it's important to prevent duplicate scripts
+    // create a new MonitoredScript and save it to the database
     const newScript = createMonitoredScript(
       scriptName,
       scriptDescription,
       scriptTimeframe,
       shouldScriptRepeat,
-      applicableSet,
-      situationDetector,
-      strategies
+      transformedApplicableSet,
+      transformedSituationDetector,
+      transformedStrategies
     );
     const createdScript = await newScript.save();
 
