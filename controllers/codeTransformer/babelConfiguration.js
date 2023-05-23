@@ -23,7 +23,5 @@ export const transformOSCode = function (code, config) {
  */
 export const asyncThisConfig = {
   plugins: [addAsyncAwaitPlugin, addThisPlugin],
-
-  // keep any white space so code stays pretty
-  retainLines: true,
+  retainLines: false,
 };

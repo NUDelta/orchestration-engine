@@ -6,6 +6,7 @@ import * as feedbackFns from '../programmingLanguage/feedbackFunctions.js';
 import * as predicateFns from '../programmingLanguage/predicates.js';
 import * as timeHelperFns from '../programmingLanguage/timeHelpers.js';
 
+// create a set for all Organizational Object identifiers
 export const organizationalObjectIdenfifiers = new Set([
   'projects',
   'people',
@@ -19,6 +20,7 @@ export const organizationalObjectIdenfifiers = new Set([
   'venue',
 ]);
 
+// create a set for all helper function identifiers
 export const helperFunctionIdentifiers = new Set(
   Object.keys({ ...feedbackFns, ...predicateFns, ...timeHelperFns })
 );

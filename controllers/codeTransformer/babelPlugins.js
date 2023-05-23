@@ -16,7 +16,13 @@ export const addAsyncAwaitPlugin = function () {
   return {
     pre() {
       // only need to add async/await flags to functions
-      this.helperFnsIdentifiers = helperFunctionIdentifiers;
+      // manually remove where, whereAll, and whereSome since filter requires sync functions
+      let fnsToAddAsyncAwait = new Set(helperFunctionIdentifiers);
+      fnsToAddAsyncAwait.delete('where');
+      fnsToAddAsyncAwait.delete('whereAll');
+      fnsToAddAsyncAwait.delete('whereSome');
+
+      this.helperFnsIdentifiers = fnsToAddAsyncAwait;
     },
 
     visitor: {
@@ -88,10 +94,14 @@ export const addThisPlugin = function () {
         }
       },
 
-      // on exit (after the node has been visted), check if identifier is a member expression
+      // on exit (after the node has been visted), note identifier variables
       Identifier: {
         exit(path) {
-          if (!t.isMemberExpression(path.parentPath.node)) {
+          // identifier should not be a member expression or object property
+          if (
+            !t.isMemberExpression(path.parentPath.node) &&
+            !t.isObjectProperty(path.parentPath.node)
+          ) {
             // add "this" keyword if it's a Org Object or a helper function
             if (
               this.orgObjIdentifiers.has(path.node.name) ||
