@@ -3,8 +3,8 @@
  */
 
 import * as feedbackFns from '../programmingLanguage/feedbackFunctions.js';
-import * as predicateFns from '../programmingLanguage/predicateFunctions.js';
-import * as timeHelperFns from '../programmingLanguage/timeHelperFunctions.js';
+import * as predicateFns from '../programmingLanguage/predicates.js';
+import * as timeHelperFns from '../programmingLanguage/timeHelpers.js';
 
 export const organizationalObjectIdenfifiers = new Set([
   'projects',

@@ -86,7 +86,7 @@ mongoose.connection.on('error', (err) => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 app.use('/scripts', scriptRouter);
-app.use('/activeIssues', 'activeIssuesRouter');
+app.use('/activeIssues', activeIssuesRouter);
 app.use('/data', dataRouter);
 app.use('/tester', testerRouter);
 app.use('/simulator', simulatorRouter);

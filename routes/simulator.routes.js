@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { runSimulationOfScript } from '../controllers/simulator/scriptSimulator';
+import { runSimulationOfScript } from '../controllers/simulator/scriptSimulator.js';
 
 export const simulatorRouter = new Router();
 

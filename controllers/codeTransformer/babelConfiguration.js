@@ -11,6 +11,7 @@ import { addAsyncAwaitPlugin, addThisPlugin } from './babelPlugins.js';
  * Transforms input code based on the babel configuration passed in.
  * @param {string} code: block of code to tranform.
  * @param {object} config: babel configuration with plugins that is used to transform the code.
+ * @returns {string} transformed code.
  */
 export const transformOSCode = function (code, config) {
   let output = babel.transformSync(code, config);

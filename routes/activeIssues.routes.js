@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { createActiveIssue } from '../controllers/modelControllers/activeIssuesController';
-import { getRefreshedObjsForTarget } from '../controllers/execution/executionFns';
+import { createActiveIssue } from '../controllers/modelControllers/activeIssuesController.js';
+import { getRefreshedObjsForTarget } from '../controllers/execution/executionFns.js';
 
 export const activeIssuesRouter = new Router();
 

@@ -6,7 +6,7 @@ import * as t from '@babel/types';
 import {
   organizationalObjectIdenfifiers,
   helperFunctionIdentifiers,
-} from './identifierSet';
+} from './identifierSet.js';
 
 /**
  * Adds async/await to all helper functions in the OS Programming Language
