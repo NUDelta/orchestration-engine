@@ -1,5 +1,10 @@
 // TODO: need to catch errors if things fail
+
+// execution helpers
 import { ExecutionEnv } from './executionEnv.js';
+import { floorDateToNearestFiveMinutes } from '../../imports/utils.js';
+
+// data fetchers
 import {
   getAllProjects,
   getProjectByName,
@@ -17,7 +22,6 @@ import {
   getVenuesForProject,
   getVenuesForSig,
 } from '../dataFetchers/fetchVenues.js';
-import { floorDateToNearestFiveMinutes } from '../../imports/utils.js';
 
 // TODO: error checking
 /**

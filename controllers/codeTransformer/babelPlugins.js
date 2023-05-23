@@ -1,10 +1,12 @@
-import babel from '@babel/core';
-import * as t from '@babel/types';
+/**
+ * This file contains the babel plugins used to transform the OS Programming Language by adding async/await flags and this keywords.
+ */
 
+import * as t from '@babel/types';
 import {
-  objectIdentifiers,
-  functionIdentifiers,
-} from '../imports/orchestration-pl/identifierSet.js';
+  organizationalObjectIdenfifiers,
+  helperFunctionIdentifiers,
+} from './identifierSet';
 
 /**
  * Adds async/await to all helper functions in the OS Programming Language
@@ -13,20 +15,23 @@ import {
 export const addAsyncAwaitPlugin = function () {
   return {
     pre() {
-      this.plObjIdentifiers = objectIdentifiers;
-      this.plFnIdentifiers = functionIdentifiers;
+      // only need to add async/await flags to functions
+      this.helperFnsIdentifiers = helperFunctionIdentifiers;
     },
+
     visitor: {
+      // make functions async
       FunctionDeclaration(path) {
         path.node.async = true;
       },
 
+      // make functions async
       FunctionExpression(path) {
         path.node.async = true;
       },
 
+      // make any calls to OS functions async
       CallExpression(path) {
-        // make any calls to OS functions async
         // check if the call is not already async before adding the await block
         if (!t.isAwaitExpression(path.parentPath.node)) {
           // get callee
@@ -41,7 +46,7 @@ export const addAsyncAwaitPlugin = function () {
           }
 
           // make an async call if the function is an OS Helper function
-          if (this.plFnIdentifiers.has(expressionName)) {
+          if (this.helperFnsIdentifiers.has(expressionName)) {
             path.replaceWith(t.awaitExpression(path.node));
           }
         }
@@ -50,23 +55,28 @@ export const addAsyncAwaitPlugin = function () {
   };
 };
 
+/**
+ * Adds this keyword to all OS objects and helper functions
+ * @returns {{pre(): void, visitor: {MemberExpression(*): void, Identifier: {exit(*): void}, CallExpression(*): void}}}
+ */
 export const addThisPlugin = function () {
   return {
     pre() {
-      this.plObjIdentifiers = objectIdentifiers;
-      this.plFnIdentifiers = functionIdentifiers;
+      this.orgObjIdentifiers = organizationalObjectIdenfifiers;
+      this.helperFnsIdentifiers = helperFunctionIdentifiers;
     },
+
     visitor: {
+      // check if the child of the member expression is an identifier
       MemberExpression(path) {
-        // check if the child of the memebr expression is an identifier
         if (t.isIdentifier(path.node.object)) {
           // check if the identifier is not a local variable
           if (!path.scope.hasBinding(path.node.object.name)) {
             let identifierString = path.node.object.name;
 
             // check if either a variable from OS
-            if (this.plObjIdentifiers.has(identifierString)) {
-              // add this. to the OS PL function
+            if (this.orgObjIdentifiers.has(identifierString)) {
+              // add this. to org objects
               path.replaceWith(
                 t.memberExpression(
                   t.memberExpression(t.thisExpression(), path.node.object),
@@ -78,14 +88,14 @@ export const addThisPlugin = function () {
         }
       },
 
+      // on exit (after the node has been visted), check if identifier is a member expression
       Identifier: {
         exit(path) {
-          // on exit (after the node has been visted), check if identifier is a member
           if (!t.isMemberExpression(path.parentPath.node)) {
-            // add "this" keyword if it's a OS PL object or fn (usually a predicate)
+            // add "this" keyword if it's a Org Object or a helper function
             if (
-              this.plObjIdentifiers.has(path.node.name) ||
-              this.plFnIdentifiers.has(path.node.name)
+              this.orgObjIdentifiers.has(path.node.name) ||
+              this.helperFnsIdentifiers.has(path.node.name)
             ) {
               path.replaceWith(
                 t.memberExpression(t.thisExpression(), path.node)
@@ -95,8 +105,8 @@ export const addThisPlugin = function () {
         },
       },
 
+      // add this. to OS helper functions
       CallExpression(path) {
-        // add this. to OS function calls
         if (t.isIdentifier(path.node.callee)) {
           // get callee
           let callee = path.node.callee;
@@ -109,7 +119,7 @@ export const addThisPlugin = function () {
             expressionName = callee.property.name;
           }
 
-          if (this.plFnIdentifiers.has(expressionName)) {
+          if (this.helperFnsIdentifiers.has(expressionName)) {
             // replace the path this.<expression>
             path.replaceWith(
               t.callExpression(

@@ -40,6 +40,7 @@ export class ExecutionEnv {
 }
 
 // add programming language functions to the ExecutionEnv's prototype
+// studio fns are needed for the feedback functions
 const scriptingLanguageFns = {
   ...feedbackFns,
   ...predicateFns,

@@ -1,3 +1,9 @@
+/**
+ * This file contains functions to transpile code into a format the OS engine can understand using babel.
+ *
+ * Currently, this includes adding async/await flags and this keywords to code.
+ */
+
 import babel from '@babel/core';
 import { addAsyncAwaitPlugin, addThisPlugin } from './babelPlugins.js';
 
