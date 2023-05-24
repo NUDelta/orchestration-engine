@@ -79,7 +79,7 @@ scriptRouter.post('/createScript', async (req, res) => {
   } catch (error) {
     let errorMessage = `Error when creating MonitoredScript via API route: ${error.stack}`;
     console.error(errorMessage);
-    res.send(errorMessage);
+    res.status(500).send(errorMessage);
   }
 });
 
