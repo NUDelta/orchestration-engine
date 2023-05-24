@@ -7,6 +7,7 @@ import hash from 'object-hash';
 import { MonitoredScripts } from '../../models/monitoredScripts.js';
 import { ActiveIssues } from '../../models/activeIssues.js';
 import { ArchivedIssues } from '../../models/archivedIssues.js';
+import { createActiveIssue } from '../modelControllers/activeIssuesController.js';
 
 import { ExecutionEnv } from './executionEnv.js';
 import {
@@ -69,11 +70,11 @@ export const checkMonitoredScripts = async () => {
         // check if issue already exists in database
         // match on both the script ID and the hash of the target b/c together they are unique
         // TODO: this is buggy if the tools update -- should do it on everything but the tools I think
-        const targetHashObject = {
+        const targetHash = hash({
           targetType: currOrgObjTarget.targetType,
           name: currOrgObjTarget.name,
-        };
-        const targetHash = hash(targetHashObject);
+        });
+
         let foundIssue = await ActiveIssues.findOne({
           script_id: currScript._id,
           target_hash: targetHash,
@@ -82,22 +83,16 @@ export const checkMonitoredScripts = async () => {
         // create a new active issue if it doesn't exist already
         if (foundIssue === null) {
           generatedIssues.push(
-            new ActiveIssues({
-              script_id: currScript._id,
-              name: currScript.name,
-              date_triggered: currDate,
-              expiry_time: computeExpiryTimeForScript(
-                currDate,
-                currScript.timeframe
-              ),
-              repeat: currScript.repeat,
-              issue_target: currOrgObjTarget,
-              target_hash: targetHash,
-              computed_strategies: await computeStrategies(
-                refreshedOrgObjs,
-                currScript.strategies
-              ),
-            })
+            createActiveIssue(
+              currScript._id,
+              currScript.name,
+              currDate,
+              computeExpiryTimeForScript(currDate, currScript.timeframe),
+              currScript.repeat,
+              currOrgObjTarget,
+              targetHash,
+              await computeStrategies(refreshedOrgObjs, currScript.strategies)
+            )
           );
         }
       }
@@ -221,23 +216,24 @@ export const archiveStaleIssues = async () => {
           );
 
           // create and save new issue
-          let repeatedActiveIssue = new ActiveIssues({
-            script_id: issue.script_id,
-            name: issue.name,
-            date_triggered: issue.expiry_time,
-            expiry_time: computeExpiryTimeForScript(
+          issuesToReset.push(
+            createActiveIssue(
+              issue.script_id,
+              issue.name,
               issue.expiry_time,
-              relevantScript.timeframe
-            ),
-            repeat: issue.repeat,
-            issue_target: issue.issue_target,
-            target_hash: issue.target_hash,
-            computed_strategies: await computeStrategies(
-              refreshedOrgObjs,
-              relevantScript.strategies
-            ),
-          });
-          issuesToReset.push(repeatedActiveIssue);
+              computeExpiryTimeForScript(
+                issue.expiry_time,
+                relevantScript.timeframe
+              ),
+              issue.repeat,
+              issue.issue_target,
+              issue.target_hash,
+              await computeStrategies(
+                refreshedOrgObjs,
+                relevantScript.strategies
+              )
+            )
+          );
         }
       }
 

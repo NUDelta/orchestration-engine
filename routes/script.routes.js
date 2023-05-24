@@ -1,73 +1,96 @@
 import { Router } from 'express';
-import { runSimulationOfScript } from '../controllers/simulator/scriptSimulator.js';
+import {
+  transformOSCode,
+  asyncThisConfig,
+} from '../controllers/codeTransformer/babelConfiguration.js';
+import { createMonitoredScript } from '../controllers/modelControllers/monitoredScriptsController.js';
 
 export const scriptRouter = new Router();
 
-// manually trigger an existing script
-// scriptRouter.post("/triggerScript", async (req, res) => {
-//   let activatedScript;
-//   try {
-//     // get parameters from request
-//     let scriptId = req.body.scriptId;
-//     let studentList = req.body.students === undefined ? [] : JSON.parse(req.body.students);
-//     let projList = req.body.projects === undefined ? [] : JSON.parse(req.body.projects);
-//     let feedbackMessage = req.body.feedbackMessage;
-//
-//     // get the template script for the passed in script ID
-//     let templateScript = await OrchestrationScript.findOne({ _id: scriptId });
-//     let newActiveScript = new MonitoredScripts({
-//       script_id: templateScript._id,
-//       name: templateScript.name,
-//       description: templateScript.description,
-//       target: {
-//         students: studentList,
-//         projects: projList
-//       },
-//       detector: templateScript.detector,
-//       actionable_feedback: [{
-//         feedback_message: feedbackMessage,
-//         feedback_opportunity: (async function () { return new Date(); }).toString(),
-//         feedback_outlet: (async function () { return await getSlackIdForPerson(await getStudentsInScript()) }).toString()
-//       }]
-//     });
-//     activatedScript = await newActiveScript.save();
-//
-//     // // run tester with the new script
-//     // await runSimulationOfScript(templateScript._id, new Date(2021, 4, 31), new Date(2021, 5, 7))
-//   } catch (error) {
-//     console.error(`Error in /triggerScript route: ${ error }`);
-//     res.json(error);
-//     return;
-//   }
-//
-//   // return activated script if successful
-//   res.json(activatedScript);
-// });
-
-scriptRouter.post('/runSimulationForScripts', async (req, res) => {
-  let tickAmount;
-  let startDate;
-  let endDate;
-
+/**
+ * Route to create a new MonitoredScript.
+ * request body: {
+ *  scriptName: string,
+ *  scriptDescription: string,
+ *  scriptTimeframe: string,
+ *  shouldScriptRepeat: boolean,
+ *  applicableSet: string,
+ *  situationDetector: string,
+ *  strategies: [
+ *    {
+ *      name: string,
+ *      description: string,
+ *      strategyFunction: string,
+ *    }
+ *  ]
+ * }
+ */
+scriptRouter.post('/createScript', async (req, res) => {
   try {
-    // get parameters from request
-    tickAmount = parseInt(req.body.tickAmount);
-    startDate = req.body.startDate;
-    endDate = req.body.endDate;
+    // parse out input from request body
+    const {
+      scriptName,
+      scriptDescription,
+      scriptTimeframe,
+      shouldScriptRepeat,
+      applicableSet,
+      situationDetector,
+      strategies,
+    } = req.body;
 
-    // run tester with the new script
-    let output = await runSimulationOfScript(
-      new Date(startDate),
-      new Date(endDate),
-      tickAmount
+    // transform code into OS-compatible code
+    let transformedApplicableSet = transformOSCode(
+      applicableSet,
+      asyncThisConfig
     );
 
-    if (output) {
-      // return 200 status if successful
-      res.status(200).send(`Script simulation completed.`);
-    }
+    let transformedSituationDetector = transformOSCode(
+      situationDetector,
+      asyncThisConfig
+    );
+
+    let transformedStrategies = strategies.map((strategy) => {
+      return {
+        name: strategy.name,
+        description: strategy.description,
+        strategy_function: transformOSCode(
+          strategy.strategyFunction,
+          asyncThisConfig
+        ),
+      };
+    });
+
+    // TODO: prior to creating, check if a script for the same goal / target already exists
+    // ^ this might be a bit tricky to compute, but it's important to prevent duplicate scripts
+    // create a new MonitoredScript and save it to the database
+    const newScript = createMonitoredScript(
+      scriptName,
+      scriptDescription,
+      scriptTimeframe,
+      shouldScriptRepeat,
+      transformedApplicableSet,
+      transformedSituationDetector,
+      transformedStrategies
+    );
+    const createdScript = await newScript.save();
+
+    // return a successful response with the created script
+    res.status(200).json(createdScript);
   } catch (error) {
-    console.error(`Error in /runTestForScript route: ${error.stack}`);
-    res.json(error);
+    let errorMessage = `Error when creating MonitoredScript via API route: ${error.stack}`;
+    console.error(errorMessage);
+    res.status(500).send(errorMessage);
   }
 });
+
+// TODO: implement
+scriptRouter.get('/getScripts', async (req, res) => {});
+
+// TODO: implement
+scriptRouter.get('/getScript', async (req, res) => {});
+
+// TODO: implement
+scriptRouter.post('/updateScript', async (req, res) => {});
+
+// TODO: implement
+scriptRouter.post('/deleteScript', async (req, res) => {});

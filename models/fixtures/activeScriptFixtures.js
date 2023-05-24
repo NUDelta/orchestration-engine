@@ -5,13 +5,16 @@ import { ArchivedIssues } from '../archivedIssues.js';
 
 const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
-    'Support students in planning a Status Update for their project',
+    'Overcommitted',
+    'Undercommitted',
+    'overlyFocusCategory',
+    'UserStudyBacklogged',
+    // 'Support students in planning a Status Update for their project',
     // "Fully planning sprints",
     // "Scoping sprint plans to time constraints",
     // "Using venues throughout the week for progressing research work",
     // "Research progress for Ph.D. students",
     // "Compass in-action cues",
-
     // "Preparing for EOQ deliverables by reading through checklist",
     // "Planning and scoping end-of-quarter deliverables",
   ];

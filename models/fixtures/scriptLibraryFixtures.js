@@ -10,6 +10,12 @@ import usingVenuesThroughoutWeekJonathan from './exampleScriptFixtures/usingVenu
 import researchProgressForPhdStudents from './exampleScriptFixtures/researchProgressForPhdStudents.js';
 import compassInActionCues from './exampleScriptFixtures/compassInActionCues.js';
 
+// grace and jordan's scripts
+import overcommitted from './exampleScriptFixtures/overcommitted.js';
+import undercommitted from './exampleScriptFixtures/undercommitted.js';
+import overlyFocusedCategory from './exampleScriptFixtures/overlyFocusedCategory.js';
+import userStudyBacklogged from './exampleScriptFixtures/userStudyBacklogged.js';
+
 /**
  * Creates orchestration scripts documents and saves them to the script_library collection.
  * @return {Promise<void>}
@@ -25,6 +31,10 @@ const createScripts = async () => {
     new OrchestrationScript(usingVenuesThroughoutWeekJonathan),
     new OrchestrationScript(researchProgressForPhdStudents),
     new OrchestrationScript(compassInActionCues),
+    new OrchestrationScript(overcommitted),
+    new OrchestrationScript(undercommitted),
+    new OrchestrationScript(overlyFocusedCategory),
+    new OrchestrationScript(userStudyBacklogged),
   ];
 
   // check if script is already in the database, by name
