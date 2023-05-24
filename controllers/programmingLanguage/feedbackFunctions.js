@@ -64,7 +64,7 @@ export const messagePeople = async ({ message, people, opportunity } = {}) => {
  * @param people list of strings with people's names.
  * @param opportunity string function to compute the date when message should be delivered.
  */
-export const includeInSummary = (issue, message, people, opportunity) => {
+export const includeInSummary = async (issue, message, people, opportunity) => {
   return;
 };
 

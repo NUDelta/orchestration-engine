@@ -294,7 +294,7 @@ const computeExpiryTimeForScript = (triggerDate, timeFrame) => {
  * @param strategyList
  * @return {Promise<{outlet_fn: *, opportunity: *, message: *}[]>}
  */
-const computeStrategies = async (target, strategyList) => {
+export const computeStrategies = async (target, strategyList) => {
   let computedStrategies = await executeStrategies(target, strategyList);
   return computedStrategies.map((currStrategy) => {
     currStrategy.outlet_fn = currStrategy.outlet_fn.toString();

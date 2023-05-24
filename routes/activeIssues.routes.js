@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import { createActiveIssue } from '../controllers/modelControllers/activeIssuesController.js';
 import { getRefreshedObjsForTarget } from '../controllers/execution/executionFns.js';
+import { computeStrategies } from '../controllers/execution/executionFlow.js';
 
 export const activeIssuesRouter = new Router();
 
 // TODO: needs testing
 /**
- * Create an active issue.
+ * Creates a new ActiveIssue
  * request body: {
  *  scriptId: string,
  *  scriptName: string,
@@ -48,7 +49,7 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
 
     // compute strategy given the target and the script
     let refreshedOrgObjs = await getRefreshedObjsForTarget(issueTarget);
-    let computedStrategies = await computedStrategies(refreshedOrgObjs, [
+    let computedStrategies = await computeStrategies(refreshedOrgObjs, [
       strategyAsFn,
     ]);
     const targetHash = hash({
