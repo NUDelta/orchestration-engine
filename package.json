@@ -1,7 +1,7 @@
 {
   "name": "orchestration-engine",
-  "description": "Orchestration Engine: A System for Writing and Executing Orchestration Scripts",
-  "version": "0.0.1",
+  "description": "Orchestration Engine: A System for Supporting Situated Work Practices in Socio-Technical Work Ecosystems",
+  "version": "1.0.0",
   "private": true,
   "homepage": "http://dtr.northwestern.edu/",
   "bugs": {
@@ -21,7 +21,7 @@
     "lines": "cloc --exclude-dir=node_modules,.idea --exclude-ext=json ."
   },
   "engines": {
-    "node": "^19.x"
+    "node": "^16.x"
   },
   "type": "module",
   "dependencies": {
