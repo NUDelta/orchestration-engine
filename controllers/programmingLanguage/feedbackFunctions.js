@@ -53,6 +53,29 @@ export const messagePeople = async ({ message, people, opportunity } = {}) => {
 };
 
 /**
+ * Stores an ActiveIssue in the database that the OSE Diagnosis Tool can present to a user.
+ * @param message string message to send. Passed in as a standard string, but ES6 template literals
+ * are supported and executed at run-time within an ExecutionEnv that contains organization data.
+ * This means you compose templated messages such as, "Hello ${ this.project.sigHead }!"
+ * @param projectName string name of a project
+ * @param opportunity string function to compute the date when message should be delivered.
+ * @returns {Promise<{opportunity_fn: string, outlet_fn: string, outlet_args: {}}>}
+ */
+export const presentInDiagnosisTool = async ({
+  message = '',
+  projectName,
+  opportunity,
+} = {}) => {
+  return {
+    outlet_fn: () => {
+      return;
+    },
+    outlet_args: { projectName, message },
+    opportunity_fn: new Function(`return ${opportunity}`)(),
+  };
+};
+
+/**
  * TODO: implement
  * Schedules message to be included in a summary message to a person (or list of people).
  * @param issue object issue that the message is for. this is used to generate headers in the
@@ -64,7 +87,7 @@ export const messagePeople = async ({ message, people, opportunity } = {}) => {
  * @param people list of strings with people's names.
  * @param opportunity string function to compute the date when message should be delivered.
  */
-export const includeInSummary = (issue, message, people, opportunity) => {
+export const includeInSummary = async (issue, message, people, opportunity) => {
   return;
 };
 
