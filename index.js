@@ -92,7 +92,7 @@ app.use('/tester', testerRouter);
 app.use('/simulator', simulatorRouter);
 
 // catch any undefined routes
-app.receiver.app.all('*', (request, response) => {
+app.all('*', (request, response) => {
   console.error(
     `External request: ${request.url} does not exist. Returning 404 error.`
   );
