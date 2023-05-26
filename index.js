@@ -92,9 +92,11 @@ app.use('/tester', testerRouter);
 app.use('/simulator', simulatorRouter);
 
 // catch any undefined routes
-app.all('*', (request, response) => {
-  console.log('Returning a 404 from the catch-all route');
-  return response.sendStatus(404);
+app.receiver.app.all('*', (request, response) => {
+  console.error(
+    `External request: ${request.url} does not exist. Returning 404 error.`
+  );
+  return response.status(404).json({ error: `${request.url} not found` });
 });
 
 // start application
