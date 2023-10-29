@@ -116,7 +116,8 @@ const sendSlackMessageToProjectChannel = async function ({
       message: eval('`' + message + '`'),
     });
   } catch (error) {
-    console.error(`Error sendSlackMessageToProjectChannel: ${error}`);
+    console.error(`Error sendSlackMessageToProjectChannel:`);
+    console.error(error);
   }
 };
 
