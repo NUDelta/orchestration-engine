@@ -11,6 +11,7 @@ import { activeIssuesRouter } from './routes/activeIssues.routes.js';
 import { dataRouter } from './routes/data.routes.js';
 import { testerRouter } from './routes/tester.routes.js';
 import { simulatorRouter } from './routes/simulator.routes.js';
+import { organizationalObjectRouter } from './routes/organizationalObjects.routes.js';
 
 // fixtures for development
 import {
@@ -90,6 +91,7 @@ app.use('/activeIssues', activeIssuesRouter);
 app.use('/data', dataRouter);
 app.use('/tester', testerRouter);
 app.use('/simulator', simulatorRouter);
+app.use('/organizationalObjects', organizationalObjectRouter);
 
 // catch any undefined routes
 app.all('*', (request, response) => {
