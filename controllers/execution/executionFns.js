@@ -24,6 +24,7 @@ import {
 } from '../dataFetchers/fetchVenues.js';
 
 // TODO: error checking
+// TODO: fix name
 /**
  * Fetches all organization data objects form the Studio API.
  * @returns {Promise<{processes: [], projects: [], venues: [], socialStructures: [], people: []}>}
@@ -63,6 +64,7 @@ export async function computeApplicableSet(applicableSetFn) {
 export async function getRefreshedObjsForTarget(currTarget) {
   let newObjs;
   let targetType = currTarget.targetType;
+
   // TODO: should processes be current processes?
   switch (targetType) {
     case 'project':

@@ -29,7 +29,7 @@ export default {
       name: 'Undercommitted',
       description: 'Students committed too few points on their sprint log',
       strategy_function: async function () {
-        return await this.messagePeople({
+        return await this.presentInDiagnosisTool({
           message: `It looks like ${this.project.name} (${this.project.students
             .map((student) => {
               return student.name.split(' ')[0];
@@ -41,7 +41,7 @@ export default {
           } points available; <${
             this.project.tools.sprintLog.url
           }|Sprint Log>).`,
-          people: ['Grace Wang', 'Jordan Checkoff'],
+          projectName: this.project.name,
           opportunity: async function () {
             return await this.morningOfVenue(
               await this.venues.find(this.where('kind', 'SigMeeting'))

@@ -21,7 +21,7 @@
     "lines": "cloc --exclude-dir=node_modules,.idea --exclude-ext=json ."
   },
   "engines": {
-    "node": "^16.x"
+    "node": "^19.x"
   },
   "type": "module",
   "dependencies": {
