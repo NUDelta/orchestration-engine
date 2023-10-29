@@ -195,11 +195,8 @@ const formatProjectOrgObj = (projApiObj) => {
       compass: {
         url: projApiObj.compass,
       },
-      practicalResearchCanvas: {
-        url: projApiObj.practical_research_canvas,
-      },
-      researchResearchCanvas: {
-        url: projApiObj.research_research_canvas,
+      researchCanvas: {
+        url: projApiObj.research_canvas,
       },
       eoqChecklist: {
         url: projApiObj.eoq_checklist,
