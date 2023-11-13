@@ -3,6 +3,7 @@ import {
   transformOSCode,
   asyncThisConfig,
 } from '../controllers/codeTransformer/babelConfiguration.js';
+import { MonitoredScripts } from '../models/monitoredScripts.js';
 import { createMonitoredScript } from '../controllers/modelControllers/monitoredScriptsController.js';
 
 export const scriptRouter = new Router();
@@ -83,8 +84,21 @@ scriptRouter.post('/createScript', async (req, res) => {
   }
 });
 
-// TODO: implement
-scriptRouter.get('/getScripts', async (req, res) => {});
+/**
+ * Returns all monitored scripts.
+ * request body: {}
+ * response body: MonitoredScript[]
+ */
+scriptRouter.get('/fetchScripts', async (req, res) => {
+  try {
+    const scripts = await MonitoredScripts.find({});
+    res.status(200).json(scripts);
+  } catch (error) {
+    let errorMessage = `Error when fetching all MonitoredScripts via API route: ${error.stack}`;
+    console.error(errorMessage);
+    res.status(500).json(errorMessage);
+  }
+});
 
 // TODO: implement
 scriptRouter.get('/getScript', async (req, res) => {});
