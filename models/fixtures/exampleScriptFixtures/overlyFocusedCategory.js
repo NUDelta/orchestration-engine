@@ -12,9 +12,10 @@ export default {
     );
   }.toString(),
   situation_detector: async function situationDetector() {
-    let isMorningOfSig = await this.currentlyIs(
-      await this.morningOfVenue(
-        await this.venues.find(this.where('kind', 'SigMeeting'))
+    let isHourBeforeSig = await this.currentlyIs(
+      await this.hoursBeforeVenue(
+        await this.venues.find(this.where('kind', 'SigMeeting')),
+        1
       )
     );
 
@@ -26,12 +27,12 @@ export default {
       this.project.tools.sprintLog.totalPoints.pointsCommitted.research >=
         0.93 * this.project.tools.sprintLog.totalPoints.pointsCommitted.total;
 
-    return isMorningOfSig && isOverlyFocused;
+    return isHourBeforeSig && isOverlyFocused;
   }.toString(),
   strategies: [
     {
-      name: 'Overcommitted',
-      description: 'Students committed too few points on their sprint log',
+      name: 'Overly focused',
+      description: 'Students are overly focused on one part of D, T, or R',
       strategy_function: async function strategy() {
         return await this.messagePeople({
           message: `It looks like ${this.project.name} (${this.project.students
@@ -41,10 +42,11 @@ export default {
             .join(' and ')}) is overly focused on a Category <${
             this.project.tools.sprintLog.url
           }|Sprint Log>).`,
-          people: ['Grace Wang', 'Jordan Checkoff'],
+          people: ['Grace Wang', 'Linh Ly'],
           opportunity: async function opportunity() {
-            return await this.morningOfVenue(
-              await this.venues.find(this.where('kind', 'SigMeeting'))
+            return await this.hoursBeforeVenue(
+              await this.venues.find(this.where('kind', 'SigMeeting')),
+              1
             );
           }.toString(),
         });

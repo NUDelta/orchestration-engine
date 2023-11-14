@@ -12,16 +12,18 @@ export default {
     );
   }.toString(),
   situation_detector: async function situationDetector() {
-    let isMorningOfSig = await this.currentlyIs(
-      await this.morningOfVenue(
-        await this.venues.find(this.where('kind', 'SigMeeting'))
+    let isHourBeforeSig = await this.currentlyIs(
+      await this.hoursBeforeVenue(
+        await this.venues.find(this.where('kind', 'SigMeeting')),
+        1
       )
     );
 
     let isOverPoints =
       this.project.tools.sprintLog.totalPoints.pointsCommitted.total >=
       1.1 * this.project.tools.sprintLog.totalPoints.pointAvailable;
-    return isMorningOfSig && isOverPoints;
+
+    return isHourBeforeSig && isOverPoints;
   }.toString(),
   strategies: [
     {
@@ -40,10 +42,11 @@ export default {
           } points available; <${
             this.project.tools.sprintLog.url
           }|Sprint Log>).`,
-          people: ['Grace Wang', 'Jordan Checkoff'],
+          people: ['Grace Wang', 'Linh Ly'],
           opportunity: async function opportunity() {
-            return await this.morningOfVenue(
-              await this.venues.find(this.where('kind', 'SigMeeting'))
+            return await this.hoursBeforeVenue(
+              await this.venues.find(this.where('kind', 'SigMeeting')),
+              1
             );
           }.toString(),
         });

@@ -12,11 +12,14 @@ export default {
     );
   }.toString(),
   situation_detector: async function situationDetector() {
-    let isCurrentlySig = await this.currentlyIs(
-      await this.morningOfVenue(
-        await this.venues.find(this.where('kind', 'SigMeeting'))
+    let isHourBeforeSig = await this.currentlyIs(
+      await this.hoursBeforeVenue(
+        await this.venues.find(this.where('kind', 'SigMeeting')),
+        1
       )
     );
+
+    // TODO: this should work, but check what happens when this runs at the start of a new sprint / week
     let isUserStudyBacklogged = this.project.tools.sprintLog.stories.some(
       (story) =>
         story.tasks.some((task) => {
@@ -31,7 +34,7 @@ export default {
           );
         })
     );
-    return isCurrentlySig && isUserStudyBacklogged;
+    return isHourBeforeSig && isUserStudyBacklogged;
   }.toString(),
   strategies: [
     {
@@ -46,10 +49,11 @@ export default {
             .join(' and ')})'s userstudy is backlogged <${
             this.project.tools.sprintLog.url
           }|Sprint Log>).`,
-          people: ['Grace Wang', 'Jordan Checkoff'],
+          people: ['Grace Wang', 'Linh Ly'],
           opportunity: async function opportunity() {
-            return await this.morningOfVenue(
-              await this.venues.find(this.where('kind', 'SigMeeting'))
+            return await this.hoursBeforeVenue(
+              await this.venues.find(this.where('kind', 'SigMeeting')),
+              1
             );
           }.toString(),
         });
