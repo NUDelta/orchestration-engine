@@ -5,6 +5,9 @@ import { computeStrategies } from '../controllers/execution/executionFlow.js';
 import { ActiveIssues } from '../models/activeIssues.js';
 import { getFromStudioAPI } from '../imports/studioAPI/requests.js';
 
+import hash from 'object-hash';
+import mongoose from 'mongoose';
+
 export const activeIssuesRouter = new Router();
 
 // TODO: needs testing
@@ -61,7 +64,7 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
 
     // create the active issue
     const activeIssue = createActiveIssue(
-      scriptId,
+      new mongoose.Types.ObjectId(),
       scriptName,
       new Date(dateTriggered),
       new Date(expiryTime),
