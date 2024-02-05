@@ -50,6 +50,24 @@ export const daysBefore = async function (eventDate, numDays) {
 };
 
 /**
+ * Returns the Date numDays after an event.
+ * @param eventDate date for an event to get number of days after.
+ * @param numDays number of days to get time after the event.
+ * @returns {Promise<Date>} date numDays after eventDate.
+ */
+export const daysAfter = async function (eventDate, numDays) {
+  // shift time from eventDate
+  let shiftedTime = DateTime.fromJSDate(eventDate).plus({
+    hours: numDays * 24, // numDays * 24 hours/day
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // return the shifted time
+  return shiftedTime.toJSDate();
+};
+
+/**
  * Returns the Date numDays before the start of a venue.
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @param numDays number of days to get time before venue.
