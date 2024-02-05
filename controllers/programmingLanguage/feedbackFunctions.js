@@ -91,6 +91,20 @@ export const includeInSummary = async (issue, message, people, opportunity) => {
   return;
 };
 
+export const presentInNotetakingTool = async (
+  message = '',
+  projectName,
+  opportunity
+) => {
+  return {
+    outlet_fn: () => {
+      return;
+    },
+    outlet_args: { projectName, message },
+    opportunity_fn: new Function(`return ${opportunity}`)(),
+  };
+};
+
 /**
  * TODO: implement
  * Presents a mentor with follow-up interactions that they can choose for the system to track.
