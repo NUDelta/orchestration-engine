@@ -42,6 +42,19 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       strategyToEnact,
     } = req.body;
 
+    // check to see if the script exists
+    let objIdForScript = mongoose.Types.ObjectId.createFromHexString(scriptId);
+    let foundIssue = await ActiveIssues.findOne({
+      script_id: objIdForScript,
+    });
+    if (foundIssue !== null) {
+      console.log(
+        `In createActiveIssue: script with id ${scriptId} already exists`
+      );
+      res.status(200).json(foundIssue);
+      return;
+    }
+
     // TODO: run code transformer to add this and async/await before saving script
     // convert strategy into a function
     const strategyAsFn = {
@@ -57,6 +70,12 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
     let computedStrategies = await computeStrategies(refreshedOrgObjs, [
       strategyAsFn,
     ]);
+
+    // check if strategies were computed successfully
+    if (computedStrategies.length === 0) {
+      throw new Error('No strategies were computed');
+    }
+
     const targetHash = hash({
       targetType: issueTarget.targetType,
       name: issueTarget.name,
@@ -64,7 +83,7 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
 
     // create the active issue
     const activeIssue = createActiveIssue(
-      new mongoose.Types.ObjectId(),
+      objIdForScript,
       scriptName,
       new Date(dateTriggered),
       new Date(expiryTime),
