@@ -250,7 +250,7 @@ export const archiveStaleIssues = async () => {
 };
 
 /**
- *
+ * Computes when an active issue should be archived, given when the issue was triggered and the timeframe of the script.
  * @param triggerDate
  * @param timeFrame
  * @return {Date}
@@ -289,7 +289,7 @@ const computeExpiryTimeForScript = (triggerDate, timeFrame) => {
 };
 
 /**
- *
+ * Computes strategies for a script, given the target and strategies to compute.
  * @param target
  * @param strategyList
  * @return {Promise<{outlet_fn: *, opportunity: *, message: *}[]>}
