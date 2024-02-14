@@ -32,17 +32,7 @@ export default {
       description: 'Students committed too many points on their current sprint',
       strategy_function: async function strategy() {
         return await this.messagePeople({
-          message: `It looks like ${this.project.name} (${this.project.students
-            .map((student) => {
-              return student.name.split(' ')[0];
-            })
-            .join(' and ')}) is over points (${
-            this.project.tools.sprintLog.totalPoints.pointsCommitted.total
-          } points committed out of ${
-            this.project.tools.sprintLog.totalPoints.pointAvailable
-          } points available; <${
-            this.project.tools.sprintLog.url
-          }|Sprint Log>).`,
+          message: `Students committed too many points on their current sprint.`,
           people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(

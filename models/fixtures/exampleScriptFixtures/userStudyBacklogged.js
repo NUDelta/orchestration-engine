@@ -43,13 +43,7 @@ export default {
         'User Study Backlogged: students have user study tasks backlogged',
       strategy_function: async function strategy() {
         return await this.messagePeople({
-          message: `It looks like ${this.project.name} (${this.project.students
-            .map((student) => {
-              return student.name.split(' ')[0];
-            })
-            .join(' and ')})'s userstudy is backlogged <${
-            this.project.tools.sprintLog.url
-          }|Sprint Log>).`,
+          message: `User Study Backlogged: students have user study tasks backlogged.`,
           people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(

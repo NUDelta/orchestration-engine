@@ -36,13 +36,7 @@ export default {
         "Students' sprint plans are heavily focused on one part of D, T, or R",
       strategy_function: async function strategy() {
         return await this.messagePeople({
-          message: `It looks like ${this.project.name} (${this.project.students
-            .map((student) => {
-              return student.name.split(' ')[0];
-            })
-            .join(' and ')}) is overly focused on a Category <${
-            this.project.tools.sprintLog.url
-          }|Sprint Log>).`,
+          message: `Students' sprint plans are heavily focused on one part of D, T, or R.`,
           people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(

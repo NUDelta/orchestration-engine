@@ -61,17 +61,7 @@ export default {
       description: 'Students have spent too many hours in the past week',
       strategy_function: async function strategy() {
         return await this.messagePeople({
-          message: `It looks like ${this.project.name} (${this.project.students
-            .map((student) => {
-              return student.name.split(' ')[0];
-            })
-            .join(' and ')}) has OVER worked in the last week (${
-            this.project.tools.sprintLog.totalPoints.hoursSpent.total
-          } points committed out of ${
-            this.project.tools.sprintLog.totalPoints.pointAvailable
-          } points available; <${
-            this.project.tools.sprintLog.url
-          }|Sprint Log>).`,
+          message: `Students have spent too many hours in the past week.`,
           people: ['Kapil Garg'],
           opportunity: async function () {
             return await this.startOfVenue(
