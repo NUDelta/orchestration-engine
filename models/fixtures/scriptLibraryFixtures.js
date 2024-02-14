@@ -10,6 +10,9 @@ import usingVenuesThroughoutWeekJonathan from './exampleScriptFixtures/usingVenu
 import researchProgressForPhdStudents from './exampleScriptFixtures/researchProgressForPhdStudents.js';
 import compassInActionCues from './exampleScriptFixtures/compassInActionCues.js';
 
+import underworking from './exampleScriptFixtures/underworking.js';
+import overworking from './exampleScriptFixtures/overworking.js';
+
 // grace and jordan's scripts
 import overcommitted from './exampleScriptFixtures/overcommitted.js';
 import undercommitted from './exampleScriptFixtures/undercommitted.js';
@@ -35,6 +38,8 @@ const createScripts = async () => {
     new OrchestrationScript(undercommitted),
     new OrchestrationScript(overlyFocusedCategory),
     new OrchestrationScript(userStudyBacklogged),
+    new OrchestrationScript(underworking),
+    new OrchestrationScript(overworking),
   ];
 
   // check if script is already in the database, by name

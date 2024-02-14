@@ -7,6 +7,8 @@ const populateActiveScripts = async () => {
   let scriptsToActivateNames = [
     'Overcommitted',
     'Undercommitted',
+    'Underworking',
+    'Overworking',
     'overlyFocusCategory',
     'UserStudyBacklogged',
     'Support students in planning a Status Update for their project',
