@@ -42,6 +42,7 @@ const createScripts = async () => {
     new OrchestrationScript(overworking),
   ];
 
+  // TODO: allow for updating
   // check if script is already in the database, by name
   for (let script of scriptsToAdd) {
     let relevantScript = await OrchestrationScript.findOne({

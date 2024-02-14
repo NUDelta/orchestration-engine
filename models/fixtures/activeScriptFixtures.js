@@ -55,10 +55,10 @@ export const createActiveScriptFixtures = async (shouldEmpty = false) => {
     await MonitoredScripts.deleteMany({}).exec();
 
     // clear out active issues
-    await ActiveIssues.deleteMany({}).exec();
+    // await ActiveIssues.deleteMany({}).exec();
 
     // clear out archived issues
-    await ArchivedIssues.deleteMany({}).exec();
+    // await ArchivedIssues.deleteMany({}).exec();
   }
 
   // populate active scripts
