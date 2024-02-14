@@ -1,5 +1,6 @@
 /**
  * Support students undercommitted
+ * TODO: make sure to check for mid-sprint
  */
 export default {
   name: 'Undercommitted',
@@ -28,7 +29,7 @@ export default {
   strategies: [
     {
       name: 'Undercommitted',
-      description: 'Students committed too few points on their sprint log',
+      description: 'Students committed too few points on their current sprint',
       strategy_function: async function strategy() {
         return await this.messagePeople({
           message: `It looks like ${this.project.name} (${this.project.students
@@ -42,7 +43,7 @@ export default {
           } points available; <${
             this.project.tools.sprintLog.url
           }|Sprint Log>).`,
-          people: ['Grace Wang', 'Linh Ly'],
+          people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(
               await this.venues.find(this.where('kind', 'SigMeeting')),

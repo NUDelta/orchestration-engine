@@ -32,7 +32,8 @@ export default {
   strategies: [
     {
       name: 'Overly focused',
-      description: 'Students are overly focused on one part of D, T, or R',
+      description:
+        "Students' sprint plans are heavily focused on one part of D, T, or R",
       strategy_function: async function strategy() {
         return await this.messagePeople({
           message: `It looks like ${this.project.name} (${this.project.students
@@ -42,7 +43,7 @@ export default {
             .join(' and ')}) is overly focused on a Category <${
             this.project.tools.sprintLog.url
           }|Sprint Log>).`,
-          people: ['Grace Wang', 'Linh Ly'],
+          people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(
               await this.venues.find(this.where('kind', 'SigMeeting')),
