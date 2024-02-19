@@ -44,7 +44,8 @@ export default {
         student: currStudent,
         hoursSpent: currStudentHoursSpent,
         hoursAvail: currStudentHoursAvail,
-        isOver: currStudentHoursSpent > multiplier * currStudentHoursAvail,
+        isOver:
+          currStudentHoursSpent > 1.2 * (multiplier * currStudentHoursAvail),
       };
     });
 
