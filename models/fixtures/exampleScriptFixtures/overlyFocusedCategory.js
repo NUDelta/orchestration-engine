@@ -12,10 +12,9 @@ export default {
     );
   }.toString(),
   situation_detector: async function situationDetector() {
-    let isHourBeforeSig = await this.currentlyIs(
-      await this.hoursBeforeVenue(
-        await this.venues.find(this.where('kind', 'SigMeeting')),
-        1
+    let isMorningOfSig = await this.currentlyIs(
+      await this.morningOfVenue(
+        await this.venues.find(this.where('kind', 'SigMeeting'))
       )
     );
 
@@ -27,7 +26,7 @@ export default {
       this.project.tools.sprintLog.totalPoints.pointsCommitted.research >=
         0.93 * this.project.tools.sprintLog.totalPoints.pointsCommitted.total;
 
-    return isHourBeforeSig && isOverlyFocused;
+    return isMorningOfSig && isOverlyFocused;
   }.toString(),
   strategies: [
     {
@@ -37,7 +36,7 @@ export default {
       strategy_function: async function strategy() {
         return await this.messagePeople({
           message: `Students' sprint plans are heavily focused on one part of D, T, or R.`,
-          people: ['Kapil Garg'],
+          people: ['Kapil Garg', 'Grace Wang', 'Linh Ly'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(
               await this.venues.find(this.where('kind', 'SigMeeting')),

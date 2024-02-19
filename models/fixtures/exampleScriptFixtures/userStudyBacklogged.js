@@ -12,10 +12,9 @@ export default {
     );
   }.toString(),
   situation_detector: async function situationDetector() {
-    let isHourBeforeSig = await this.currentlyIs(
-      await this.hoursBeforeVenue(
-        await this.venues.find(this.where('kind', 'SigMeeting')),
-        1
+    let isMorningOfSig = await this.currentlyIs(
+      await this.morningOfVenue(
+        await this.venues.find(this.where('kind', 'SigMeeting'))
       )
     );
 
@@ -34,7 +33,7 @@ export default {
           );
         })
     );
-    return isHourBeforeSig && isUserStudyBacklogged;
+    return isMorningOfSig && isUserStudyBacklogged;
   }.toString(),
   strategies: [
     {
@@ -44,7 +43,7 @@ export default {
       strategy_function: async function strategy() {
         return await this.messagePeople({
           message: `User Study Backlogged: students have user study tasks backlogged.`,
-          people: ['Kapil Garg'],
+          people: ['Kapil Garg', 'Grace Wang', 'Linh Ly'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(
               await this.venues.find(this.where('kind', 'SigMeeting')),
