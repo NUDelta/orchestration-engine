@@ -91,6 +91,13 @@ export const includeInSummary = async (issue, message, people, opportunity) => {
   return;
 };
 
+/**
+ * TODO: implement. Right now, this is based on the presentInDiagnosisTool function.
+ * @param {*} message
+ * @param {*} projectName
+ * @param {*} opportunity
+ * @returns
+ */
 export const presentInNotetakingTool = async (
   message = '',
   projectName,

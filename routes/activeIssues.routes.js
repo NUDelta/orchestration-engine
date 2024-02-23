@@ -42,6 +42,11 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       strategyToEnact,
     } = req.body;
 
+    console.log(
+      'In /createActiveIssue: strategiesToEnact code',
+      strategyToEnact
+    );
+
     // check to see if the script exists
     let objIdForScript = mongoose.Types.ObjectId.createFromHexString(scriptId);
     let foundIssue = await ActiveIssues.findOne({
