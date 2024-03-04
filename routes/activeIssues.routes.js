@@ -53,10 +53,13 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       script_id: objIdForScript,
     });
     if (foundIssue !== null) {
-      console.log(
-        `In createActiveIssue: script with id ${scriptId} already exists`
-      );
-      res.status(200).json(foundIssue);
+      const issueFoundMessage = `In createActiveIssue: script with id ${scriptId} already exists`;
+      console.log(issueFoundMessage);
+
+      // return a 409 conflict with server message
+      res
+        .status(409)
+        .json({ error: issueFoundMessage, foundIssue: foundIssue });
       return;
     }
 
@@ -100,11 +103,13 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
     const createdIssue = await activeIssue.save();
 
     // return a successful response with the created issue
-    res.status(200).json(createdIssue);
+    res.status(200).json({ activeIssue: createdIssue });
   } catch (error) {
     let errorMessage = `Error when creating ActiveIssue via API route: ${error.stack}`;
     console.error(errorMessage);
-    res.json(errorMessage);
+
+    // return a 400 error with the error message and stack
+    res.status(400).json({ error: errorMessage, stack: error.stack });
   }
 });
 
