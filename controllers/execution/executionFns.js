@@ -150,6 +150,7 @@ export async function executeStrategies(orgObj, strategies) {
       let flooredComputedOpportunity =
         floorDateToNearestFiveMinutes(computedOpportunity);
 
+      // TODO: may want to add a "delivery" field here to indicate how the feedback should be delivered (e.g., in summary, message over slack, shown in tool)
       // add computed strategies
       computedStrategies.push({
         opportunity: flooredComputedOpportunity,

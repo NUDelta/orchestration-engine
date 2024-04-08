@@ -114,6 +114,7 @@ export const checkActiveIssues = async () => {
   let currDate = floorDateToNearestFiveMinutes(new Date());
 
   // for each issue, check if any of the strategies should be presented and track which ones were
+  // TODO: this is a good place to check for summaries
   let presentedStrategies = [];
 
   for (const currIssue of activeIssues) {
@@ -133,6 +134,7 @@ export const checkActiveIssues = async () => {
       // TODO: this will fail since its looking for a direct match. Need to round this down.
       // TODO: in the future, may want to change it to currTime >= oppTime (or on the same day, but >= time). This will need to check, though, if a ping has been sent for an active issue.
       // check if it's time to deliver the current strategy
+      // TODO: add a check here for summary messages before sending. Pool them together and send after the checking of issues is done
       if (currDate.getTime() === currCompStrat.opportunity.getTime()) {
         // execute strategy by creating an execution env with the refreshed org objs and outlet_fn
         let stratExecutionEnv = new ExecutionEnv(

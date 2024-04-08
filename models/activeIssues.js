@@ -26,6 +26,8 @@ export const ActiveIssues = mongoose.model(
     target_hash: { type: String, required: true }, // used to check if an existing issue is present
     computed_strategies: [
       {
+        //TODO: add a delivery mechanism for strategy here
+        // TODO: consider including context for the computed strategy
         opportunity: { type: Date, required: true },
         outlet_fn: { type: String, required: true }, // function that returns where the feedback should go
         outlet_args: { type: Object, required: true },
