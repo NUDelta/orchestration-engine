@@ -49,10 +49,6 @@ export default {
       };
     });
 
-    if (isCurrentlySig && isUnderPoints.some((student) => student.isUnder)) {
-      console.log(isUnderPoints);
-    }
-
     // return true if current is SIG and any students are over points
     return isCurrentlySig && isUnderPoints.some((student) => student.isUnder);
   }.toString(),
@@ -62,7 +58,14 @@ export default {
       description: 'Students have spent too few hours in the past week',
       strategy_function: async function strategy() {
         return await this.messagePeople({
-          message: `Students have spent too few hours in the past week.`,
+          message: `Students have spent too few hours in the past week (${this.project.tools.sprintLog.points
+            .map((student) => {
+              let currStudent = student.name;
+              let currStudentHoursSpent = student.hoursSpent.total.toFixed(2);
+              let currStudentHoursAvail = student.pointsAvailable.toFixed(2);
+              return `${currStudent}: ${currStudentHoursSpent} hours spent vs. ${currStudentHoursAvail} hours available`;
+            })
+            .join('; ')}; Sprint Log: ${this.project.tools.sprintLog.url}).`,
           people: ['Kapil Garg'],
           opportunity: async function () {
             return await this.startOfVenue(

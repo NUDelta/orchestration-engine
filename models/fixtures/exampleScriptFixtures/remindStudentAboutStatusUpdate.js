@@ -37,23 +37,23 @@ export default {
       }.toString(),
     },
     // TODO: this breaks if the SIG is the same day as studio since the situation detector activates at the start of the day
-    {
-      name: "Check in on your student's preparation for Status Update",
-      description:
-        'Discuss how your students are planning to use Status Update later this week.',
-      strategy_function: async function () {
-        return await this.messagePeople({
-          message:
-            "Your student(s), ${ this.project.students.map(student => { return student.name }).join(' and ') }, have a Status Update this week. During SIG, try to check in on their Status Update plan and see if they might need any support or feedback.",
-          people: [this.project.sigHead.name],
-          opportunity: async function () {
-            return await this.minutesBeforeVenue(
-              await this.venues.find(this.where('kind', 'SigMeeting')),
-              30
-            );
-          }.toString(),
-        });
-      }.toString(),
-    },
+    // {
+    //   name: "Check in on your student's preparation for Status Update",
+    //   description:
+    //     'Discuss how your students are planning to use Status Update later this week.',
+    //   strategy_function: async function () {
+    //     return await this.messagePeople({
+    //       message:
+    //         "Your student(s), ${ this.project.students.map(student => { return student.name }).join(' and ') }, have a Status Update this week. During SIG, try to check in on their Status Update plan and see if they might need any support or feedback.",
+    //       people: [this.project.sigHead.name],
+    //       opportunity: async function () {
+    //         return await this.minutesBeforeVenue(
+    //           await this.venues.find(this.where('kind', 'SigMeeting')),
+    //           30
+    //         );
+    //       }.toString(),
+    //     });
+    //   }.toString(),
+    // },
   ],
 };

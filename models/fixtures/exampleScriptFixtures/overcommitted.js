@@ -31,8 +31,16 @@ export default {
       description: 'Students committed too many points on their current sprint',
       strategy_function: async function strategy() {
         return await this.messagePeople({
-          message: `Students committed too many points on their current sprint.`,
-          people: ['Kapil Garg', 'Grace Wang', 'Linh Ly'],
+          message: `Students committed too many points on their current sprint (${this.project.tools.sprintLog.points
+            .map((student) => {
+              let currStudent = student.name;
+              let currStudentHoursSpent =
+                student.pointsCommitted.total.toFixed(2);
+              let currStudentHoursAvail = student.pointsAvailable.toFixed(2);
+              return `${currStudent}: ${currStudentHoursSpent} points committed vs. ${currStudentHoursAvail} points available`;
+            })
+            .join('; ')}; Sprint Log: ${this.project.tools.sprintLog.url}).`,
+          people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(
               await this.venues.find(this.where('kind', 'SigMeeting')),
