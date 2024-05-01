@@ -80,7 +80,7 @@ export const presentInDiagnosisTool = async ({
  * Schedules message to be included in a summary message to a person (or list of people).
  * @param issue object issue that the message is for. this is used to generate headers in the
  * message body to separate strategies from different issues from each other.
- * @param message string message to present in the summary.. Passed in as a standard string,
+ * @param message string message to present in the summary. Passed in as a standard string,
  * but ES6 template literals are supported and executed at run-time within an ExecutionEnv that
  * contains organization data. This means you compose templated messages such as,
  * "Hello ${ this.project.sigHead }!"
@@ -93,6 +93,7 @@ export const includeInSummary = async (issue, message, people, opportunity) => {
 
 /**
  * TODO: implement. Right now, this is based on the presentInDiagnosisTool function.
+ * TODO: useful here to track the context of the raised issue
  * @param {*} message
  * @param {*} projectName
  * @param {*} opportunity

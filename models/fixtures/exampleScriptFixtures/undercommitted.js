@@ -13,8 +13,8 @@ export default {
     );
   }.toString(),
   situation_detector: async function () {
-    let isMorningOfSig = await this.currentlyIs(
-      await this.morningOfVenue(
+    let isCurrentlySig = await this.currentlyIs(
+      await this.startOfVenue(
         await this.venues.find(this.where('kind', 'SigMeeting'))
       )
     );
@@ -23,7 +23,7 @@ export default {
       this.project.tools.sprintLog.totalPoints.pointsCommitted.total <
       0.9 * this.project.tools.sprintLog.totalPoints.pointAvailable;
 
-    return isMorningOfSig && isUnderPoints;
+    return isCurrentlySig && isUnderPoints;
   }.toString(),
   strategies: [
     {
@@ -40,7 +40,7 @@ export default {
               return `${currStudent}: ${currStudentHoursSpent} points committed vs. ${currStudentHoursAvail} points available`;
             })
             .join('; ')}; Sprint Log: ${this.project.tools.sprintLog.url}).`,
-          people: ['Kapil Garg', 'Grace Wang', 'Linh Ly'],
+          people: ['Kapil Garg'],
           opportunity: async function opportunity() {
             return await this.hoursBeforeVenue(
               await this.venues.find(this.where('kind', 'SigMeeting')),

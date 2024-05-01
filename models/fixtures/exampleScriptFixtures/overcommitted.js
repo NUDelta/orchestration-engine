@@ -13,8 +13,8 @@ export default {
     );
   }.toString(),
   situation_detector: async function situationDetector() {
-    let isMorningOfSig = await this.currentlyIs(
-      await this.morningOfVenue(
+    let isCurrentlySig = await this.currentlyIs(
+      await this.startOfVenue(
         await this.venues.find(this.where('kind', 'SigMeeting'))
       )
     );
@@ -23,7 +23,7 @@ export default {
       this.project.tools.sprintLog.totalPoints.pointsCommitted.total >=
       1.1 * this.project.tools.sprintLog.totalPoints.pointAvailable;
 
-    return isMorningOfSig && isOverPoints;
+    return isCurrentlySig && isOverPoints;
   }.toString(),
   strategies: [
     {
