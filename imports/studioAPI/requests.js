@@ -1,5 +1,6 @@
 import got from 'got';
 import { studioAPIUrl } from '../../index.js';
+import { MessageLog } from '../../models/messageLog.js';
 
 /**
  * GET request wrapper for the Studio API.
@@ -35,6 +36,30 @@ export const postToStudioApi = async (
   jsonBody = {},
   retryLimit = 3
 ) => {
+  // create message log
+  let newMessageLog = new MessageLog({
+    message: jsonBody.message,
+  });
+
+  if (jsonBody.sigName) {
+    newMessageLog.target = {
+      type: 'sig',
+      sigName: jsonBody.sigName,
+    };
+  } else if (jsonBody.projName) {
+    newMessageLog.target = {
+      type: 'project',
+      projectName: jsonBody.projName,
+    };
+  } else if (jsonBody.people) {
+    newMessageLog.target = {
+      type: 'people',
+      people: jsonBody.people,
+    };
+  }
+
+  await newMessageLog.save();
+
   return got.post(`${studioAPIUrl}/${subdomain}`, {
     json: jsonBody,
     responseType: 'json',

@@ -138,8 +138,7 @@ const sendSlackMessageToProjectChannel = async function ({
       message: eval('`' + message + '`'),
     });
   } catch (error) {
-    console.error(`Error sendSlackMessageToProjectChannel:`);
-    console.error(error);
+    console.error(`Error sendSlackMessageToProjectChannel: ${error.stack}`);
   }
 };
 
@@ -157,7 +156,7 @@ const sendSlackMessageToSigChannel = async function ({ sigName, message }) {
       message: eval('`' + message + '`'),
     });
   } catch (error) {
-    console.error(`Error sendSlackMessageToProjectChannel: ${error}`);
+    console.error(`Error sendSlackMessageToProjectChannel: ${error.stack}`);
   }
 };
 
