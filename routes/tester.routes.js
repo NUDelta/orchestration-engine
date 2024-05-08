@@ -41,6 +41,14 @@ import {
   getRefreshedObjsForTarget,
 } from '../controllers/execution/executionFns.js';
 
+import {
+  thisAfternoon,
+  thisEvening,
+  tomorrowMorning,
+  tomorrowAfternoon,
+  tomorrowEvening,
+} from '../controllers/programmingLanguage/timeHelpers.js';
+
 export const testerRouter = new Router();
 
 testerRouter.get('/projects', async (req, res) => {
@@ -182,4 +190,16 @@ testerRouter.get('/execution', async (req, res) => {
       )[0]
     )
   );
+});
+
+testerRouter.get('/timeAtDate', async (req, res) => {
+  // get the timestamp, timezone
+  const { timestamp, timezone } = req.query;
+  return res.json({
+    thisAfternoon: await thisAfternoon(timestamp, timezone),
+    thisEvening: await thisEvening(timestamp, timezone),
+    tomorrowMorning: await tomorrowMorning(timestamp, timezone),
+    tomorrowAfternoon: await tomorrowAfternoon(timestamp, timezone),
+    tomorrowEvening: await tomorrowEvening(timestamp, timezone),
+  });
 });

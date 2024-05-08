@@ -206,6 +206,64 @@ export const eveningOfVenue = async function (venue) {
 };
 
 /**
+ * Returns the date at the afternoon of the timestamp
+ * @param timestamp javascript date object.
+ * @param timezone string timezone of the date.
+ * @returns {Promise<Date>} date of the afternoon of the timestamp.
+ */
+export const thisAfternoon = async function (timestamp, timezone) {
+  let dateObj = new Date(timestamp);
+  return setTimeOfDayForDate(dateObj, timezone, 'afternoon');
+};
+
+/**
+ * Returns the date at the evening of the timestamp
+ * @param timestamp javascript date object.
+ * @param timezone string timezone of the date.
+ * @returns {Promise<Date>} date of the evening of the timestamp.
+ */
+export const thisEvening = async function (timestamp, timezone) {
+  let dateObj = new Date(timestamp);
+  return setTimeOfDayForDate(dateObj, timezone, 'evening');
+};
+
+/**
+ * Returns tomorrow's date at the morning of the timestamp
+ * @param timestamp javascript date object.
+ * @param timezone string timezone of the date.
+ * @returns {Promise<Date>} date of tomorrow during the morning of the timestamp.
+ */
+export const tomorrowMorning = async function (timestamp, timezone) {
+  let dateObj = new Date(timestamp);
+  let todayMorning = setTimeOfDayForDate(dateObj, timezone, 'morning');
+  return daysAfter(todayMorning, 1);
+};
+
+/**
+ * Returns tomorrow's date at the afternoon of the timestamp
+ * @param timestamp javascript date object.
+ * @param timezone string timezone of the date.
+ * @returns {Promise<Date>} date of tomorrow during the afternoon of the timestamp.
+ */
+export const tomorrowAfternoon = async function (timestamp, timezone) {
+  let dateObj = new Date(timestamp);
+  let todayAfternoon = setTimeOfDayForDate(dateObj, timezone, 'afternoon');
+  return daysAfter(todayAfternoon, 1);
+};
+
+/**
+ * Returns tomorrow's date at the evening of the timestamp
+ * @param timestamp javascript date object.
+ * @param timezone string timezone of the date.
+ * @returns {Promise<Date>} date of tomorrow during the evening of the timestamp.
+ */
+export const tomorrowEvening = async function (timestamp, timezone) {
+  let dateObj = new Date(timestamp);
+  let todayEvening = setTimeOfDayForDate(dateObj, timezone, 'evening');
+  return daysAfter(todayEvening, 1);
+};
+
+/**
  * Generic function for computing the Date for a venue at a time of day.
  * @param venue object that contains the name of the venue, start_time, end_time, and day of week.
  * @param timeOfDay string what time of day the date should be computed for.
