@@ -1,6 +1,9 @@
 import { Router } from 'express';
 import { createActiveIssue } from '../controllers/modelControllers/activeIssuesController.js';
-import { getRefreshedObjsForTarget } from '../controllers/execution/executionFns.js';
+import {
+  computeApplicableSet,
+  getRefreshedObjsForTarget,
+} from '../controllers/execution/executionFns.js';
 import { computeStrategies } from '../controllers/execution/executionFlow.js';
 import { ActiveIssues } from '../models/activeIssues.js';
 import { getFromStudioAPI } from '../imports/studioAPI/requests.js';
@@ -40,6 +43,7 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       shouldRepeat,
       issueTarget, // should be in the format of an applicable set target (man, typescript interfaces would be really nice here)
       strategyToEnact,
+      updateIfExists = false,
     } = req.body;
 
     console.log(
@@ -47,21 +51,8 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       strategyToEnact
     );
 
-    // check to see if the script exists
+    // create an objectId based on the passed in scriptId
     let objIdForScript = mongoose.Types.ObjectId.createFromHexString(scriptId);
-    let foundIssue = await ActiveIssues.findOne({
-      script_id: objIdForScript,
-    });
-    if (foundIssue !== null) {
-      const issueFoundMessage = `In createActiveIssue: script with id ${scriptId} already exists`;
-      console.log(issueFoundMessage);
-
-      // return a 409 conflict with server message
-      res
-        .status(409)
-        .json({ error: issueFoundMessage, foundIssue: foundIssue });
-      return;
-    }
 
     // TODO: run code transformer to add this and async/await before saving script
     // convert strategy into a function
@@ -73,8 +64,17 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       )(),
     };
 
+    // compute applicable set for target
+    // TODO: assumes target is a project for now
+    let applicableSet = await computeApplicableSet(async function () {
+      return this.projects.filter(this.where('name', [issueTarget.name]));
+    });
+    if (applicableSet.length === 0) {
+      throw new Error('No applicable set was computed');
+    }
+
     // compute strategy given the target and the script
-    let refreshedOrgObjs = await getRefreshedObjsForTarget(issueTarget);
+    let refreshedOrgObjs = await getRefreshedObjsForTarget(applicableSet[0]);
     let computedStrategies = await computeStrategies(refreshedOrgObjs, [
       strategyAsFn,
     ]);
@@ -89,14 +89,51 @@ activeIssuesRouter.post('/createActiveIssue', async (req, res) => {
       name: issueTarget.name,
     });
 
-    // create the active issue
+    // check to see if the script exists
+    let foundIssue = await ActiveIssues.findOne({
+      script_id: objIdForScript,
+    });
+
+    // if it does and we shouldn't update, return a 409 conflict
+    if (foundIssue !== null && !updateIfExists) {
+      const issueFoundMessage = `In createActiveIssue: script with id ${scriptId} already exists`;
+      console.log(issueFoundMessage);
+
+      // return a 409 conflict with server message
+      res
+        .status(409)
+        .json({ error: issueFoundMessage, foundIssue: foundIssue });
+      return;
+    } else if (foundIssue !== null && updateIfExists) {
+      console.log(
+        `In createActiveIssue: script with id ${scriptId} already exists. updating it's value.`
+      );
+
+      // if we should update, update the existing issue
+      foundIssue.name = scriptName;
+      foundIssue.date_triggered = new Date(dateTriggered);
+      foundIssue.expiry_time = new Date(expiryTime);
+      foundIssue.repeat = shouldRepeat;
+      foundIssue.issue_target = applicableSet[0];
+      foundIssue.target_hash = targetHash;
+      foundIssue.computed_strategies = computedStrategies;
+
+      // save the updated issue
+      const updatedIssue = await foundIssue.save();
+
+      // return a successful response with the updated issue
+      res.status(200).json({ activeIssue: updatedIssue });
+      return;
+    }
+
+    // otherwise, create a new active issue
     const activeIssue = createActiveIssue(
       objIdForScript,
       scriptName,
       new Date(dateTriggered),
       new Date(expiryTime),
       shouldRepeat,
-      issueTarget,
+      applicableSet[0],
       targetHash,
       computedStrategies
     );
