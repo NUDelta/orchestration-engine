@@ -89,7 +89,7 @@ export const daysAfter = async function (eventDate, numDays) {
  * Returns the Date numHours before a date.
  * @param timestamp javascript-parsable date for an event to get number of hours before.
  * @param numHours number of hours to get time before the timestamp.
- * @returns {Promise<Date>} date numHours before timestamp.
+ * @returns {Promise<Date>} date numHours before timestamp, rounded to nearest upper 15 mins.
  */
 export const hoursBefore = async function (timestamp, numHours) {
   // shift time from eventDate
@@ -100,22 +100,18 @@ export const hoursBefore = async function (timestamp, numHours) {
     seconds: 0,
   });
 
-  // round to nearest 30 minutes
-  let minutes = shiftedTime.minute;
-  let hour = shiftedTime.hour;
-
-  // if before 30 minutes, round down to 30 for the same hour
-  if (minutes <= 30) {
-    shiftedTime = shiftedTime.set({ minute: 30 });
-  }
-
-  // if more than 30 minutes, round up to the next hour
-  if (minutes > 30) {
-    shiftedTime = shiftedTime.set({ hour: hour + 1, minute: 0 });
-  }
-
   // zero out the seconds
   shiftedTime = shiftedTime.set({ second: 0 });
+
+  // round to nearest 15 minutes
+  let remainder = shiftedTime.minute % 15;
+  let addition = 15 - remainder;
+
+  // TODO: this should probably round DOWN if it's before
+  // if remainder is 0 (already 15 minutes), don't add anything
+  if (remainder !== 0) {
+    shiftedTime = shiftedTime.plus({ minutes: addition });
+  }
 
   // return the shifted time
   return shiftedTime.toJSDate();
@@ -125,7 +121,7 @@ export const hoursBefore = async function (timestamp, numHours) {
  * Returns the Date numHours after a date.
  * @param timestamp javascript-parsable date for an event to get number of hours after.
  * @param numHours number of hours to get time after the timestamp.
- * @returns {Promise<Date>} date numHours after timestamp.
+ * @returns {Promise<Date>} date numHours after timestamp, rounded to nearest upper 15 mins.
  */
 export const hoursAfter = async function (timestamp, numHours) {
   // shift time from eventDate
@@ -136,22 +132,17 @@ export const hoursAfter = async function (timestamp, numHours) {
     seconds: 0,
   });
 
-  // round to nearest 30 minutes
-  let minutes = shiftedTime.minute;
-  let hour = shiftedTime.hour;
-
-  // if before 30 minutes, round down to 30 for the same hour
-  if (minutes <= 30) {
-    shiftedTime = shiftedTime.set({ minute: 30 });
-  }
-
-  // if more than 30 minutes, round up to the next hour
-  if (minutes > 30) {
-    shiftedTime = shiftedTime.set({ hour: hour + 1, minute: 0 });
-  }
-
   // zero out the seconds
   shiftedTime = shiftedTime.set({ second: 0 });
+
+  // round to nearest 15 minutes
+  let remainder = shiftedTime.minute % 15;
+  let addition = 15 - remainder;
+
+  // if remainder is 0 (already 15 minutes), don't add anything
+  if (remainder !== 0) {
+    shiftedTime = shiftedTime.plus({ minutes: addition });
+  }
 
   // return the shifted time
   return shiftedTime.toJSDate();
