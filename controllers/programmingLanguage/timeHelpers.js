@@ -32,6 +32,24 @@ export const weeksBefore = async function (eventDate, numWeeks) {
 };
 
 /**
+ * Returns the Date numWeeks after an event.
+ * @param eventDate date for an event to get number of weeks after.
+ * @param numWeeks number of weeks to get time after the event.
+ * @returns {Promise<Date>} date numWeeks after eventDate.
+ */
+export const weeksAfter = async function (eventDate, numWeeks) {
+  // shift time from eventDate
+  let shiftedTime = DateTime.fromJSDate(eventDate).plus({
+    hours: numWeeks * 7 * 24, // numWeeks * 7 days/week * 24 hours/day
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // return the shifted time
+  return shiftedTime.toJSDate();
+};
+
+/**
  * Returns the Date numDays before an event.
  * @param eventDate date for an event to get number of days before.
  * @param numDays number of days to get time before the event.
@@ -62,6 +80,78 @@ export const daysAfter = async function (eventDate, numDays) {
     minutes: 0,
     seconds: 0,
   });
+
+  // return the shifted time
+  return shiftedTime.toJSDate();
+};
+
+/**
+ * Returns the Date numHours before a date.
+ * @param timestamp javascript-parsable date for an event to get number of hours before.
+ * @param numHours number of hours to get time before the timestamp.
+ * @returns {Promise<Date>} date numHours before timestamp.
+ */
+export const hoursBefore = async function (timestamp, numHours) {
+  // shift time from eventDate
+  let jsDate = new Date(timestamp);
+  let shiftedTime = DateTime.fromJSDate(jsDate).minus({
+    hours: numHours,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // round to nearest 30 minutes
+  let minutes = shiftedTime.minute;
+  let hour = shiftedTime.hour;
+
+  // if before 30 minutes, round down to 30 for the same hour
+  if (minutes <= 30) {
+    shiftedTime = shiftedTime.set({ minute: 30 });
+  }
+
+  // if more than 30 minutes, round up to the next hour
+  if (minutes > 30) {
+    shiftedTime = shiftedTime.set({ hour: hour + 1, minute: 0 });
+  }
+
+  // zero out the seconds
+  shiftedTime = shiftedTime.set({ second: 0 });
+
+  // return the shifted time
+  return shiftedTime.toJSDate();
+};
+
+/**
+ * Returns the Date numHours after a date.
+ * @param timestamp javascript-parsable date for an event to get number of hours after.
+ * @param numHours number of hours to get time after the timestamp.
+ * @returns {Promise<Date>} date numHours after timestamp.
+ */
+export const hoursAfter = async function (timestamp, numHours) {
+  // shift time from eventDate
+  let jsDate = new Date(timestamp);
+  let shiftedTime = DateTime.fromJSDate(jsDate).plus({
+    hours: numHours,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // round to nearest 30 minutes
+  let minutes = shiftedTime.minute;
+  let hour = shiftedTime.hour;
+
+  // if before 30 minutes, round down to 30 for the same hour
+  if (minutes <= 30) {
+    shiftedTime = shiftedTime.set({ minute: 30 });
+  }
+
+  // if more than 30 minutes, round up to the next hour
+  if (minutes > 30) {
+    shiftedTime = shiftedTime.set({ hour: hour + 1, minute: 0 });
+  }
+
+  // zero out the seconds
+  shiftedTime = shiftedTime.set({ second: 0 });
 
   // return the shifted time
   return shiftedTime.toJSDate();
@@ -107,24 +197,6 @@ export const minutesBeforeVenue = async function (venue, numMinutes) {
     minutes: numMinutes,
     seconds: 0,
   });
-};
-
-/**
- * Returns the Date numWeeks after an event.
- * @param eventDate date for an event to get number of weeks after.
- * @param numWeeks number of weeks to get time after the event.
- * @returns {Promise<Date>} date numWeeks after eventDate.
- */
-export const weeksAfter = async function (eventDate, numWeeks) {
-  // shift time from eventDate
-  let shiftedTime = DateTime.fromJSDate(eventDate).plus({
-    hours: numWeeks * 7 * 24, // numWeeks * 7 days/week * 24 hours/day
-    minutes: 0,
-    seconds: 0,
-  });
-
-  // return the shifted time
-  return shiftedTime.toJSDate();
 };
 
 /**
