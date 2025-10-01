@@ -269,6 +269,17 @@ export const eveningOfVenue = async function (venue) {
 };
 
 /**
+ * Returns the date at the morning of the timestamp
+ * @param timestamp javascript date object.
+ * @param timezone string timezone of the date.
+ * @returns {Promise<Date>} date of the morning of the timestamp.
+ */
+export const thisMorning = async function (timestamp, timezone) {
+  let dateObj = new Date(timestamp);
+  return setTimeOfDayForDate(dateObj, timezone, 'morning');
+};
+
+/**
  * Returns the date at the afternoon of the timestamp
  * @param timestamp javascript date object.
  * @param timezone string timezone of the date.
